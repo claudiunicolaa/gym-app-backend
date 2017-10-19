@@ -2,8 +2,8 @@ parameters:
     database_host: localhost
     database_port: null
     database_name: gymapp
-    database_user: root
-    database_password: root
+    database_user:
+    database_password:
     #database_path: '%kernel.project_dir%/var/data/data.sqlite'
     mailer_transport: smtp
     mailer_host: 127.0.0.1
