@@ -9,11 +9,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
+ * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
+ *
  * @ORM\Entity
- * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"user", "user-read"}},
- *     "denormalization_context"={"groups"={"user", "user-write"}}
- * })
  */
 class User extends BaseUser
 {
