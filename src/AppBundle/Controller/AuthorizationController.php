@@ -16,8 +16,12 @@ class AuthorizationController extends Controller
 {
     /**
      * @Route("/api/login", name="login")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
      */
-    public function loginAction(Request $request)
+    public function loginAction(Request $request) : JsonResponse
     {
         $email = $request->get('email');
         $password = $request->get('password');
