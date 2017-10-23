@@ -31,7 +31,19 @@ class User extends BaseUser
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"user"})
      */
-    protected $fullname;
+    protected $firstName;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"user"})
+     */
+    protected $lastName;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"user"})
+     */
+    protected $picture;
 
     /**
      * @Groups({"user-write"})
@@ -43,16 +55,64 @@ class User extends BaseUser
      */
     protected $username;
 
-    public function setFullname($fullname)
+    /**
+     * @return mixed
+     */
+    public function getFirstName()
     {
-        $this->fullname = $fullname;
+        return $this->firstName;
+    }
+
+    /**
+     * @param mixed $firstName
+     * @return $this
+     */
+    public function setFirstName($firstName)
+    {
+        $this->firstName = $firstName;
 
         return $this;
     }
-    public function getFullname()
+
+    /**
+     * @return mixed
+     */
+    public function getLastName()
     {
-        return $this->fullname;
+        return $this->lastName;
     }
+
+    /**
+     * @param mixed $lastName
+     * @return $this
+     */
+    public function setLastName($lastName)
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPicture()
+    {
+        return $this->picture;
+    }
+
+    /**
+     * @param mixed $picture
+     * @return $this
+     */
+    public function setPicture($picture)
+    {
+        $this->picture = $picture;
+
+        return $this;
+    }
+
+
 
     public function isUser(UserInterface $user = null)
     {
