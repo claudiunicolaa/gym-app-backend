@@ -4,7 +4,6 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
-use FOS\UserBundle\Model\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Annotation\ApiResource;
 
@@ -60,7 +59,11 @@ class User extends BaseUser
      */
     public function getFirstName() : string
     {
-        return $this->firstName;
+        if ($this->firstName) {
+            return $this->firstName;
+        }
+
+        return '';
     }
 
     /**
@@ -79,11 +82,16 @@ class User extends BaseUser
      */
     public function getLastName() : string
     {
-        return $this->lastName;
+        if ($this->lastName) {
+            return $this->lastName;
+        }
+
+        return '';
     }
 
     /**
      * @param string $lastName
+     *
      * @return $this
      */
     public function setLastName(string $lastName) : self
@@ -98,11 +106,16 @@ class User extends BaseUser
      */
     public function getPicture() : string
     {
-        return $this->picture;
+        if ($this->picture) {
+            return $this->picture;
+        }
+
+        return '';
     }
 
     /**
      * @param string $picture
+     *
      * @return $this
      */
     public function setPicture(string $picture) : self
@@ -110,13 +123,6 @@ class User extends BaseUser
         $this->picture = $picture;
 
         return $this;
-    }
-
-
-
-    public function isUser(UserInterface $user = null)
-    {
-        return $user instanceof self && $user->id === $this->id;
     }
 }
 
