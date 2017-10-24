@@ -31,7 +31,19 @@ class User extends BaseUser
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"user"})
      */
-    protected $fullname;
+    protected $firstName;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"user"})
+     */
+    protected $lastName;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"user"})
+     */
+    protected $picture;
 
     /**
      * @Groups({"user-write"})
@@ -43,19 +55,68 @@ class User extends BaseUser
      */
     protected $username;
 
-    public function setFullname($fullname)
+    /**
+     * @return string
+     */
+    public function getFirstName()
     {
-        $this->fullname = $fullname;
+        return $this->firstName;
+    }
+
+    /**
+     * @param string $firstName
+     * @return $this
+     */
+    public function setFirstName($firstName)
+    {
+        $this->firstName = $firstName;
 
         return $this;
     }
-    public function getFullname()
+
+    /**
+     * @return string
+     */
+    public function getLastName()
     {
-        return $this->fullname;
+        return $this->lastName;
     }
+
+    /**
+     * @param string $lastName
+     * @return $this
+     */
+    public function setLastName($lastName)
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPicture()
+    {
+        return $this->picture;
+    }
+
+    /**
+     * @param string $picture
+     * @return $this
+     */
+    public function setPicture($picture)
+    {
+        $this->picture = $picture;
+
+        return $this;
+    }
+
+
 
     public function isUser(UserInterface $user = null)
     {
         return $user instanceof self && $user->id === $this->id;
     }
 }
+
