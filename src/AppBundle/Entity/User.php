@@ -56,58 +56,76 @@ class User extends BaseUser
     protected $username;
 
     /**
-     * @return string
+     * @return string | null
      */
     public function getFirstName()
     {
-        return $this->firstName;
+        if(isset($this->firstName))
+            return $this->firstName;
+
+        return null;
     }
 
     /**
-     * @param string $firstName
-     * @return $this
+     * @param string $firstName | null
+     * @return User $this
      */
     public function setFirstName($firstName)
     {
-        $this->firstName = $firstName;
+        if(isset($firstName))
+            $this->firstName = $firstName;
+        else
+            $this->firstName = null;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return string | null
      */
     public function getLastName()
     {
-        return $this->lastName;
+        if(isset($this->lastName))
+            return $this->lastName;
+
+        return null;
     }
 
     /**
-     * @param string $lastName
+     * @param string $lastName | null
      * @return $this
      */
     public function setLastName($lastName)
     {
-        $this->lastName = $lastName;
+        if(isset($lastName))
+            $this->lastName = $lastName;
+        else
+            $this->lastName = null;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return string | null
      */
     public function getPicture()
     {
-        return $this->picture;
+        if(isset($this->picture))
+            return $this->picture;
+
+        return null;
     }
 
     /**
-     * @param string $picture
+     * @param string $picture | null
      * @return $this
      */
     public function setPicture($picture)
     {
-        $this->picture = $picture;
+        if(isset($picture))
+            $this->picture = $picture;
+        else
+            $this->picture = null;
 
         return $this;
     }
