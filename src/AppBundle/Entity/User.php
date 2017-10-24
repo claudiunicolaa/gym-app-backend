@@ -58,7 +58,7 @@ class User extends BaseUser
     /**
      * @return string | null
      */
-    public function getFirstName()
+    public function getFirstName() : string
     {
         if(isset($this->firstName))
             return $this->firstName;
@@ -70,7 +70,7 @@ class User extends BaseUser
      * @param string $firstName | null
      * @return User $this
      */
-    public function setFirstName($firstName)
+    public function setFirstName(string $firstName) : self
     {
         if(isset($firstName))
             $this->firstName = $firstName;
@@ -83,7 +83,7 @@ class User extends BaseUser
     /**
      * @return string | null
      */
-    public function getLastName()
+    public function getLastName() : string
     {
         if(isset($this->lastName))
             return $this->lastName;
@@ -95,7 +95,7 @@ class User extends BaseUser
      * @param string $lastName | null
      * @return $this
      */
-    public function setLastName($lastName)
+    public function setLastName(string $lastName) : self
     {
         if(isset($lastName))
             $this->lastName = $lastName;
@@ -108,7 +108,7 @@ class User extends BaseUser
     /**
      * @return string | null
      */
-    public function getPicture()
+    public function getPicture() : string
     {
         if(isset($this->picture))
             return $this->picture;
@@ -120,7 +120,7 @@ class User extends BaseUser
      * @param string $picture | null
      * @return $this
      */
-    public function setPicture($picture)
+    public function setPicture(string $picture) : self
     {
         if(isset($picture))
             $this->picture = $picture;
