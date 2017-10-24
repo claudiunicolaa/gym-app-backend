@@ -40,7 +40,7 @@ class Course
     protected $capacity;
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId() : int
     {
@@ -48,30 +48,24 @@ class Course
     }
 
     /**
-     * @return User | null
+     * @return User
      */
     public function getTrainer() : User
     {
-        if(isset($this->trainer))
-            return $this->trainer;
-
-        return null;
+        return $this->trainer;
     }
 
     /**
-     * @param User $trainer | null
+     * @param User $trainer
      * @return $this
      */
     public function setTrainer(User $trainer) : self
     {
-        if(isset($trainer))
-            $this->trainer = $trainer;
-
-        return $this;
+        $this->trainer = $trainer;
     }
 
     /**
-     * @return datetime
+     * @return \DateTime
      */
     public function getEventDate() : \DateTime
     {
@@ -79,19 +73,16 @@ class Course
     }
 
     /**
-     * @param datetime $eventDate | null
+     * @param \DateTime $eventDate
      * @return $this
      */
     public function setEventDate(\DateTime $eventDate) : self
     {
-        if(isset($eventDate))
-            $this->eventDate = $eventDate;
-
-        return $this;
+        $this->eventDate = $eventDate;
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getCapacity() : int
     {
@@ -99,14 +90,11 @@ class Course
     }
 
     /**
-     * @param integer $capacity | null
+     * @param int $capacity
      * @return $this
      */
     public function setCapacity(int $capacity) : self 
     {
-        if(isset($capacity))
-            $this->capacity = $capacity;
-
-        return $this;
+        $this->capacity = $capacity;
     }
 }
