@@ -42,7 +42,7 @@ class Course
     /**
      * @return integer
      */
-    public function getId()
+    public function getId() : int
     {
         return $this->id;
     }
@@ -50,7 +50,7 @@ class Course
     /**
      * @return User | null
      */
-    public function getTrainer()
+    public function getTrainer() : User
     {
         if(isset($this->trainer))
             return $this->trainer;
@@ -62,7 +62,7 @@ class Course
      * @param User $trainer | null
      * @return $this
      */
-    public function setTrainer($trainer)
+    public function setTrainer(User $trainer) : self
     {
         if(isset($trainer))
             $this->trainer = $trainer;
@@ -73,7 +73,7 @@ class Course
     /**
      * @return datetime
      */
-    public function getEventDate()
+    public function getEventDate() : \DateTime
     {
         return $this->eventDate;
     }
@@ -82,7 +82,7 @@ class Course
      * @param datetime $eventDate | null
      * @return $this
      */
-    public function setEventDate($eventDate)
+    public function setEventDate(\DateTime $eventDate) : self
     {
         if(isset($eventDate))
             $this->eventDate = $eventDate;
@@ -93,7 +93,7 @@ class Course
     /**
      * @return integer
      */
-    public function getCapacity()
+    public function getCapacity() : int
     {
         return $this->capacity;
     }
@@ -102,7 +102,7 @@ class Course
      * @param integer $capacity | null
      * @return $this
      */
-    public function setCapacity($capacity)
+    public function setCapacity(int $capacity) : self 
     {
         if(isset($capacity))
             $this->capacity = $capacity;
