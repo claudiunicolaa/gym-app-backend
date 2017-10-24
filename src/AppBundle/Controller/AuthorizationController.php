@@ -7,6 +7,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use AppBundle\Entity\User;
 
 /**
  * Class AuthorizationController
@@ -16,6 +17,14 @@ use Symfony\Component\HttpFoundation\Request;
 class AuthorizationController extends Controller
 {
     /**
+     * ### Example Response ###
+     *     {
+     *         "token" : <token>,
+     *         "role" : "ROLE_USER"
+     *     }
+     *
+     *     Other roles are: ROLE_ADMIN or ROLE_TRAINER
+     *
      * @Route("/api/login", name="login", methods={"POST"})
      *
      * @param Request $request
@@ -24,7 +33,7 @@ class AuthorizationController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used for user authentication. Provides the token if credentials are valid",
+     *  description="Used for user authentication. Provides the token and the user role if credentials are valid",
      *  section="Authorization",
      *  filters={
      *      {"name"="email", "dataType"="string"},
@@ -51,10 +60,38 @@ class AuthorizationController extends Controller
             $encoder = $this->get('security.encoder_factory')->getEncoder($user);
             if ($encoder->isPasswordValid($user->getPassword(),$password,$user->getSalt())) {
                 $tokenManager = $this->get('lexik_jwt_authentication.jwt_manager');
-                return new JsonResponse(array('token' => $tokenManager->create($user)), 200);
+                return new JsonResponse(
+                    array(
+                        'token' => $tokenManager->create($user),
+                        'role' => $this->getHighestRole($user)
+                    ),
+                    200
+                );
             }
         }
 
         return new JsonResponse(array('error' => 'Invalid credentials'), 401);
+    }
+
+    /**
+     * Returns the highest user role
+     *
+     * @param User $user
+     *
+     * @return string
+     */
+    protected function getHighestRole(User $user) : string
+    {
+        $userRoles = $user->getRoles();
+        $rolesSortedByImportance = ['ROLE_ADMIN', 'ROLE_TRAINER'];
+        foreach ($rolesSortedByImportance as $role)
+        {
+            if (in_array($role, $userRoles))
+            {
+                return $role;
+            }
+        }
+
+        return 'ROLE_USER';
     }
 }
