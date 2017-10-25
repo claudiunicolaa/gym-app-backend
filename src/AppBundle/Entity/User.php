@@ -2,10 +2,11 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use FOS\UserBundle\Model\User as BaseUser;
 use Symfony\Component\Serializer\Annotation\Groups;
-use ApiPlatform\Core\Annotation\ApiResource;
+use FOS\UserBundle\Model\User as BaseUser;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
@@ -45,6 +46,21 @@ class User extends BaseUser
     protected $picture;
 
     /**
+     * @var Collection
+     *
+     * @OneToMany(targetEntity="Course", mappedBy="trainer")
+     */
+    protected $trainedCourses;
+
+    /**
+     * Many Users are subscribed to Many Courses
+     *
+     * @ManyToMany(targetEntity="Course", inversedBy="registeredUsers")
+     * @JoinTable(name="users_courses")
+     */
+    protected $attendingCourses;
+
+    /**
      * @Groups({"user-write"})
      */
     protected $plainPassword;
@@ -53,6 +69,17 @@ class User extends BaseUser
      * @Groups({"user"})
      */
     protected $username;
+
+    /**
+     * User constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->trainedCourses = new ArrayCollection();
+        $this->attendingCourses = new ArrayCollection();
+    }
 
     /**
      * @return string
@@ -121,6 +148,70 @@ class User extends BaseUser
     public function setPicture(string $picture) : self
     {
         $this->picture = $picture;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getTrainedCourses(): Collection
+    {
+        return $this->trainedCourses;
+    }
+
+    /**
+     * @param Course $course
+     *
+     * @return $this
+     */
+    public function addTrainedCourse(Course $course) : self
+    {
+        $this->trainedCourses->add($course);
+
+        return $this;
+    }
+
+    /**
+     * @param Course $course
+     *
+     * @return $this
+     */
+    public function removeTrainedCourse(Course $course) : self
+    {
+        $this->trainedCourses->removeElement($course);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getAttendingCourses(): Collection
+    {
+        return $this->attendingCourses;
+    }
+
+    /**
+     * @param Course $course
+     *
+     * @return $this
+     */
+    public function addAttendingCourse(Course $course) : self
+    {
+        $this->attendingCourses->add($course);
+
+        return $this;
+    }
+
+    /**
+     * @param Course $course
+     *
+     * @return $this
+     */
+    public function removeAttendingCourse(Course $course) : self
+    {
+        $this->attendingCourses->removeElement($course);
 
         return $this;
     }
