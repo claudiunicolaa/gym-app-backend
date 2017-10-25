@@ -86,11 +86,7 @@ class User extends BaseUser
      */
     public function getFirstName() : string
     {
-        if ($this->firstName) {
-            return $this->firstName;
-        }
-
-        return '';
+        return (string) $this->firstName;
     }
 
     /**
@@ -109,11 +105,7 @@ class User extends BaseUser
      */
     public function getLastName() : string
     {
-        if ($this->lastName) {
-            return $this->lastName;
-        }
-
-        return '';
+        return (string) $this->lastName;
     }
 
     /**
@@ -133,11 +125,7 @@ class User extends BaseUser
      */
     public function getPicture() : string
     {
-        if ($this->picture) {
-            return $this->picture;
-        }
-
-        return '';
+        return (string) $this->picture;
     }
 
     /**
