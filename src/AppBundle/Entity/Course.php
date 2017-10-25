@@ -2,10 +2,9 @@
 
 namespace AppBundle\Entity;
 
-use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
-use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
  * @author Alexandru Emil Popa <a.pope95@yahoo.com>
@@ -40,6 +39,21 @@ class Course
     protected $capacity;
 
     /**
+     * Many Courses have Many Users.
+     *
+     * @ManyToMany(targetEntity="User", mappedBy="attendingCourses")
+     */
+    protected $registeredUsers;
+
+    /**
+     * Course constructor.
+     */
+    public function __construct()
+    {
+        $this->registeredUsers = new ArrayCollection();
+    }
+
+    /**
      * @return int
      */
     public function getId() : int
@@ -62,6 +76,8 @@ class Course
     public function setTrainer(User $trainer) : self
     {
         $this->trainer = $trainer;
+
+        return $this;
     }
 
     /**
@@ -74,11 +90,14 @@ class Course
 
     /**
      * @param \DateTime $eventDate
+     *
      * @return $this
      */
     public function setEventDate(\DateTime $eventDate) : self
     {
         $this->eventDate = $eventDate;
+
+        return $this;
     }
 
     /**
@@ -91,10 +110,45 @@ class Course
 
     /**
      * @param int $capacity
+     *
      * @return $this
      */
     public function setCapacity(int $capacity) : self 
     {
         $this->capacity = $capacity;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getRegisteredUsers(): Collection
+    {
+        return $this->registeredUsers;
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return $this
+     */
+    public function addRegisteredUser(User $user) : self
+    {
+        $this->registeredUsers->add($user);
+
+        return $this;
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return $this
+     */
+    public function removeRegisteredUser(User $user) : self
+    {
+        $this->registeredUsers->removeElement($user);
+
+        return $this;
     }
 }
