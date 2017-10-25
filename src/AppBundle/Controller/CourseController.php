@@ -48,7 +48,7 @@ class CourseController extends Controller
      *
      * @todo Implement this method
      *
-     * @Route("/api/course", name="course_get", methods={"GET"})
+     * @Route("/api/courses", name="courses_get", methods={"GET"})
      *
      * @param Request $request
      *
@@ -59,7 +59,6 @@ class CourseController extends Controller
      *  description="Returns all courses that match the given filters.",
      *  section="Course",
      * filters={
-     *      {"name"="id", "dataType"="int", "description"="Returns the course with the given id. Optional"},
      *      {"name"="users_courses", "dataType"="boolean", "description"="Returns the courses the current user is registered to. Optional"},
      *      {"name"="owned_courses", "dataType"="boolean", "description"="Returns the courses the current user is training. Optional"},
      *      {"name"="interval_start", "dataType"="timestamp", "description"="Returns the courses that start before the given time. Optional"},
@@ -72,6 +71,50 @@ class CourseController extends Controller
      *  )
      */
     public function getCoursesAction(Request $request) : JsonResponse
+    {
+        throw new NotImplementedException("Not implemented");
+    }
+
+    /**
+     * ### Example Response ###
+     *      {
+     *         {
+     *              "id" : "1",
+     *              "trainer" : {
+     *                  "id" : "1",
+     *                  "fullName" : "Smith Adam",
+     *                  "email" : "adamsmith@gmail.com",
+     *                  "picture" : "https://i.imgur.com/NiCqGa3.jpg"
+     *              },
+     *              "eventDate" : "1508916731",
+     *              "capacity" : "30",
+     *              "registered_users" : "15"
+     *         }
+     *     }
+     *
+     * @todo Implement this method
+     *
+     * @Route("/api/course", name="course_get", methods={"GET"})
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Returns the course with the given id.",
+     *  section="Course",
+     *  filters={
+     *      {"name"="id", "dataType"="int", "description"="Course id. Mandatory"}
+     *  },
+     *  statusCodes={
+     *      200="Returned when successful",
+     *      400="Returned when the request is invalid",
+     *      401="Returned when the request is valid, but the token given is invalid or missing"
+     *  }
+     *  )
+     */
+    public function getCourseAction(Request $request) : JsonResponse
     {
         throw new NotImplementedException("Not implemented");
     }
