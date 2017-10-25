@@ -27,7 +27,7 @@ class UserController extends Controller
      *
      * @todo Implement this method
      *
-     * @Route("/api/user/get", name="user_get", methods={"GET"})
+     * @Route("/api/user", name="user_get", methods={"GET"})
      *
      * @param Request $request
      *
@@ -43,7 +43,7 @@ class UserController extends Controller
      *  }
      *  )
      */
-    public function getAction(Request $request) : JsonResponse
+    public function getUserAction(Request $request) : JsonResponse
     {
         throw new NotImplementedException("Not implemented");
     }
@@ -51,7 +51,7 @@ class UserController extends Controller
     /**
      * @todo Implement this method
      *
-     * @Route("/api/user/update", name="user_update", methods={"PUT"})
+     * @Route("/api/user", name="user_update", methods={"PUT"})
      *
      * @param Request $request
      *
@@ -72,7 +72,7 @@ class UserController extends Controller
      *  }
      *  )
      */
-    public function updateAction(Request $request) : JsonResponse
+    public function updateUserAction(Request $request) : JsonResponse
     {
         throw new NotImplementedException("Not implemented");
     }

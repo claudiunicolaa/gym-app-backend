@@ -28,7 +28,8 @@ class CourseController extends Controller
      *                  "picture" : "https://i.imgur.com/NiCqGa3.jpg"
      *              },
      *              "eventDate" : "1508916731",
-     *              "capacity" : "30"
+     *              "capacity" : "30",
+     *              "registered_users" : "15"
      *         },
      *         {
      *              {
@@ -40,15 +41,14 @@ class CourseController extends Controller
      *                  "picture" : "https://i.imgur.com/NiCqGa3.jpg"
      *              },
      *              "eventDate" : "1508916731",
-     *              "capacity" : "25"
+     *              "capacity" : "25",
+     *              "registered_users" : "25"
      *         }
      *     }
      *
-     *     Other roles are: ROLE_ADMIN or ROLE_TRAINER
-     *
      * @todo Implement this method
      *
-     * @Route("/api/course/get", name="course_get", methods={"GET"})
+     * @Route("/api/course", name="course_get", methods={"GET"})
      *
      * @param Request $request
      *
@@ -59,10 +59,11 @@ class CourseController extends Controller
      *  description="Returns all courses that match the given filters.",
      *  section="Course",
      * filters={
-     *      {"name"="my_courses", "dataType"="boolean", "description"="Returns the courses the current user is registered to. Optional"},
-     *      {"name"="courses_I_am_training", "dataType"="boolean", "description"="Returns the courses the current user is training. Optional"},
+     *      {"name"="id", "dataType"="int", "description"="Returns the course with the given id. Optional"},
+     *      {"name"="users_courses", "dataType"="boolean", "description"="Returns the courses the current user is registered to. Optional"},
+     *      {"name"="owned_courses", "dataType"="boolean", "description"="Returns the courses the current user is training. Optional"},
      *      {"name"="interval_start", "dataType"="timestamp", "description"="Returns the courses that start before the given time. Optional"},
- *          {"name"="interval_stop", "dataType"="timestamp", "description"="Returns the courses that start until the given time. Optional"}
+     *      {"name"="interval_stop", "dataType"="timestamp", "description"="Returns the courses that start until the given time. Optional"}
      *  },
      *  statusCodes={
      *      200="Returned when successful",
@@ -70,7 +71,7 @@ class CourseController extends Controller
      *  }
      *  )
      */
-    public function myCoursesAction(Request $request) : JsonResponse
+    public function getCoursesAction(Request $request) : JsonResponse
     {
         throw new NotImplementedException("Not implemented");
     }
@@ -78,7 +79,7 @@ class CourseController extends Controller
     /**
      * @todo Implement this method
      *
-     * @Route("/api/course/create", name="course_create", methods={"POST"})
+     * @Route("/api/course", name="course_create", methods={"POST"})
      *
      * @param Request $request
      *
@@ -99,7 +100,7 @@ class CourseController extends Controller
      *  }
      *  )
      */
-    public function createAction(Request $request) : JsonResponse
+    public function createCourseAction(Request $request) : JsonResponse
     {
         throw new NotImplementedException("Not implemented");
     }
@@ -107,7 +108,7 @@ class CourseController extends Controller
     /**
      * @todo Implement this method
      *
-     * @Route("/api/course/register", name="course_register", methods={"POST"})
+     * @Route("/api/course/subscription", name="course_subscribe", methods={"POST"})
      *
      * @param Request $request
      *
@@ -115,7 +116,7 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used when a user wants to register to a course. In the request send the course id. Use the status code to understand the output. No JSON provided.",
+     *  description="Used when a user wants to subscribe to a course. In the request send the course id. Use the status code to understand the output. No JSON provided.",
      *  section="Course",
      *  filters={
      *      {"name"="id", "dataType"="int"},
@@ -127,7 +128,7 @@ class CourseController extends Controller
      *  }
      *  )
      */
-    public function registerAction(Request $request) : JsonResponse
+    public function subscribeAction(Request $request) : JsonResponse
     {
         throw new NotImplementedException("Not implemented");
     }
@@ -135,7 +136,7 @@ class CourseController extends Controller
     /**
      * @todo Implement this method
      *
-     * @Route("/api/course/update", name="course_update", methods={"PUT"})
+     * @Route("/api/course", name="course_update", methods={"PUT"})
      *
      * @param Request $request
      *
@@ -158,7 +159,7 @@ class CourseController extends Controller
      *  }
      *  )
      */
-    public function updateAction(Request $request) : JsonResponse
+    public function updateCourseAction(Request $request) : JsonResponse
     {
         throw new NotImplementedException("Not implemented");
     }
@@ -166,7 +167,7 @@ class CourseController extends Controller
     /**
      * @todo Implement this method
      *
-     * @Route("/api/course/delete", name="course_delete", methods={"DELETE"})
+     * @Route("/api/course", name="course_delete", methods={"DELETE"})
      *
      * @param Request $request
      *
@@ -187,7 +188,7 @@ class CourseController extends Controller
      *  }
      *  )
      */
-    public function deleteAction(Request $request) : JsonResponse
+    public function deleteCourseAction(Request $request) : JsonResponse
     {
         throw new NotImplementedException("Not implemented");
     }
@@ -195,7 +196,7 @@ class CourseController extends Controller
     /**
      * @todo Implement this method
      *
-     * @Route("/api/course/unregister", name="course_unregister", methods={"DELETE"})
+     * @Route("/api/course/subscription", name="course_unsubscribe", methods={"DELETE"})
      *
      * @param Request $request
      *
@@ -203,7 +204,7 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used when a user wants to unregister from a course. In the request send the course id. Use the status code to understand the output. No JSON provided.",
+     *  description="Used when a user wants to unsubscribe from a course. In the request send the course id. Use the status code to understand the output. No JSON provided.",
      *  section="Course",
      *  filters={
      *      {"name"="id", "dataType"="int"},
@@ -215,7 +216,7 @@ class CourseController extends Controller
      *  }
      *  )
      */
-    public function unregisterAction(Request $request) : JsonResponse
+    public function unsubscribeAction(Request $request) : JsonResponse
     {
         throw new NotImplementedException("Not implemented");
     }
