@@ -1,0 +1,18 @@
+services:
+    _defaults:
+        autowire: true
+
+    AppBundle\Repository\UserRepository:
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - AppBundle\Entity\User
+
+    AppBundle\Repository\CourseRepository:
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - AppBundle\Entity\Course
+
+    AppBundle\Repository\ProductRepository:
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - AppBundle\Entity\Product
