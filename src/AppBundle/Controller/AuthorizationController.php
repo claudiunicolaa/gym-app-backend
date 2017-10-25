@@ -52,7 +52,7 @@ class AuthorizationController extends Controller
         $password = $request->get('password');
 
         if (!isset($email) || !isset($password)) {
-            return new JsonResponse(array('error' => 'Missing email or password'), 400);
+            return new JsonResponse(['error' => 'Missing email or password'], 400);
         }
 
         $user =  $this->get('fos_user.user_manager')->findUserByEmail($email);
@@ -61,16 +61,16 @@ class AuthorizationController extends Controller
             if ($encoder->isPasswordValid($user->getPassword(),$password,$user->getSalt())) {
                 $tokenManager = $this->get('lexik_jwt_authentication.jwt_manager');
                 return new JsonResponse(
-                    array(
+                    [
                         'token' => $tokenManager->create($user),
                         'role' => $this->getHighestRole($user)
-                    ),
+                    ],
                     200
                 );
             }
         }
 
-        return new JsonResponse(array('error' => 'Invalid credentials'), 401);
+        return new JsonResponse(['error' => 'Invalid credentials'], 401);
     }
 
     /**
