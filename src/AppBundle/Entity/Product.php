@@ -49,6 +49,13 @@ class Product
     protected $name;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="category", type="string")
+     */
+    protected $category;
+
+    /**
      * @return int
      */
     public function getId() : int
@@ -140,6 +147,26 @@ class Product
     public function setName(string $name) : self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCategory(): string
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param string $category
+     *
+     * @return $this
+     */
+    public function setCategory(string $category) : self
+    {
+        $this->category = $category;
 
         return $this;
     }

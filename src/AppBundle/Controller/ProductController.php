@@ -65,7 +65,8 @@ class ProductController extends Controller
      *              "price" : "45",
      *              "description" : "Example description #1",
      *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
-     *              "name" : "Example Product B"
+     *              "name" : "Example Product B",
+     *              "category" : "Category A"
      *         }
      *     }
      *
