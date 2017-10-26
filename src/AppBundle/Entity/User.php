@@ -48,15 +48,15 @@ class User extends BaseUser
     /**
      * @var Collection
      *
-     * @OneToMany(targetEntity="Course", mappedBy="trainer")
+     * @ORM\OneToMany(targetEntity="Course", mappedBy="trainer")
      */
     protected $trainedCourses;
 
     /**
      * Many Users are subscribed to Many Courses
      *
-     * @ManyToMany(targetEntity="Course", inversedBy="registeredUsers")
-     * @JoinTable(name="users_courses")
+     * @ORM\ManyToMany(targetEntity="Course", inversedBy="registeredUsers")
+     * @ORM\JoinTable(name="users_courses")
      */
     protected $attendingCourses;
 

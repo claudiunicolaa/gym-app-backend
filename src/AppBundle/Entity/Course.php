@@ -41,7 +41,7 @@ class Course
     /**
      * Many Courses have Many Users.
      *
-     * @ManyToMany(targetEntity="User", mappedBy="attendingCourses")
+     * @ORM\ManyToMany(targetEntity="User", mappedBy="attendingCourses")
      */
     protected $registeredUsers;
 
