@@ -5,9 +5,9 @@ namespace AppBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Repository\ProductRepository;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ProductController
@@ -37,7 +37,7 @@ class ProductController extends Controller
      *
      * @Route("/api/products", name="products_get", methods={"GET"})
      *
-     * @return JsonResponse
+     * @return Response
      *
      * @ApiDoc(
      *  resource=true,
@@ -49,12 +49,18 @@ class ProductController extends Controller
      *  }
      *  )
      */
-    public function getProductsAction() : JsonResponse
+    public function getProductsAction() : Response
     {
         /** @var ProductRepository $productRepository */
         $productRepository = $this->get(ProductRepository::class);
 
-        return new JsonResponse($productRepository->findAll(), 200);
+        return new Response(
+            $this->get('serializer')->serialize(
+                $productRepository->findAll(),
+                'json'
+            ),
+            200
+        );
     }
 
     /**
@@ -74,7 +80,7 @@ class ProductController extends Controller
      *
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return Response
      *
      * @ApiDoc(
      *  resource=true,
@@ -90,16 +96,28 @@ class ProductController extends Controller
      *  }
      *  )
      */
-    public function getProductAction(Request $request) : JsonResponse
+    public function getProductAction(Request $request) : Response
     {
         $productId = $request->get('id');
         if ($productId === null) {
-            return new JsonResponse(['error' => 'Missing required parameter id'], 400);
+            return new Response(
+                $this->get('serializer')->serialize(
+                    ['error' => 'Missing required parameter id'],
+                    'json'
+                ),
+                400
+            );
         }
 
         /** @var ProductRepository $productRepository */
         $productRepository = $this->get(ProductRepository::class);
 
-        return new JsonResponse($productRepository->find($productId), 200);
+        return new Response(
+            $this->get('serializer')->serialize(
+                $productRepository->find($productId),
+                'json'
+            ),
+            200
+        );
     }
 }
