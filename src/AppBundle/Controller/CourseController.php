@@ -239,12 +239,13 @@ class CourseController extends Controller
             return new Response('', 400);
         }
 
-        /** @var CourseRepository $productRepository */
-        $productRepository = $this->get(CourseRepository::class);
         /** @var Course $course */
-        $course = $productRepository->find($courseId);
+        $course = $this->get(CourseRepository::class)->find($courseId);
+        if ($course === null) {
+            return new Response('', 400);
+        }
 
-        $loggedUser = $this->get('security.token_storage')->getToken()->getUser();
+        $loggedUser = $this->getUser();
         if (!($course->getTrainer()->getId() === $loggedUser->getId()) &&
             !in_array('ROLE_ADMIN', $loggedUser->getRoles()))
         {
