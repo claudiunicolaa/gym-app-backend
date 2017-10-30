@@ -46,6 +46,13 @@ class Course
     protected $image;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string")
+     */
+    protected $name;
+
+    /**
      * Many Courses have Many Users.
      *
      * @ORM\ManyToMany(targetEntity="User", mappedBy="attendingCourses")
@@ -96,13 +103,13 @@ class Course
     }
 
     /**
-     * @param \DateTime $eventDate
+     * @param int $timestamp
      *
      * @return $this
      */
-    public function setEventDate(\DateTime $eventDate) : self
+    public function setEventDate(int $timestamp) : self
     {
-        $this->eventDate = $eventDate;
+        $this->eventDate = (new \DateTime())->setTimestamp($timestamp);
 
         return $this;
     }
@@ -175,6 +182,26 @@ class Course
     public function setImage(string $image) : self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function setName(string $name) : self
+    {
+        $this->name = $name;
 
         return $this;
     }

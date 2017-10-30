@@ -3,14 +3,18 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Course;
+use AppBundle\Entity\User;
 use AppBundle\Repository\CourseRepository;
+use AppBundle\Services\Validator\CourseValidator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Intl\Exception\NotImplementedException;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
  * Class CourseController
@@ -32,6 +36,7 @@ class CourseController extends Controller
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "30",
+     *              "name" : "Course A",
      *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
      *              "registered_users" : "15"
      *         },
@@ -46,6 +51,7 @@ class CourseController extends Controller
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "25",
+     *              "name" : "Course B",
      *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
      *              "registered_users" : "25"
      *         }
@@ -93,6 +99,7 @@ class CourseController extends Controller
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "30",
+     *              "name" : "Course A",
      *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
      *              "registered_users" : "15"
      *         }
@@ -141,7 +148,8 @@ class CourseController extends Controller
      *  filters={
      *      {"name"="eventDate", "dataType"="timestamp"},
      *      {"name"="capacity", "dataType"="int"},
-     *      {"name"="image", "dataType"="string"}
+     *      {"name"="image", "dataType"="string", "description" : "Optional"},
+     *      {"name"="name", "dataType"="string"},
      *  },
      *  statusCodes={
      *      200="Returned when successful",
@@ -196,9 +204,10 @@ class CourseController extends Controller
      *  section="Course",
      *  filters={
      *      {"name"="id", "dataType"="int"},
-     *      {"name"="eventDate", "dataType"="timestamp", description="Optional"},
-     *      {"name"="capacity", "dataType"="int", description="Optional"},
-     *      {"name"="image", "dataType"="string", description="Optional"}
+     *      {"name"="eventDate", "dataType"="timestamp", "description"="Optional"},
+     *      {"name"="capacity", "dataType"="int", "description"="Optional"},
+     *      {"name"="image", "dataType"="string", "description"="Optional"},
+     *      {"name"="name", "dataType"="string", "description"="Optional"},
      *  },
      *  statusCodes={
      *      200="Returned when successful",
@@ -210,28 +219,36 @@ class CourseController extends Controller
      */
     public function updateCourseAction(Request $request) : Response
     {
-        $courseId = $request->get('id');
-        if ($courseId === null) {
-            return new Response('', 400);
-        }
-
         /** @var Course $course */
-        $course = $this->get(CourseRepository::class)->find($courseId);
+        $course = $this->get(CourseRepository::class)->find($request->get('id'));
         if ($course === null) {
             return new Response('', 400);
         }
 
-        $loggedUser = $this->get('security.token_storage')->getToken()->getUser();
+        $loggedUser = $this->getUser();
         if (!($course->getTrainer()->getId() === $loggedUser->getId()) &&
-            !in_array('ROLE_ADMIN', $loggedUser->getRoles()))
-        {
+            !in_array('ROLE_ADMIN', $loggedUser->getRoles())
+        ) {
             return new Response('', 401);
         }
 
-        $this->updateCourse($course, $request);
-        $this->getDoctrine()->getManager()->flush();
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+        $optionalKeys = ['eventDate', 'capacity', 'image', 'name'];
+        try {
+            foreach ($optionalKeys as $key) {
+                $value = $request->get($key);
+                if($value !== null) {
+                    $this->get(CourseValidator::class)->validate($key, $value);
+                    $propertyAccessor->setValue($course, $key, $value);
+                }
+            }
 
-        return new Response('', 200);
+            $this->getDoctrine()->getManager()->flush();
+
+            return new Response('', 200);
+        } catch(Exception $ex) {
+            return new Response('', 400);
+        }
     }
 
     /**
@@ -309,28 +326,5 @@ class CourseController extends Controller
     public function unsubscribeAction(Request $request) : JsonResponse
     {
         throw new NotImplementedException("Not implemented");
-    }
-
-    /**
-     * Updates a given course with the fields set in the request
-     *
-     * @param Course $course
-     * @param Request $request
-     */
-    protected function updateCourse(Course $course, Request $request) : void
-    {
-        if (is_numeric($request->get('eventDate'))) {
-            $date = new \DateTime();
-            $date->setTimestamp($request->get('eventDate'));
-            $course->setEventDate($date);
-        }
-
-        if (is_int($request->get('capacity'))) {
-            $course->setCapacity($request->get('capacity'));
-        }
-
-        if (is_string($request->get('image'))) {
-            $course->setImage($request->get('image'));
-        }
     }
 }
