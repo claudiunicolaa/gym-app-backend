@@ -39,6 +39,13 @@ class Course
     protected $capacity;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="image", type="string")
+     */
+    protected $image;
+
+    /**
      * Many Courses have Many Users.
      *
      * @ORM\ManyToMany(targetEntity="User", mappedBy="attendingCourses")
@@ -148,6 +155,26 @@ class Course
     public function removeRegisteredUser(User $user) : self
     {
         $this->registeredUsers->removeElement($user);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImage() : ?string
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param string $image
+     *
+     * @return $this
+     */
+    public function setImage(string $image) : self
+    {
+        $this->image = $image;
 
         return $this;
     }

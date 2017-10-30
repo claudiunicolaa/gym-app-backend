@@ -32,6 +32,7 @@ class CourseController extends Controller
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "30",
+     *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
      *              "registered_users" : "15"
      *         },
      *         {
@@ -45,6 +46,7 @@ class CourseController extends Controller
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "25",
+     *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
      *              "registered_users" : "25"
      *         }
      *     }
@@ -91,6 +93,7 @@ class CourseController extends Controller
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "30",
+     *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
      *              "registered_users" : "15"
      *         }
      *     }
@@ -137,7 +140,8 @@ class CourseController extends Controller
      *  section="Course",
      *  filters={
      *      {"name"="eventDate", "dataType"="timestamp"},
-     *      {"name"="capacity", "dataType"="int"}
+     *      {"name"="capacity", "dataType"="int"},
+     *      {"name"="image", "dataType"="string"}
      *  },
      *  statusCodes={
      *      200="Returned when successful",
@@ -180,13 +184,11 @@ class CourseController extends Controller
     }
 
     /**
-     * @todo Implement this method
-     *
      * @Route("/api/course", name="course_update", methods={"PUT"})
      *
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return Response
      *
      * @ApiDoc(
      *  resource=true,
@@ -194,8 +196,9 @@ class CourseController extends Controller
      *  section="Course",
      *  filters={
      *      {"name"="id", "dataType"="int"},
-     *      {"name"="eventDate", "dataType"="timestamp"},
-     *      {"name"="capacity", "dataType"="int"}
+     *      {"name"="eventDate", "dataType"="timestamp", description="Optional"},
+     *      {"name"="capacity", "dataType"="int", description="Optional"},
+     *      {"name"="image", "dataType"="string", description="Optional"}
      *  },
      *  statusCodes={
      *      200="Returned when successful",
@@ -205,9 +208,30 @@ class CourseController extends Controller
      *  }
      *  )
      */
-    public function updateCourseAction(Request $request) : JsonResponse
+    public function updateCourseAction(Request $request) : Response
     {
-        throw new NotImplementedException("Not implemented");
+        $courseId = $request->get('id');
+        if ($courseId === null) {
+            return new Response('', 400);
+        }
+
+        /** @var Course $course */
+        $course = $this->get(CourseRepository::class)->find($courseId);
+        if ($course === null) {
+            return new Response('', 400);
+        }
+
+        $loggedUser = $this->get('security.token_storage')->getToken()->getUser();
+        if (!($course->getTrainer()->getId() === $loggedUser->getId()) &&
+            !in_array('ROLE_ADMIN', $loggedUser->getRoles()))
+        {
+            return new Response('', 401);
+        }
+
+        $this->updateCourse($course, $request);
+        $this->getDoctrine()->getManager()->flush();
+
+        return new Response('', 200);
     }
 
     /**
@@ -285,5 +309,28 @@ class CourseController extends Controller
     public function unsubscribeAction(Request $request) : JsonResponse
     {
         throw new NotImplementedException("Not implemented");
+    }
+
+    /**
+     * Updates a given course with the fields set in the request
+     *
+     * @param Course $course
+     * @param Request $request
+     */
+    protected function updateCourse(Course $course, Request $request) : void
+    {
+        if (is_numeric($request->get('eventDate'))) {
+            $date = new \DateTime();
+            $date->setTimestamp($request->get('eventDate'));
+            $course->setEventDate($date);
+        }
+
+        if (is_int($request->get('capacity'))) {
+            $course->setCapacity($request->get('capacity'));
+        }
+
+        if (is_string($request->get('image'))) {
+            $course->setImage($request->get('image'));
+        }
     }
 }
