@@ -2,11 +2,14 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Course;
+use AppBundle\Repository\CourseRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Intl\Exception\NotImplementedException;
 
 /**
@@ -208,13 +211,11 @@ class CourseController extends Controller
     }
 
     /**
-     * @todo Implement this method
-     *
      * @Route("/api/course", name="course_delete", methods={"DELETE"})
      *
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return Response
      *
      * @ApiDoc(
      *  resource=true,
@@ -231,9 +232,30 @@ class CourseController extends Controller
      *  }
      *  )
      */
-    public function deleteCourseAction(Request $request) : JsonResponse
+    public function deleteCourseAction(Request $request) : Response
     {
-        throw new NotImplementedException("Not implemented");
+        $courseId = $request->get('id');
+        if ($courseId === null) {
+            return new Response('', 400);
+        }
+
+        /** @var CourseRepository $productRepository */
+        $productRepository = $this->get(CourseRepository::class);
+        /** @var Course $course */
+        $course = $productRepository->find($courseId);
+
+        $loggedUser = $this->get('security.token_storage')->getToken()->getUser();
+        if (!($course->getTrainer()->getId() === $loggedUser->getId()) &&
+            !in_array('ROLE_ADMIN', $loggedUser->getRoles()))
+        {
+            return new Response('', 401);
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($course);
+        $em->flush();
+
+        return new Response('', 200);
     }
 
     /**
