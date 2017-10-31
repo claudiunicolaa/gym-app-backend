@@ -2,11 +2,14 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Course;
+use AppBundle\Repository\CourseRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Intl\Exception\NotImplementedException;
 
 /**
@@ -208,8 +211,6 @@ class CourseController extends Controller
     }
 
     /**
-     * @todo Implement this method
-     *
      * @Route("/api/course", name="course_delete", methods={"DELETE"})
      *
      * @param Request $request
@@ -218,7 +219,7 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used for course removal. Use the course id for the removal. Use the status code to understand the output. No JSON provided.",
+     *  description="Used for course removal. Use the course id for the removal.",
      *  section="Course",
      *  filters={
      *      {"name"="id", "dataType"="int"},
@@ -226,14 +227,36 @@ class CourseController extends Controller
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
-     *      401="Returned when the request is valid, but the token given is invalid or missing or given user did
-     *          not create the course or is not an admin so he can't delete it"
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      403="Returned when user did not create the course and is not an admin"
      *  }
      *  )
      */
     public function deleteCourseAction(Request $request) : JsonResponse
     {
-        throw new NotImplementedException("Not implemented");
+        $courseId = $request->get('id');
+        if ($courseId === null) {
+            return new JsonResponse(['error' => 'Missing parameter id'], 400);
+        }
+
+        /** @var Course $course */
+        $course = $this->get(CourseRepository::class)->find($courseId);
+        if ($course === null) {
+            return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
+        }
+
+        $loggedUser = $this->getUser();
+        if (!($course->getTrainer()->getId() === $loggedUser->getId()) &&
+            !in_array('ROLE_ADMIN', $loggedUser->getRoles()))
+        {
+            return new JsonResponse(['error' => 'Not authorized'], 403);
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($course);
+        $em->flush();
+
+        return new JsonResponse('', 200);
     }
 
     /**
