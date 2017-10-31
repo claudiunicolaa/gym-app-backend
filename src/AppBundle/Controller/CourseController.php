@@ -4,12 +4,15 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Course;
 use AppBundle\Entity\User;
+use AppBundle\Exception\CourseValidationException;
+use AppBundle\Form\Type\CourseType;
 use AppBundle\Repository\CourseRepository;
 use AppBundle\Services\Validator\CourseValidator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -192,18 +195,18 @@ class CourseController extends Controller
     }
 
     /**
-     * @Route("/api/course", name="course_update", methods={"PUT"})
+     * @Route("/api/course/{id}", name="course_update", methods={"PUT"})
      *
      * @param Request $request
+     * @param Course $course
      *
-     * @return Response
+     * @return JsonResponse
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used for course update. Only an admin or the trainer can update the course. Use the status code to understand the output. No JSON provided.",
+     *  description="Used for course update. Only an admin or the trainer can update the course.",
      *  section="Course",
      *  filters={
-     *      {"name"="id", "dataType"="int"},
      *      {"name"="eventDate", "dataType"="timestamp", "description"="Optional"},
      *      {"name"="capacity", "dataType"="int", "description"="Optional"},
      *      {"name"="image", "dataType"="string", "description"="Optional"},
@@ -212,43 +215,40 @@ class CourseController extends Controller
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
-     *      401="Returned when the request is valid, but the token given is invalid or missing or given user did
-     *          not create the course or is not an admin so he can't modify it"
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      403="Returned when user did not create the course or is not an admin"
      *  }
      *  )
      */
-    public function updateCourseAction(Request $request) : Response
+    public function updateCourseAction(Request $request, ?Course $course) : JsonResponse
     {
-        /** @var Course $course */
-        $course = $this->get(CourseRepository::class)->find($request->get('id'));
-        if ($course === null) {
-            return new Response('', 400);
+        $queryParameters = $request->query->all();
+
+        if (null === $course) {
+            return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
         }
 
         $loggedUser = $this->getUser();
         if (!($course->getTrainer()->getId() === $loggedUser->getId()) &&
             !in_array('ROLE_ADMIN', $loggedUser->getRoles())
         ) {
-            return new Response('', 401);
+            return new JsonResponse(['error' => 'Forbidden'], 403);
+        }
+
+        try {
+            $this->get(CourseValidator::class)->validate($queryParameters);
+        } catch (CourseValidationException $ex) {
+            return new JsonResponse(['error' => $ex->getMessage()], 400);
         }
 
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
-        $optionalKeys = ['eventDate', 'capacity', 'image', 'name'];
-        try {
-            foreach ($optionalKeys as $key) {
-                $value = $request->get($key);
-                if($value !== null) {
-                    $this->get(CourseValidator::class)->validate($key, $value);
-                    $propertyAccessor->setValue($course, $key, $value);
-                }
-            }
-
-            $this->getDoctrine()->getManager()->flush();
-
-            return new Response('', 200);
-        } catch(Exception $ex) {
-            return new Response('', 400);
+        foreach ($queryParameters as $key => $value) {
+            $propertyAccessor->setValue($course, $key, $value);
         }
+
+        $this->getDoctrine()->getManager()->flush();
+
+        return new JsonResponse('', 200);
     }
 
     /**

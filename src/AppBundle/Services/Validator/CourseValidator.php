@@ -11,37 +11,35 @@ use AppBundle\Exception\CourseValidationException;
  */
 class CourseValidator
 {
-    public function validate(string $key, ?string $value)
+    /**
+     * @param array $data
+     *
+     * @return void
+     *
+     * @throws CourseValidationException if the course data is invalid
+     */
+    public function validate(array $data) : void
     {
-        if ($value === null) {
-            return ;
+        $allowedKeys = ['eventDate', 'capacity', 'image', 'name'];
+        $filteredData = array_intersect_key($data, array_flip($allowedKeys));
+
+        if (count($filteredData) !== count($data)) {
+            throw new CourseValidationException("Invalid parameters given!");
         }
 
-        call_user_func([$this,'validate'.ucfirst($key)], $value);
-//        switch ($key) {
-//            case 'eventDate':
-//                $this->validateEventDate($value);
-//                break;
-//            case 'capacity':
-//                $this->validateCapacity($value);
-//                break;
-//            case 'image':
-//                $this->validateImage($value);
-//                break;
-//            case 'name':
-//                $this->validateName($value);
-//                break;
-//            default:
-//                break;
-//        }
+        foreach ($filteredData as $key => $value) {
+            call_user_func([$this, 'validate'.ucwords($key)], $value);
+        }
     }
 
     /**
      * @param string $eventDate
      *
+     * @return void
+     *
      * @throws \Exception
      */
-    private function validateEventDate(string $eventDate)
+    private function validateEventDate(string $eventDate) : void
     {
         if (!is_numeric($eventDate)) {
             throw new CourseValidationException("Invalid event date given!");
@@ -57,9 +55,11 @@ class CourseValidator
     /**
      * @param string $capacity
      *
+     * @return void
+     *
      * @throws \Exception
      */
-    private function validateCapacity(string $capacity)
+    private function validateCapacity(string $capacity) : void
     {
         if (!is_numeric($capacity) || (int)$capacity < 0) {
             throw new CourseValidationException("Invalid capacity given!");
@@ -69,9 +69,11 @@ class CourseValidator
     /**
      * @param string $image
      *
+     * @return void
+     *
      * @throws \Exception
      */
-    private function validateImage(string $image)
+    private function validateImage(string $image) : void
     {
         if (!is_string($image) || !filter_var($image, FILTER_VALIDATE_URL)) {
             throw new CourseValidationException("Invalid image url given!");
@@ -81,9 +83,11 @@ class CourseValidator
     /**
      * @param string $name
      *
+     * @return void
+     *
      * @throws \Exception
      */
-    private function validateName(string $name)
+    private function validateName(string $name) : void
     {
         if (!is_string($name) || strlen($name) === 0) {
             throw new CourseValidationException("Invalid name given!");

@@ -29,11 +29,15 @@ class Course
     protected $trainer;
 
     /**
+     * @var \DateTime
+     *
      * @ORM\Column(name="event_date", type="datetime")
      */
     protected $eventDate;
 
     /**
+     * @var int
+     *
      * @ORM\Column(name="capacity", type="integer")
      */
     protected $capacity;
