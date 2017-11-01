@@ -103,9 +103,7 @@ class CourseController extends Controller
      *         }
      *     }
      *
-     * @todo Implement this method
-     *
-     * @Route("/api/course", name="course_get", methods={"GET"})
+     * @Route("/api/course/{id}", name="course_get", methods={"GET"})
      *
      * @param Request $request
      *
@@ -115,9 +113,6 @@ class CourseController extends Controller
      *  resource=true,
      *  description="Returns the course with the given id.",
      *  section="Course",
-     *  filters={
-     *      {"name"="id", "dataType"="int", "description"="Course id. Mandatory"}
-     *  },
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
@@ -125,9 +120,13 @@ class CourseController extends Controller
      *  }
      *  )
      */
-    public function getCourseAction(Request $request) : JsonResponse
+    public function getCourseAction(Request $request, ?Course $course) : JsonResponse
     {
-        throw new NotImplementedException("Not implemented");
+        if (null === $course) {
+            return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
+        }
+
+        return new JsonResponse($course->toArray(), 200);
     }
 
     /**
