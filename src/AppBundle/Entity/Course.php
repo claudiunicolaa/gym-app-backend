@@ -29,14 +29,32 @@ class Course
     protected $trainer;
 
     /**
+     * @var \DateTime
+     *
      * @ORM\Column(name="event_date", type="datetime")
      */
     protected $eventDate;
 
     /**
+     * @var int
+     *
      * @ORM\Column(name="capacity", type="integer")
      */
     protected $capacity;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="image", type="string")
+     */
+    protected $image;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string")
+     */
+    protected $name;
 
     /**
      * Many Courses have Many Users.
@@ -89,13 +107,13 @@ class Course
     }
 
     /**
-     * @param \DateTime $eventDate
+     * @param int $timestamp
      *
      * @return $this
      */
-    public function setEventDate(\DateTime $eventDate) : self
+    public function setEventDate(int $timestamp) : self
     {
-        $this->eventDate = $eventDate;
+        $this->eventDate = (new \DateTime())->setTimestamp($timestamp);
 
         return $this;
     }
@@ -148,6 +166,46 @@ class Course
     public function removeRegisteredUser(User $user) : self
     {
         $this->registeredUsers->removeElement($user);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImage() : ?string
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param string $image
+     *
+     * @return $this
+     */
+    public function setImage(string $image) : self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function setName(string $name) : self
+    {
+        $this->name = $name;
 
         return $this;
     }

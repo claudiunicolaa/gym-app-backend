@@ -3,14 +3,16 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Course;
+use AppBundle\Exception\CourseValidationException;
 use AppBundle\Repository\CourseRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use AppBundle\Services\Validator\CourseValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Intl\Exception\NotImplementedException;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 /**
  * Class CourseController
@@ -32,6 +34,8 @@ class CourseController extends Controller
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "30",
+     *              "name" : "Course A",
+     *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
      *              "registered_users" : "15"
      *         },
      *         {
@@ -45,6 +49,8 @@ class CourseController extends Controller
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "25",
+     *              "name" : "Course B",
+     *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
      *              "registered_users" : "25"
      *         }
      *     }
@@ -91,6 +97,8 @@ class CourseController extends Controller
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "30",
+     *              "name" : "Course A",
+     *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
      *              "registered_users" : "15"
      *         }
      *     }
@@ -137,7 +145,9 @@ class CourseController extends Controller
      *  section="Course",
      *  filters={
      *      {"name"="eventDate", "dataType"="timestamp"},
-     *      {"name"="capacity", "dataType"="int"}
+     *      {"name"="capacity", "dataType"="int"},
+     *      {"name"="image", "dataType"="string", "description" : "Optional"},
+     *      {"name"="name", "dataType"="string"},
      *  },
      *  statusCodes={
      *      200="Returned when successful",
@@ -180,34 +190,60 @@ class CourseController extends Controller
     }
 
     /**
-     * @todo Implement this method
-     *
-     * @Route("/api/course", name="course_update", methods={"PUT"})
+     * @Route("/api/course/{id}", name="course_update", methods={"PUT"})
      *
      * @param Request $request
+     * @param Course $course
      *
      * @return JsonResponse
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used for course update. Only an admin or the trainer can update the course. Use the status code to understand the output. No JSON provided.",
+     *  description="Used for course update. Only an admin or the trainer can update the course.",
      *  section="Course",
      *  filters={
-     *      {"name"="id", "dataType"="int"},
-     *      {"name"="eventDate", "dataType"="timestamp"},
-     *      {"name"="capacity", "dataType"="int"}
+     *      {"name"="eventDate", "dataType"="timestamp", "description"="Optional"},
+     *      {"name"="capacity", "dataType"="int", "description"="Optional"},
+     *      {"name"="image", "dataType"="string", "description"="Optional"},
+     *      {"name"="name", "dataType"="string", "description"="Optional"},
      *  },
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
-     *      401="Returned when the request is valid, but the token given is invalid or missing or given user did
-     *          not create the course or is not an admin so he can't modify it"
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      403="Returned when user did not create the course or is not an admin"
      *  }
      *  )
      */
-    public function updateCourseAction(Request $request) : JsonResponse
+    public function updateCourseAction(Request $request, ?Course $course) : JsonResponse
     {
-        throw new NotImplementedException("Not implemented");
+        $queryParameters = $request->query->all();
+
+        if (null === $course) {
+            return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
+        }
+
+        $loggedUser = $this->getUser();
+        if (!($course->getTrainer()->getId() === $loggedUser->getId()) &&
+            !in_array('ROLE_ADMIN', $loggedUser->getRoles())
+        ) {
+            return new JsonResponse(['error' => 'Forbidden'], 403);
+        }
+
+        try {
+            $this->get(CourseValidator::class)->validate($queryParameters);
+        } catch (CourseValidationException $ex) {
+            return new JsonResponse(['error' => $ex->getMessage()], 400);
+        }
+
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+        foreach ($queryParameters as $key => $value) {
+            $propertyAccessor->setValue($course, $key, $value);
+        }
+
+        $this->getDoctrine()->getManager()->flush();
+
+        return new JsonResponse('', 200);
     }
 
     /**
