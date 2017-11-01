@@ -203,5 +203,26 @@ class User extends BaseUser
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getFullName() : string
+    {
+        return $this->getLastName() . ' ' . $this->getFirstName();
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray() : array
+    {
+        return [
+            'id' => $this->getId(),
+            'fullName' => $this->getFullName(),
+            'email' => $this->getEmail(),
+            'picture' => $this->getPicture()
+        ];
+    }
 }
 

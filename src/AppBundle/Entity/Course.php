@@ -209,4 +209,20 @@ class Course
 
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function toArray() : array
+    {
+        return [
+            'id' => $this->getId(),
+            'trainer' => $this->getTrainer()->toArray(),
+            'eventDate' => $this->getEventDate()->getTimestamp(),
+            'capacity' => $this->getCapacity(),
+            'name' => $this->getName(),
+            'image' => $this->getImage(),
+            'registered_users' => count($this->getRegisteredUsers())
+        ];
+    }
 }
