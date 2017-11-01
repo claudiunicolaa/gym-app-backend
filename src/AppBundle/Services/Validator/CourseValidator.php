@@ -11,6 +11,8 @@ use AppBundle\Exception\CourseValidationException;
  */
 class CourseValidator
 {
+    const ALLOWED_KEYS = ['eventDate', 'capacity', 'image', 'name'];
+
     /**
      * @param array $data
      *
@@ -20,8 +22,7 @@ class CourseValidator
      */
     public function validate(array $data) : void
     {
-        $allowedKeys = ['eventDate', 'capacity', 'image', 'name'];
-        $filteredData = array_intersect_key($data, array_flip($allowedKeys));
+        $filteredData = array_intersect_key($data, array_flip(self::ALLOWED_KEYS));
 
         if (count($filteredData) !== count($data)) {
             throw new CourseValidationException("Invalid parameters given!");
