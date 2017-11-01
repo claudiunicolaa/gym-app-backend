@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Course;
 use AppBundle\Exception\CourseValidationException;
+use AppBundle\Exception\CourseRepositoryException;
 use AppBundle\Repository\CourseRepository;
 use AppBundle\Services\Validator\CourseValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -55,8 +56,6 @@ class CourseController extends Controller
      *         }
      *     }
      *
-     * @todo Implement this method
-     *
      * @Route("/api/courses", name="courses_get", methods={"GET"})
      *
      * @param Request $request
@@ -75,13 +74,19 @@ class CourseController extends Controller
      *  },
      *  statusCodes={
      *      200="Returned when successful",
-     *      401="Returned when the request is valid, but the token given is invalid or missing"
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      400="Returned when the request is invalid"
      *  }
      *  )
      */
     public function getCoursesAction(Request $request) : JsonResponse
     {
-        throw new NotImplementedException("Not implemented");
+        try {
+            $courses = $this->get(CourseRepository::class)->getCourses($this->getUser(), $request->query->all());
+            return new JsonResponse($courses, 200);
+        } catch (CourseRepositoryException $ex) {
+            return new JsonResponse(['error' => $ex->getMessage()], 400);
+        }
     }
 
     /**
