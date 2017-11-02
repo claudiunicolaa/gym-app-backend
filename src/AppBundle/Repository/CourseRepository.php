@@ -25,7 +25,7 @@ class CourseRepository extends EntityRepository
      */
     public function getFilteredCourses(User $user, array $filters = []) : array
     {
-        $qb = $this
+        $queryBuilder = $this
             ->createQueryBuilder('c')
             ->select(
             'c.id,
@@ -45,100 +45,48 @@ class CourseRepository extends EntityRepository
             ->groupBy('c.id')
         ;
 
-        $this->applyFilters($qb, $user, $filters);
+        $this->applyFilters($queryBuilder, $user, $filters);
 
-        return $this->formatResult($qb->getQuery()->getResult());
+        return $queryBuilder->getQuery()->getResult();
     }
 
     /**
-     * @param QueryBuilder  $qb
+     * @param QueryBuilder  $queryBuilder
      * @param User          $loggedUser
-     * @param array         $rawFilters
+     * @param array         $filters already validated. Don't call this method without validation
      *
      * @return void
      *
      * @throws CourseRepositoryException if the filters are invalid
      */
-    protected function applyFilters(QueryBuilder $qb, User $loggedUser, array $rawFilters = []) : void
+    protected function applyFilters(QueryBuilder $queryBuilder, User $loggedUser, array $filters = []) : void
     {
-        $allowedFilters = ['users_courses', 'owned_courses', 'interval_start', 'interval_stop'];
-        $filters = array_intersect_key($rawFilters, array_flip($allowedFilters));
-
-        if (count($filters) !== count($rawFilters)) {
-            throw new CourseRepositoryException('Invalid query params given!');
-        }
-
         if (isset($filters['users_courses'])) {
-            $filters['users_courses'] = strtolower($filters['users_courses']);
-            if (!in_array($filters['users_courses'], ['true', 'false'])) {
-                throw new CourseRepositoryException('Invalid value for users_courses parameter!');
-            }
-
             $op = $filters['users_courses'] === 'true' ? 'MEMBER OF' : 'NOT MEMBER OF';
-            $qb->andWhere(':loggedUser ' . $op . ' c.registeredUsers')
+            $queryBuilder->andWhere(':loggedUser ' . $op . ' c.registeredUsers')
                 ->setParameter('loggedUser', $loggedUser)
             ;
         }
 
         if (isset($filters['owned_courses'])) {
-            $filters['owned_courses'] = strtolower($filters['owned_courses']);
-            if (!in_array($filters['owned_courses'], ['true', 'false'])) {
-                throw new CourseRepositoryException('Invalid value for owned_courses parameter!');
-            }
-
             $op = $filters['owned_courses'] === 'true' ? '=' : '!=';
-            $qb->andWhere('c.trainer ' . $op . ' :loggedUser')
+            $queryBuilder->andWhere('c.trainer ' . $op . ' :loggedUser')
                 ->setParameter('loggedUser', $loggedUser)
             ;
         }
 
         if (isset($filters['interval_start'])) {
-            $intervalStart = $filters['interval_start'];
-            if (!is_numeric($intervalStart) || (int)$intervalStart > 2554416000 || (int)$intervalStart < 0) {
-                throw new CourseRepositoryException('Invalid value for interval_start parameter!');
-            }
-
-            $date = (new \DateTime())->setTimestamp((int)$intervalStart);
-            $qb->andWhere('c.eventDate >= :interval_start')
+            $date = (new \DateTime())->setTimestamp((int)$filters['interval_start']);
+            $queryBuilder->andWhere('c.eventDate >= :interval_start')
                 ->setParameter('interval_start', $date)
             ;
         }
 
         if (isset($filters['interval_stop'])) {
-            $intervalStop = $filters['interval_stop'];
-            if (!is_numeric($intervalStop) || (int)$intervalStop < 0 || (int)$intervalStop > 2554416000) {
-                throw new CourseRepositoryException('Invalid value for interval_stop parameter!');
-            }
-
-            $date = (new \DateTime())->setTimestamp((int)$intervalStop);
-            $qb->andWhere('c.eventDate <= :interval_stop')
+            $date = (new \DateTime())->setTimestamp((int)$filters['interval_stop']);
+            $queryBuilder->andWhere('c.eventDate <= :interval_stop')
                 ->setParameter('interval_stop', $date)
             ;
         }
-    }
-
-    /**
-     * @param array $result
-     *
-     * @return array
-     */
-    private function formatResult(array $result) : array
-    {
-        foreach (array_keys($result) as $key) {
-            $result[$key]['trainer'] = [];
-            $result[$key]['trainer']['id'] = $result[$key]["trainer_id"];
-            $result[$key]['trainer']['fullName'] = $result[$key]['lastName'] . ' ' .$result[$key]['firstName'];
-            $result[$key]['trainer']['email'] = $result[$key]['email'];
-            $result[$key]['trainer']['picture'] = $result[$key]['picture'];
-            $result[$key]['eventDate'] = $result[$key]['eventDate']->getTimestamp();
-
-            unset($result[$key]['trainer_id']);
-            unset($result[$key]['lastName']);
-            unset($result[$key]['firstName']);
-            unset($result[$key]['picture']);
-            unset($result[$key]['email']);
-        }
-
-        return $result;
     }
 }

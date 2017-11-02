@@ -6,6 +6,7 @@ use AppBundle\Entity\Course;
 use AppBundle\Exception\CourseValidationException;
 use AppBundle\Exception\CourseRepositoryException;
 use AppBundle\Repository\CourseRepository;
+use AppBundle\Services\Validator\CourseFiltersValidator;
 use AppBundle\Services\Validator\CourseValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -82,6 +83,7 @@ class CourseController extends Controller
     public function getCoursesAction(Request $request) : JsonResponse
     {
         try {
+            $this->get(CourseFiltersValidator::class)->validate($request->query->all());
             $courses = $this
                 ->get(CourseRepository::class)
                 ->getFilteredCourses(
@@ -90,7 +92,7 @@ class CourseController extends Controller
                 )
             ;
 
-            return new JsonResponse($courses, 200);
+            return new JsonResponse($this->formatResult($courses), 200);
         } catch (CourseRepositoryException $ex) {
             return new JsonResponse(['error' => $ex->getMessage()], 400);
         }
@@ -322,5 +324,31 @@ class CourseController extends Controller
     public function unsubscribeAction(Request $request) : JsonResponse
     {
         throw new NotImplementedException("Not implemented");
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array
+     */
+    private function formatResult(array $data) : array
+    {
+        $result = [];
+
+        foreach ($data as $key => $courseData) {
+            $result[$key]['trainer'] = [];
+            $result[$key]['trainer']['id'] = $courseData["trainer_id"];
+            $result[$key]['trainer']['fullName'] = $courseData['lastName'] . ' ' .$courseData['firstName'];
+            $result[$key]['trainer']['email'] = $courseData['email'];
+            $result[$key]['trainer']['picture'] = $courseData['picture'];
+            $result[$key]['eventDate'] = $courseData['eventDate']->getTimestamp();
+            $result[$key]['id'] = $courseData['id'];
+            $result[$key]['capacity'] = $courseData['capacity'];
+            $result[$key]['name'] = $courseData['name'];
+            $result[$key]['image'] = $courseData['image'];
+            $result[$key]['registered_users'] = $courseData['registered_users'];
+        }
+
+        return $result;
     }
 }
