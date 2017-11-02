@@ -67,8 +67,8 @@ class CourseController extends Controller
      *  description="Returns all courses that match the given filters.",
      *  section="Course",
      * filters={
-     *      {"name"="users_courses", "dataType"="boolean", "description"="Returns the courses the current user is registered to. Optional"},
-     *      {"name"="owned_courses", "dataType"="boolean", "description"="Returns the courses the current user is training. Optional"},
+     *      {"name"="users_courses", "dataType"="string", "description"="Returns the courses the current user is registered to. Optional. Values: true or false"},
+     *      {"name"="owned_courses", "dataType"="string", "description"="Returns the courses the current user is training. Optional. Values: true or false"},
      *      {"name"="interval_start", "dataType"="timestamp", "description"="Returns the courses that start before the given time. Optional"},
      *      {"name"="interval_stop", "dataType"="timestamp", "description"="Returns the courses that start until the given time. Optional"}
      *  },
@@ -82,7 +82,14 @@ class CourseController extends Controller
     public function getCoursesAction(Request $request) : JsonResponse
     {
         try {
-            $courses = $this->get(CourseRepository::class)->getCourses($this->getUser(), $request->query->all());
+            $courses = $this
+                ->get(CourseRepository::class)
+                ->getFilteredCourses(
+                    $this->getUser(),
+                    $request->query->all()
+                )
+            ;
+
             return new JsonResponse($courses, 200);
         } catch (CourseRepositoryException $ex) {
             return new JsonResponse(['error' => $ex->getMessage()], 400);
@@ -110,7 +117,7 @@ class CourseController extends Controller
      *
      * @Route("/api/course/{id}", name="course_get", methods={"GET"})
      *
-     * @param Request $request
+     * @param Course    $course
      *
      * @return JsonResponse
      *
@@ -125,7 +132,7 @@ class CourseController extends Controller
      *  }
      *  )
      */
-    public function getCourseAction(Request $request, ?Course $course) : JsonResponse
+    public function getCourseAction(?Course $course) : JsonResponse
     {
         if (null === $course) {
             return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
@@ -231,7 +238,7 @@ class CourseController extends Controller
         if (!($course->getTrainer()->getId() === $loggedUser->getId()) &&
             !in_array('ROLE_ADMIN', $loggedUser->getRoles())
         ) {
-            return new JsonResponse(['error' => 'Forbidden'], 403);
+            return new JsonResponse(['error' => 'Not Authorized'], 403);
         }
 
         try {
@@ -251,9 +258,9 @@ class CourseController extends Controller
     }
 
     /**
-     * @Route("/api/course", name="course_delete", methods={"DELETE"})
+     * @Route("/api/course/{id}", name="course_delete", methods={"DELETE"})
      *
-     * @param Request $request
+     * @param Course $course
      *
      * @return JsonResponse
      *
@@ -261,9 +268,6 @@ class CourseController extends Controller
      *  resource=true,
      *  description="Used for course removal. Use the course id for the removal.",
      *  section="Course",
-     *  filters={
-     *      {"name"="id", "dataType"="int"},
-     *  },
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
@@ -272,16 +276,9 @@ class CourseController extends Controller
      *  }
      *  )
      */
-    public function deleteCourseAction(Request $request) : JsonResponse
+    public function deleteCourseAction(?Course $course) : JsonResponse
     {
-        $courseId = $request->get('id');
-        if ($courseId === null) {
-            return new JsonResponse(['error' => 'Missing parameter id'], 400);
-        }
-
-        /** @var Course $course */
-        $course = $this->get(CourseRepository::class)->find($courseId);
-        if ($course === null) {
+        if (null === $course) {
             return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
         }
 
