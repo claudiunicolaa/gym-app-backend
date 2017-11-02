@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Alexandru Emil Popa <a.pope95@yahoo.com>
+ * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
  *
  * @ORM\Entity
  * @ORM\Table(name="courses")
@@ -224,5 +225,22 @@ class Course
             'image' => $this->getImage(),
             'registered_users' => count($this->getRegisteredUsers())
         ];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInThePast() : bool
+    {
+        $now = new \DateTime();
+        return $now > $this->getEventDate();
+    }
+
+    /**
+     * @return bool
+     */
+    public function reachedCapacity() : bool
+    {
+        return count($this->getRegisteredUsers()) >= $this->getCapacity();
     }
 }
