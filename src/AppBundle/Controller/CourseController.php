@@ -311,11 +311,9 @@ class CourseController extends Controller
     }
 
     /**
-     * @todo Implement this method
+     * @Route("/api/course/{id}/subscription", name="course_unsubscribe", methods={"DELETE"})
      *
-     * @Route("/api/course/subscription", name="course_unsubscribe", methods={"DELETE"})
-     *
-     * @param Request $request
+     * @param Course $course
      *
      * @return JsonResponse
      *
@@ -323,18 +321,36 @@ class CourseController extends Controller
      *  resource=true,
      *  description="Used when a user wants to unsubscribe from a course. In the request send the course id. Use the status code to understand the output. No JSON provided.",
      *  section="Course",
-     *  filters={
-     *      {"name"="id", "dataType"="int"},
-     *  },
      *  statusCodes={
      *      200="Returned when successful",
-     *      400="Returned when the request is invalid",
+     *      400="Returned when the request is invalid. Course invalid or expired or user not subscribed.",
      *      401="Returned when the request is valid, but the token given is invalid or missing"
      *  }
      *  )
      */
-    public function unsubscribeAction(Request $request) : JsonResponse
+    public function unsubscribeAction(?Course $course) : JsonResponse
     {
-        throw new NotImplementedException("Not implemented");
+        $loggedUser = $this->getUser();
+
+        if (null === $course) {
+            return new JsonResponse(['error' => 'Course with given id doesn\'t exist!'], 400);
+        }
+
+        if ($course->isInThePast()) {
+            return new JsonResponse(['error' => 'Course has expired!'], 400);
+        }
+
+        if (!$course->getRegisteredUsers()->contains($loggedUser)) {
+            return new JsonResponse(['error' => 'User not registered to this course!'], 400);
+        }
+
+        $course->removeRegisteredUser($loggedUser);
+        $loggedUser->removeAttendingCourse($course);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($course);
+        $em->persist($loggedUser);
+        $em->flush();
+
+        return new JsonResponse('', 200);
     }
 }

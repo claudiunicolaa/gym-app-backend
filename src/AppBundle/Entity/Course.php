@@ -235,7 +235,7 @@ class Course
         $now = new \DateTime();
         return $now > $this->getEventDate();
     }
-
+  
     /**
      * @return bool
      */
