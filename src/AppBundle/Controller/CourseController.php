@@ -161,31 +161,47 @@ class CourseController extends Controller
     }
 
     /**
-     * @todo Implement this method
+     * @Route("/api/course/{id}/subscription", name="course_subscribe", methods={"POST"})
      *
-     * @Route("/api/course/subscription", name="course_subscribe", methods={"POST"})
-     *
-     * @param Request $request
+     * @param Course  $course
      *
      * @return JsonResponse
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used when a user wants to subscribe to a course. In the request send the course id. Use the status code to understand the output. No JSON provided.",
+     *  description="Used when a user wants to subscribe to a course. In the request send the course id.",
      *  section="Course",
-     *  filters={
-     *      {"name"="id", "dataType"="int"},
-     *  },
      *  statusCodes={
      *      200="Returned when successful",
-     *      400="Returned when the request is invalid",
+     *      400="Returned when the request is invalid. Invalid course, full course, past course or already registered user.",
      *      401="Returned when the request is valid, but the token given is invalid or missing"
      *  }
      *  )
      */
-    public function subscribeAction(Request $request) : JsonResponse
+    public function subscribeAction(?Course $course) : JsonResponse
     {
-        throw new NotImplementedException("Not implemented");
+        $loggedUser = $this->getUser();
+
+        if (null === $course) {
+            return new JsonResponse(['error' => 'Course with given id doesn\'t exist!'], 400);
+        }
+
+        if ($course->isInThePast() || $course->reachedCapacity()) {
+            return new JsonResponse(['error' => 'Course is full or has expired!'], 400);
+        }
+
+        if ($course->getRegisteredUsers()->contains($loggedUser)) {
+            return new JsonResponse(['error' => 'User already registered!'], 400);
+        }
+
+        $course->addRegisteredUser($loggedUser);
+        $loggedUser->addAttendingCourse($course);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($course);
+        $em->persist($loggedUser);
+        $em->flush();
+
+        return new JsonResponse('', 200);
     }
 
     /**
