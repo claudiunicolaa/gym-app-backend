@@ -16,3 +16,4 @@ services:
 
     AppBundle\Services\Validator\CourseValidator: ~
     AppBundle\Services\Validator\CourseFiltersValidator: ~
+    AppBundle\Services\Validator\UserValidator: ~
