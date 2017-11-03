@@ -3,7 +3,6 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Exception\UserValidationException;
-use AppBundle\Repository\UserRepository;
 use AppBundle\Services\Validator\UserValidator;
 use FOS\UserBundle\Model\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -59,6 +58,7 @@ class AuthorizationController extends Controller
             return new JsonResponse(['error' => 'Missing email or password'], 400);
         }
 
+        /** @var User $user */
         $user =  $this->get('fos_user.user_manager')->findUserByEmail($email);
         if ($user) {
             $encoder = $this->get('security.encoder_factory')->getEncoder($user);
@@ -67,7 +67,7 @@ class AuthorizationController extends Controller
                 return new JsonResponse(
                     [
                         'token' => $tokenManager->create($user),
-                        'role' => $this->getHighestRole($user)
+                        'role' => $user->getHighestRole()
                     ],
                     200
                 );
@@ -118,48 +118,9 @@ class AuthorizationController extends Controller
 
         /** @var UserManager $userManager */
         $userManager = $this->get('fos_user.user_manager');
-        $user = $userManager->createUser();
-        $this->setUserProperties($user, $queryParams);
+        $user = $userManager->createUser()->setProperties($queryParams);
         $userManager->updateUser($user);
 
         return new JsonResponse('', 200);
-    }
-
-    /**
-     * Returns the highest user role
-     *
-     * @param User $user
-     *
-     * @return string
-     */
-    private function getHighestRole(User $user) : string
-    {
-        $userRoles = $user->getRoles();
-        $rolesSortedByImportance = ['ROLE_ADMIN', 'ROLE_TRAINER'];
-        foreach ($rolesSortedByImportance as $role)
-        {
-            if (in_array($role, $userRoles))
-            {
-                return $role;
-            }
-        }
-
-        return 'ROLE_USER';
-    }
-
-    /**
-     * @param User  $user
-     * @param array $data
-     */
-    private function setUserProperties(User $user, array $data)
-    {
-        $user->setEmail($data['email']);
-        $user->setUsername($user->getEmail());
-        $user->setLastName(explode(' ', $data['fullName'])[0]);
-        $user->setFirstName(explode(' ', $data['fullName'])[1] ?? '');
-        $user->setPicture($data['picture'] ?? '');
-        $user->setPlainPassword($data['password']);
-        $user->addRole("ROLE_USER");
-        $user->setEnabled(true);
     }
 }

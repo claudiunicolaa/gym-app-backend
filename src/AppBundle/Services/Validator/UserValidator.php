@@ -91,6 +91,12 @@ class UserValidator
     }
 
     /**
+     * Acceptance criteria:
+     *  - minimum length of 8 characters
+     *  - at least one lowercase letter
+     *  - at least one uppercase letter
+     *  - at lest one number
+     *
      * @param string $password
      *
      * @return void
