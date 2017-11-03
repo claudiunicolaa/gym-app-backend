@@ -11,7 +11,7 @@ use AppBundle\Exception\CourseRepositoryException;
  */
 class CourseFiltersValidator
 {
-    const ALLOWED_FILTERS = ['users_courses', 'owned_courses', 'interval_start', 'interval_stop'];
+    const ALLOWED_FILTERS = ['usersCourses', 'ownedCourses', 'intervalStart', 'intervalStop'];
 
     /**
      * @param array $data
@@ -40,7 +40,7 @@ class CourseFiltersValidator
      *
      * @throws CourseRepositoryException if data is not valid
      */
-    private function validateUsers_courses(string $data) : void
+    private function validateUsersCourses(string $data) : void
     {
         if (!in_array(strtolower($data), ['true', 'false'])) {
             throw new CourseRepositoryException('Invalid value for users_courses parameter!');
@@ -54,7 +54,7 @@ class CourseFiltersValidator
      *
      * @throws CourseRepositoryException if data is not valid
      */
-    private function validateOwned_courses(string $data) : void
+    private function validateOwnedCourses(string $data) : void
     {
         if (!in_array(strtolower($data), ['true', 'false'])) {
             throw new CourseRepositoryException('Invalid value for owned_courses parameter!');
@@ -68,7 +68,7 @@ class CourseFiltersValidator
      *
      * @throws CourseRepositoryException if data is not valid
      */
-    private function validateInterval_start(string $data) : void
+    private function validateIntervalStart(string $data) : void
     {
         if (!is_numeric($data) || (int)$data > 2554416000 || (int)$data < 0) {
             throw new CourseRepositoryException('Invalid value for interval_start parameter!');
@@ -82,7 +82,7 @@ class CourseFiltersValidator
      *
      * @throws CourseRepositoryException if data is not valid
      */
-    private function validateInterval_stop(string $data) : void
+    private function validateIntervalStop(string $data) : void
     {
         if (!is_numeric($data) || (int)$data < 0 || (int)$data > 2554416000) {
             throw new CourseRepositoryException('Invalid value for interval_stop parameter!');

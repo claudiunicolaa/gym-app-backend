@@ -61,31 +61,31 @@ class CourseRepository extends EntityRepository
      */
     protected function applyFilters(QueryBuilder $queryBuilder, User $loggedUser, array $filters = []) : void
     {
-        if (isset($filters['users_courses'])) {
-            $op = $filters['users_courses'] === 'true' ? 'MEMBER OF' : 'NOT MEMBER OF';
+        if (isset($filters['usersCourses'])) {
+            $op = $filters['usersCourses'] === 'true' ? 'MEMBER OF' : 'NOT MEMBER OF';
             $queryBuilder->andWhere(':loggedUser ' . $op . ' c.registeredUsers')
                 ->setParameter('loggedUser', $loggedUser)
             ;
         }
 
-        if (isset($filters['owned_courses'])) {
-            $op = $filters['owned_courses'] === 'true' ? '=' : '!=';
+        if (isset($filters['ownedCourses'])) {
+            $op = $filters['ownedCourses'] === 'true' ? '=' : '!=';
             $queryBuilder->andWhere('c.trainer ' . $op . ' :loggedUser')
                 ->setParameter('loggedUser', $loggedUser)
             ;
         }
 
-        if (isset($filters['interval_start'])) {
-            $date = (new \DateTime())->setTimestamp((int)$filters['interval_start']);
-            $queryBuilder->andWhere('c.eventDate >= :interval_start')
-                ->setParameter('interval_start', $date)
+        if (isset($filters['intervalStart'])) {
+            $date = (new \DateTime())->setTimestamp((int)$filters['intervalStart']);
+            $queryBuilder->andWhere('c.eventDate >= :intervalStart')
+                ->setParameter('intervalStart', $date)
             ;
         }
 
-        if (isset($filters['interval_stop'])) {
-            $date = (new \DateTime())->setTimestamp((int)$filters['interval_stop']);
-            $queryBuilder->andWhere('c.eventDate <= :interval_stop')
-                ->setParameter('interval_stop', $date)
+        if (isset($filters['intervalStop'])) {
+            $date = (new \DateTime())->setTimestamp((int)$filters['intervalStop']);
+            $queryBuilder->andWhere('c.eventDate <= :intervalStop')
+                ->setParameter('intervalStop', $date)
             ;
         }
     }
