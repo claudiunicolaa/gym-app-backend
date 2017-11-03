@@ -2,12 +2,15 @@
 
 namespace AppBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use AppBundle\Exception\UserValidationException;
+use AppBundle\Services\Validator\UserValidator;
+use FOS\UserBundle\Model\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\User;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 /**
  * Class AuthorizationController
@@ -55,6 +58,7 @@ class AuthorizationController extends Controller
             return new JsonResponse(['error' => 'Missing email or password'], 400);
         }
 
+        /** @var User $user */
         $user =  $this->get('fos_user.user_manager')->findUserByEmail($email);
         if ($user) {
             $encoder = $this->get('security.encoder_factory')->getEncoder($user);
@@ -63,7 +67,7 @@ class AuthorizationController extends Controller
                 return new JsonResponse(
                     [
                         'token' => $tokenManager->create($user),
-                        'role' => $this->getHighestRole($user)
+                        'role' => $user->getHighestRole()
                     ],
                     200
                 );
@@ -74,24 +78,49 @@ class AuthorizationController extends Controller
     }
 
     /**
-     * Returns the highest user role
+     * @Route("/api/register", name="user_register", methods={"POST"})
      *
-     * @param User $user
+     * @param Request $request
      *
-     * @return string
+     * @return JsonResponse
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Used to register a user.",
+     *  section="Authorization",
+     *  filters={
+     *      {"name"="email", "dataType"="string", "description" : "Mandatory"},
+     *      {"name"="password", "dataType"="string", "description" : "Mandatory"},
+     *      {"name"="fullName", "dataType"="string", "description": "Mandatory. Format: last_name first_name"},
+     *      {"name"="picture", "dataType"="string", "description" : "Optional"}
+     *  },
+     *  statusCodes={
+     *      200="Returned when successful",
+     *      400="Returned when the request is not valid"
+     *  }
+     *  )
      */
-    protected function getHighestRole(User $user) : string
+    public function registerUserAction(Request $request) : JsonResponse
     {
-        $userRoles = $user->getRoles();
-        $rolesSortedByImportance = ['ROLE_ADMIN', 'ROLE_TRAINER'];
-        foreach ($rolesSortedByImportance as $role)
-        {
-            if (in_array($role, $userRoles))
-            {
-                return $role;
-            }
+        $queryParams = $request->query->all();
+        $userValidator = $this->get(UserValidator::class);
+        try {
+            $userValidator->checkMandatoryFields($queryParams);
+            $userValidator->validate($queryParams);
+        } catch (UserValidationException $ex) {
+            return new JsonResponse(['error' => $ex->getMessage()], 400);
         }
 
-        return 'ROLE_USER';
+        $userRepository = $this->getDoctrine()->getRepository(User::class);
+        if ($userRepository->findOneBy(['email' => $queryParams['email']]) instanceof User) {
+            return new JsonResponse(['error' => 'User with given email already exists!'], 400);
+        }
+
+        /** @var UserManager $userManager */
+        $userManager = $this->get('fos_user.user_manager');
+        $user = $userManager->createUser()->setProperties($queryParams);
+        $userManager->updateUser($user);
+
+        return new JsonResponse('', 200);
     }
 }
