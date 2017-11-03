@@ -144,8 +144,6 @@ class CourseController extends Controller
     }
 
     /**
-     * @todo Implement this method
-     *
      * @Route("/api/course", name="course_create", methods={"POST"})
      *
      * @param Request $request
@@ -157,21 +155,51 @@ class CourseController extends Controller
      *  description="Used for course creation. The assigned trainer will be the user that makes the request. Use the status code to understand the output. No JSON provided.",
      *  section="Course",
      *  filters={
-     *      {"name"="eventDate", "dataType"="timestamp"},
-     *      {"name"="capacity", "dataType"="int"},
+     *      {"name"="eventDate", "dataType"="timestamp", "description" : "Mandatory"},
+     *      {"name"="capacity", "dataType"="int", "description" : "Mandatory"},
      *      {"name"="image", "dataType"="string", "description" : "Optional"},
-     *      {"name"="name", "dataType"="string"},
+     *      {"name"="name", "dataType"="string", "description" : "Mandatory"},
      *  },
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
-     *      401="Returned when the request is valid, but the token given is invalid or missing"
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      403="Returned when user is not a trainer so he/she cannot create courses"
      *  }
      *  )
      */
     public function createCourseAction(Request $request) : JsonResponse
     {
-        throw new NotImplementedException("Not implemented");
+        $loggedUser = $this->getUser();
+        if (!in_array('ROLE_TRAINER', $loggedUser->getRoles()) &&
+            !in_array('ROLE_ADMIN', $loggedUser->getRoles())
+        ) {
+            return new JsonResponse(['error' => 'Not Authorized!'], 403);
+        }
+
+        $queryParameters = $request->query->all();
+        $courseValidator = $this->get(CourseValidator::class);
+        try {
+            $courseValidator->checkMandatoryFields($queryParameters);
+            $courseValidator->validate($queryParameters);
+
+            $course = new Course();
+            $course->setTrainer($loggedUser);
+            $course->setName($queryParameters['name']);
+            if (isset($queryParameters['image'])) {
+                $course->setImage($queryParameters['image']);
+            }
+            $course->setCapacity($queryParameters['capacity']);
+            $course->setEventDate($queryParameters['eventDate']);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($course);
+            $em->flush();
+
+            return new JsonResponse('', 200);
+        } catch (CourseValidationException $ex) {
+            return new JsonResponse(['error' => $ex->getMessage()], 400);
+        }
     }
 
     /**
