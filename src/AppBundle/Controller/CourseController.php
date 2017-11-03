@@ -4,7 +4,9 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Course;
 use AppBundle\Exception\CourseValidationException;
+use AppBundle\Exception\CourseRepositoryException;
 use AppBundle\Repository\CourseRepository;
+use AppBundle\Services\Validator\CourseFiltersValidator;
 use AppBundle\Services\Validator\CourseValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -55,8 +57,6 @@ class CourseController extends Controller
      *         }
      *     }
      *
-     * @todo Implement this method
-     *
      * @Route("/api/courses", name="courses_get", methods={"GET"})
      *
      * @param Request $request
@@ -68,20 +68,34 @@ class CourseController extends Controller
      *  description="Returns all courses that match the given filters.",
      *  section="Course",
      * filters={
-     *      {"name"="users_courses", "dataType"="boolean", "description"="Returns the courses the current user is registered to. Optional"},
-     *      {"name"="owned_courses", "dataType"="boolean", "description"="Returns the courses the current user is training. Optional"},
-     *      {"name"="interval_start", "dataType"="timestamp", "description"="Returns the courses that start before the given time. Optional"},
-     *      {"name"="interval_stop", "dataType"="timestamp", "description"="Returns the courses that start until the given time. Optional"}
+     *      {"name"="usersCourses", "dataType"="string", "description"="Returns the courses the user is registered to. Optional. Values: true or false"},
+     *      {"name"="ownedCourses", "dataType"="string", "description"="Returns the courses the current user is training. Optional. Values: true or false"},
+     *      {"name"="intervalStart", "dataType"="timestamp", "description"="Returns the courses that start before the given time. Optional"},
+     *      {"name"="intervalStop", "dataType"="timestamp", "description"="Returns the courses that start until the given time. Optional"}
      *  },
      *  statusCodes={
      *      200="Returned when successful",
-     *      401="Returned when the request is valid, but the token given is invalid or missing"
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      400="Returned when the request is invalid"
      *  }
      *  )
      */
     public function getCoursesAction(Request $request) : JsonResponse
     {
-        throw new NotImplementedException("Not implemented");
+        try {
+            $this->get(CourseFiltersValidator::class)->validate($request->query->all());
+            $courses = $this
+                ->get(CourseRepository::class)
+                ->getFilteredCourses(
+                    $this->getUser(),
+                    $request->query->all()
+                )
+            ;
+
+            return new JsonResponse($this->formatResult($courses), 200);
+        } catch (CourseRepositoryException $ex) {
+            return new JsonResponse(['error' => $ex->getMessage()], 400);
+        }
     }
 
     /**
@@ -105,7 +119,7 @@ class CourseController extends Controller
      *
      * @Route("/api/course/{id}", name="course_get", methods={"GET"})
      *
-     * @param Request $request
+     * @param Course    $course
      *
      * @return JsonResponse
      *
@@ -120,7 +134,7 @@ class CourseController extends Controller
      *  }
      *  )
      */
-    public function getCourseAction(Request $request, ?Course $course) : JsonResponse
+    public function getCourseAction(?Course $course) : JsonResponse
     {
         if (null === $course) {
             return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
@@ -242,7 +256,7 @@ class CourseController extends Controller
         if (!($course->getTrainer()->getId() === $loggedUser->getId()) &&
             !in_array('ROLE_ADMIN', $loggedUser->getRoles())
         ) {
-            return new JsonResponse(['error' => 'Forbidden'], 403);
+            return new JsonResponse(['error' => 'Not Authorized'], 403);
         }
 
         try {
@@ -262,9 +276,9 @@ class CourseController extends Controller
     }
 
     /**
-     * @Route("/api/course", name="course_delete", methods={"DELETE"})
+     * @Route("/api/course/{id}", name="course_delete", methods={"DELETE"})
      *
-     * @param Request $request
+     * @param Course $course
      *
      * @return JsonResponse
      *
@@ -272,9 +286,6 @@ class CourseController extends Controller
      *  resource=true,
      *  description="Used for course removal. Use the course id for the removal.",
      *  section="Course",
-     *  filters={
-     *      {"name"="id", "dataType"="int"},
-     *  },
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
@@ -283,16 +294,9 @@ class CourseController extends Controller
      *  }
      *  )
      */
-    public function deleteCourseAction(Request $request) : JsonResponse
+    public function deleteCourseAction(?Course $course) : JsonResponse
     {
-        $courseId = $request->get('id');
-        if ($courseId === null) {
-            return new JsonResponse(['error' => 'Missing parameter id'], 400);
-        }
-
-        /** @var Course $course */
-        $course = $this->get(CourseRepository::class)->find($courseId);
-        if ($course === null) {
+        if (null === $course) {
             return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
         }
 
@@ -352,5 +356,31 @@ class CourseController extends Controller
         $em->flush();
 
         return new JsonResponse('', 200);
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array
+     */
+    private function formatResult(array $data) : array
+    {
+        $result = [];
+
+        foreach ($data as $key => $courseData) {
+            $result[$key]['trainer'] = [];
+            $result[$key]['trainer']['id'] = $courseData["trainer_id"];
+            $result[$key]['trainer']['fullName'] = $courseData['lastName'] . ' ' .$courseData['firstName'];
+            $result[$key]['trainer']['email'] = $courseData['email'];
+            $result[$key]['trainer']['picture'] = $courseData['picture'];
+            $result[$key]['eventDate'] = $courseData['eventDate']->getTimestamp();
+            $result[$key]['id'] = $courseData['id'];
+            $result[$key]['capacity'] = $courseData['capacity'];
+            $result[$key]['name'] = $courseData['name'];
+            $result[$key]['image'] = $courseData['image'];
+            $result[$key]['registered_users'] = $courseData['registered_users'];
+        }
+
+        return $result;
     }
 }
