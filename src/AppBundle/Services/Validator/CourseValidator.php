@@ -12,6 +12,21 @@ use AppBundle\Exception\CourseValidationException;
 class CourseValidator
 {
     const ALLOWED_KEYS = ['eventDate', 'capacity', 'image', 'name'];
+    const MANDATORY_CREATE_FIELDS = ['name', 'capacity', 'eventDate'];
+
+    /**
+    * @param $queryParams
+    *
+    * @return void
+    *
+    * @throws CourseValidationException if mandatory fields are missing
+    */
+    public function checkMandatoryFields(array $queryParams) : void
+    {
+        if (3 !== count(array_intersect_key($queryParams, array_flip(self::MANDATORY_CREATE_FIELDS)))) {
+            throw new CourseValidationException('Missing mandatory parameters!');
+        }
+    }
 
     /**
      * @param array $data

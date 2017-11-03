@@ -156,11 +156,6 @@ class CourseController extends Controller
      */
     public function createCourseAction(Request $request) : JsonResponse
     {
-        $queryParameters = $request->query->all();
-        if (3 !== count(array_intersect_key($queryParameters, array_flip(['name', 'capacity', 'eventDate'])))) {
-            return new JsonResponse(['error' => 'Missing mandatory parameters!'], 400);
-        }
-
         $loggedUser = $this->getUser();
         if (!in_array('ROLE_TRAINER', $loggedUser->getRoles()) &&
             !in_array('ROLE_ADMIN', $loggedUser->getRoles())
@@ -168,8 +163,11 @@ class CourseController extends Controller
             return new JsonResponse(['error' => 'Not Authorized!'], 403);
         }
 
+        $queryParameters = $request->query->all();
+        $courseValidator = $this->get(CourseValidator::class);
         try {
-            $this->get(CourseValidator::class)->validate($queryParameters);
+            $courseValidator->checkMandatoryFields($queryParameters);
+            $courseValidator->validate($queryParameters);
 
             $course = new Course();
             $course->setTrainer($loggedUser);
