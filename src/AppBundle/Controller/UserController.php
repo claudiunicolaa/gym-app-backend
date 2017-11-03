@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -25,11 +26,7 @@ class UserController extends Controller
      *         "picture" : "https://i.imgur.com/NiCqGa3.jpg"
      *     }
      *
-     * @todo Implement this method
-     *
      * @Route("/api/user", name="user_get", methods={"GET"})
-     *
-     * @param Request $request
      *
      * @return JsonResponse
      *
@@ -43,9 +40,19 @@ class UserController extends Controller
      *  }
      *  )
      */
-    public function getUserAction(Request $request) : JsonResponse
+    public function getUserAction() : JsonResponse
     {
-        throw new NotImplementedException("Not implemented");
+        $loggedUser = $this->getUser();
+
+        return new JsonResponse(
+            [
+                'id' => $loggedUser->getId(),
+                'fullName' => $loggedUser->getFullName(),
+                'email' => $loggedUser->getEmail(),
+                'picture' => $loggedUser->getPicture()
+            ],
+            200
+        );
     }
 
     /**

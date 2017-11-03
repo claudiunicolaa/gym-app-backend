@@ -203,5 +203,64 @@ class User extends BaseUser
 
         return $this;
     }
-}
 
+    /**
+     * @return string
+     */
+    public function getFullName() : string
+    {
+        return $this->getLastName() . ' ' . $this->getFirstName();
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray() : array
+    {
+        return [
+            'id' => $this->getId(),
+            'fullName' => $this->getFullName(),
+            'email' => $this->getEmail(),
+            'picture' => $this->getPicture()
+        ];
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return $this
+     */
+    public function setProperties(array $data) : self
+    {
+        $this->setEmail($data['email'] ?? '');
+        $this->setUsername($this->getEmail());
+        $this->setLastName(explode(' ', $data['fullName'])[0] ?? '');
+        $this->setFirstName(explode(' ', $data['fullName'])[1] ?? '');
+        $this->setPicture($data['picture'] ?? '');
+        $this->setPlainPassword($data['password'] ?? '');
+        $this->addRole("ROLE_USER");
+        $this->setEnabled(true);
+
+        return $this;
+    }
+
+    /**
+     * Returns the highest user role
+     *
+     * @return string
+     */
+    public function getHighestRole() : string
+    {
+        $userRoles = $this->getRoles();
+        $rolesSortedByImportance = ['ROLE_ADMIN', 'ROLE_TRAINER'];
+        foreach ($rolesSortedByImportance as $role)
+        {
+            if (in_array($role, $userRoles))
+            {
+                return $role;
+            }
+        }
+
+        return 'ROLE_USER';
+    }
+}
