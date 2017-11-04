@@ -170,4 +170,19 @@ class Product
 
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function toArray() : array
+    {
+        return [
+            'id' => $this->getId(),
+            'price' => $this->getPrice(),
+            'description' => $this->getDescription() ?? '',
+            'image' => $this->getImage() ?? '',
+            'name' => $this->getName(),
+            'category' => $this->getCategory(),
+        ];
+    }
 }

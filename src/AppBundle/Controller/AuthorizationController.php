@@ -45,7 +45,8 @@ class AuthorizationController extends Controller
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
-     *      401="Returned when the request is valid, but the credentials are invalid"
+     *      401="Returned when the request is valid, but the credentials are invalid",
+     *      405="Returned when the method called is not allowed"
      *  }
      *  )
      */
@@ -96,7 +97,8 @@ class AuthorizationController extends Controller
      *  },
      *  statusCodes={
      *      200="Returned when successful",
-     *      400="Returned when the request is not valid"
+     *      400="Returned when the request is not valid",
+     *      405="Returned when the method called is not allowed"
      *  }
      *  )
      */

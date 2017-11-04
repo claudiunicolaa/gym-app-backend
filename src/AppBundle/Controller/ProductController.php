@@ -2,9 +2,11 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Product;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Repository\ProductRepository;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,7 +49,8 @@ class ProductController extends Controller
      *  section="Product",
      *  statusCodes={
      *      200="Returned when successful",
-     *      401="Returned when the request is valid, but the token given is invalid or missing"
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      405="Returned when the method called is not allowed"
      *  }
      *  )
      */
@@ -78,48 +81,30 @@ class ProductController extends Controller
      *         }
      *     }
      *
-     * @Route("/api/product", name="product_get", methods={"GET"})
+     * @Route("/api/product/{id}", name="product_get", methods={"GET"})
      *
-     * @param Request $request
+     * @param Product $product
      *
-     * @return Response
+     * @return JsonResponse
      *
      * @ApiDoc(
      *  resource=true,
      *  description="Returns a product with given id.",
      *  section="Product",
-     * filters={
-     *      {"name"="id", "dataType"="int", "description"="Returns the product with the given id. Mandatory"},
-     *  },
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
-     *      401="Returned when the request is valid, but the token given is invalid or missing"
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      405="Returned when the method called is not allowed"
      *  }
      *  )
      */
-    public function getProductAction(Request $request) : Response
+    public function getProductAction(?Product $product) : JsonResponse
     {
-        $productId = $request->get('id');
-        if ($productId === null) {
-            return new Response(
-                $this->get('serializer')->serialize(
-                    ['error' => 'Missing required parameter id'],
-                    'json'
-                ),
-                400
-            );
+        if (null === $product) {
+            return new JsonResponse(['error' => 'Invalid product id'], 400);
         }
 
-        /** @var ProductRepository $productRepository */
-        $productRepository = $this->get(ProductRepository::class);
-
-        return new Response(
-            $this->get('serializer')->serialize(
-                $productRepository->find($productId),
-                'json'
-            ),
-            200
-        );
+        return new JsonResponse($product->toArray(), 200);
     }
 }

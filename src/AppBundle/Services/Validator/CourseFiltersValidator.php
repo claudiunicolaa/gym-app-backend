@@ -43,7 +43,7 @@ class CourseFiltersValidator
     private function validateUsersCourses(string $data) : void
     {
         if (!in_array(strtolower($data), ['true', 'false'])) {
-            throw new CourseRepositoryException('Invalid value for users_courses parameter!');
+            throw new CourseRepositoryException('Invalid value for usersCourses parameter!');
         }
     }
 
@@ -57,7 +57,7 @@ class CourseFiltersValidator
     private function validateOwnedCourses(string $data) : void
     {
         if (!in_array(strtolower($data), ['true', 'false'])) {
-            throw new CourseRepositoryException('Invalid value for owned_courses parameter!');
+            throw new CourseRepositoryException('Invalid value for ownedCourses parameter!');
         }
     }
 
@@ -71,7 +71,7 @@ class CourseFiltersValidator
     private function validateIntervalStart(string $data) : void
     {
         if (!is_numeric($data) || (int)$data > 2554416000 || (int)$data < 0) {
-            throw new CourseRepositoryException('Invalid value for interval_start parameter!');
+            throw new CourseRepositoryException('Invalid value for intervalStart parameter!');
         }
     }
 
@@ -85,7 +85,7 @@ class CourseFiltersValidator
     private function validateIntervalStop(string $data) : void
     {
         if (!is_numeric($data) || (int)$data < 0 || (int)$data > 2554416000) {
-            throw new CourseRepositoryException('Invalid value for interval_stop parameter!');
+            throw new CourseRepositoryException('Invalid value for intervalStop parameter!');
         }
     }
 }

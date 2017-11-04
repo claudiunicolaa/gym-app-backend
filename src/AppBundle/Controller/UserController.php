@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -36,7 +35,8 @@ class UserController extends Controller
      *  section="User",
      *  statusCodes={
      *      200="Returned when successful",
-     *      401="Returned when the request is valid, but the token given is invalid or missing"
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      405="Returned when the method called is not allowed"
      *  }
      *  )
      */
@@ -75,7 +75,8 @@ class UserController extends Controller
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
-     *      401="Returned when the request is valid, but the token given is invalid or missing"
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      405="Returned when the method called is not allowed"
      *  }
      *  )
      */
