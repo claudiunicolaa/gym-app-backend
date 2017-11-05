@@ -356,7 +356,7 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used when a user wants to unsubscribe from a course. In the request send the course id. Use the status code to understand the output. No JSON provided.",
+     *  description="Used when a user wants to unsubscribe from a course. Send the course id.",
      *  section="Course",
      *  statusCodes={
      *      200="Returned when successful",
