@@ -11,7 +11,6 @@ use AppBundle\Services\Validator\CourseValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Intl\Exception\NotImplementedException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -76,7 +75,8 @@ class CourseController extends Controller
      *  statusCodes={
      *      200="Returned when successful",
      *      401="Returned when the request is valid, but the token given is invalid or missing",
-     *      400="Returned when the request is invalid"
+     *      400="Returned when the request is invalid",
+     *      405="Returned when the method called is not allowed"
      *  }
      *  )
      */
@@ -130,7 +130,8 @@ class CourseController extends Controller
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
-     *      401="Returned when the request is valid, but the token given is invalid or missing"
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      405="Returned when the method called is not allowed"
      *  }
      *  )
      */
@@ -164,7 +165,8 @@ class CourseController extends Controller
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
      *      401="Returned when the request is valid, but the token given is invalid or missing",
-     *      403="Returned when user is not a trainer so he/she cannot create courses"
+     *      403="Returned when user is not a trainer so he/she cannot create courses",
+     *      405="Returned when the method called is not allowed"
      *  }
      *  )
      */
@@ -216,7 +218,8 @@ class CourseController extends Controller
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid. Invalid course, full course, past course or already registered user.",
-     *      401="Returned when the request is valid, but the token given is invalid or missing"
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      405="Returned when the method called is not allowed"
      *  }
      *  )
      */
@@ -268,7 +271,8 @@ class CourseController extends Controller
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
      *      401="Returned when the request is valid, but the token given is invalid or missing",
-     *      403="Returned when user did not create the course or is not an admin"
+     *      403="Returned when user did not create the course or is not an admin",
+     *      405="Returned when the method called is not allowed"
      *  }
      *  )
      */
@@ -318,7 +322,8 @@ class CourseController extends Controller
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
      *      401="Returned when the request is valid, but the token given is invalid or missing",
-     *      403="Returned when user did not create the course and is not an admin"
+     *      403="Returned when user did not create the course and is not an admin",
+     *      405="Returned when the method called is not allowed"
      *  }
      *  )
      */
@@ -351,12 +356,13 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used when a user wants to unsubscribe from a course. In the request send the course id. Use the status code to understand the output. No JSON provided.",
+     *  description="Used when a user wants to unsubscribe from a course. Send the course id.",
      *  section="Course",
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid. Course invalid or expired or user not subscribed.",
-     *      401="Returned when the request is valid, but the token given is invalid or missing"
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      405="Returned when the method called is not allowed"
      *  }
      *  )
      */
