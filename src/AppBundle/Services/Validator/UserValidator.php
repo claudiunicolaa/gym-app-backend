@@ -57,6 +57,7 @@ class UserValidator
      */
     private function validateEmail(string $email) : void
     {
+        $email = trim($email);
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new UserValidationException("Invalid email given!");
         }
@@ -71,7 +72,8 @@ class UserValidator
      */
     private function validateFullName(string $fullName) : void
     {
-        if ('' === $fullName) {
+        $fullName = trim($fullName);
+        if ('' === $fullName || strpos($fullName, ' ') === false) {
             throw new UserValidationException("Invalid full name given!");
         }
     }
@@ -85,6 +87,7 @@ class UserValidator
      */
     private function validatePicture(string $picture) : void
     {
+        $picture = trim($picture);
         if (!filter_var($picture, FILTER_VALIDATE_URL)) {
             throw new UserValidationException("Invalid image url given!");
         }
