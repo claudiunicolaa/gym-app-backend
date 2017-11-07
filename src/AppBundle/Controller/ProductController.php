@@ -3,13 +3,11 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Product;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Repository\ProductRepository;
-use Symfony\Component\HttpFoundation\Response;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 /**
  * Class ProductController
@@ -41,7 +39,7 @@ class ProductController extends Controller
      *
      * @Route("/api/products", name="products_get", methods={"GET"})
      *
-     * @return Response
+     * @return JsonResponse
      *
      * @ApiDoc(
      *  resource=true,
@@ -54,18 +52,16 @@ class ProductController extends Controller
      *  }
      *  )
      */
-    public function getProductsAction() : Response
+    public function getProductsAction() : JsonResponse
     {
-        /** @var ProductRepository $productRepository */
-        $productRepository = $this->get(ProductRepository::class);
-
-        return new Response(
-            $this->get('serializer')->serialize(
-                $productRepository->findAll(),
-                'json'
-            ),
-            200
+        $products = array_map(
+            function (Product $el) {
+                return $el->toArray();
+            },
+            $this->get(ProductRepository::class)->findAll()
         );
+
+        return new JsonResponse($products, 200);
     }
 
     /**
