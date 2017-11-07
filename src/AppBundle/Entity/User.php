@@ -245,6 +245,25 @@ class User extends BaseUser
     }
 
     /**
+     * @param array $data
+     *
+     * @return $this
+     */
+    public function updateProperties(array $data) : self
+    {
+        if (isset($data['fullName'])) {
+            $this->setLastName(explode(' ', $data['fullName'])[0]);
+            $this->setFirstName(explode(' ', $data['fullName'])[1]);
+        }
+
+        if (isset($data['picture'])) {
+            $this->setPicture($data['picture']);
+        }
+
+        return $this;
+    }
+
+    /**
      * Returns the highest user role
      *
      * @return string

@@ -2,12 +2,14 @@
 
 namespace AppBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use AppBundle\Exception\UserValidationException;
+use AppBundle\Services\Validator\UserValidator;
+use FOS\UserBundle\Doctrine\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Intl\Exception\NotImplementedException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 /**
  * Class UserController
@@ -56,8 +58,6 @@ class UserController extends Controller
     }
 
     /**
-     * @todo Implement this method
-     *
      * @Route("/api/user", name="user_update", methods={"PUT"})
      *
      * @param Request $request
@@ -82,6 +82,19 @@ class UserController extends Controller
      */
     public function updateUserAction(Request $request) : JsonResponse
     {
-        throw new NotImplementedException("Not implemented");
+        $queryParams = $request->query->all();
+        $userValidator = $this->get(UserValidator::class);
+        try {
+            $userValidator->validate($queryParams);
+        } catch (UserValidationException $ex) {
+            return new JsonResponse(['error' => $ex->getMessage()], 400);
+        }
+
+        /** @var UserManager $userManager */
+        $userManager = $this->get('fos_user.user_manager');
+        $loggedUser = $this->getUser()->updateProperties($queryParams);
+        $userManager->updateUser($loggedUser);
+
+        return new JsonResponse('', 200);
     }
 }
