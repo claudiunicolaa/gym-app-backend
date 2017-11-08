@@ -8,7 +8,7 @@ security:
 
     providers:
         fos_userbundle:
-            id: fos_user.user_provider.username
+            id: fos_user.user_provider.username_email
 
     firewalls:
         main:
@@ -23,7 +23,8 @@ security:
             form_login:
                 provider: fos_userbundle
                 check_path: /admin/login_check
-                always_use_default_target_path: false
+                failure_path: /admin/login
+                always_use_default_target_path: true
                 default_target_path: /admin/dashboard
                 csrf_token_generator: security.csrf.token_manager
             logout:

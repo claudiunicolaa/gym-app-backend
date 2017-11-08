@@ -102,8 +102,19 @@ nelmio_cors:
           expose_headers: []
           max_age: 86400
 
+sonata_admin:
+    title: GYM Admin
+    dashboard:
+        groups:
+            Entities:
+                label:                Entities
+                items:
+                    - sonata.product.admin
+
 sonata_block:
     default_contexts: [cms]
     blocks:
         sonata.admin.block.admin_list:
+            contexts: [admin]
+        sonata.product.admin:
             contexts: [admin]
