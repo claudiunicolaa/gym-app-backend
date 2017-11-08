@@ -11,24 +11,25 @@ security:
             id: fos_user.user_provider.username
 
     firewalls:
-        login:
-            pattern:  ^/login
-            stateless: true
-            anonymous: true
-            provider: fos_userbundle
-            json_login:
-                check_path: /login_check
-                username_path: email
-                password_path: password
-                success_handler: lexik_jwt_authentication.handler.authentication_success
-                failure_handler: lexik_jwt_authentication.handler.authentication_failure
-
         main:
-            pattern:   ^/
+            pattern:   ^/api
             provider: fos_userbundle
             stateless: true
             anonymous: true
             lexik_jwt: ~
+
+        admin:
+            pattern: ^/admin
+            form_login:
+                provider: fos_userbundle
+                check_path: /admin/login_check
+                always_use_default_target_path: false
+                default_target_path: /admin/dashboard
+                csrf_token_generator: security.csrf.token_manager
+            logout:
+                path:   /admin/logout
+                target: /admin/login
+            anonymous:    true
 
         dev:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
@@ -39,4 +40,6 @@ security:
         - { path: ^/api/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, role: ROLE_USER }
+        - { path: ^/admin/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin, role: ROLE_ADMIN }
         - { path: ^/, role: IS_AUTHENTICATED_ANONYMOUSLY }
