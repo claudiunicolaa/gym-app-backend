@@ -55,8 +55,8 @@ class ProductController extends Controller
     public function getProductsAction() : JsonResponse
     {
         $products = array_map(
-            function (Product $el) {
-                return $el->toArray();
+            function (Product $product) {
+                return $product->toArray();
             },
             $this->get(ProductRepository::class)->findAll()
         );
