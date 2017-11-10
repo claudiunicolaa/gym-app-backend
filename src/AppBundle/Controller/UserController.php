@@ -86,8 +86,8 @@ class UserController extends Controller
         $userValidator = $this->get(UserValidator::class);
         try {
             $userValidator->validate($queryParams);
-        } catch (UserValidationException $ex) {
-            return new JsonResponse(['error' => $ex->getMessage()], 400);
+        } catch (UserValidationException $userValidationException) {
+            return new JsonResponse(['error' => $userValidationException->getMessage()], 400);
         }
 
         /** @var UserManager $userManager */
