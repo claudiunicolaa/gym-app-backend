@@ -37,7 +37,7 @@ class CourseController extends Controller
      *              "capacity" : "30",
      *              "name" : "Course A",
      *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
-     *              "registered_users" : "15"
+     *              "registeredUsers" : "15"
      *         },
      *         {
      *              {
@@ -52,7 +52,7 @@ class CourseController extends Controller
      *              "capacity" : "25",
      *              "name" : "Course B",
      *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
-     *              "registered_users" : "25"
+     *              "registeredUsers" : "25"
      *         }
      *     }
      *
@@ -113,7 +113,7 @@ class CourseController extends Controller
      *              "capacity" : "30",
      *              "name" : "Course A",
      *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
-     *              "registered_users" : "15"
+     *              "registeredUsers" : "15"
      *         }
      *     }
      *
@@ -412,7 +412,7 @@ class CourseController extends Controller
             $result[$key]['capacity'] = $courseData['capacity'];
             $result[$key]['name'] = $courseData['name'];
             $result[$key]['image'] = $courseData['image'];
-            $result[$key]['registered_users'] = $courseData['registered_users'];
+            $result[$key]['registeredUsers'] = $courseData['registered_users'];
         }
 
         return $result;
