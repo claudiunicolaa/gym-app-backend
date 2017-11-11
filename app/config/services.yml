@@ -1,10 +1,8 @@
 imports:
     - { resource: repositories.yml }
+    - { resource: admins.yml }
 
 services:
-    _defaults:
-        autowire: true
-
     AppBundle\:
         resource: '../../src/AppBundle/*'
         exclude: '../../src/AppBundle/{Entity,Repository,Tests}'

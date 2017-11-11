@@ -84,7 +84,7 @@ class User extends BaseUser
     /**
      * @return string
      */
-    public function getFirstName() : string
+    public function getFirstName() : ?string
     {
         return (string) $this->firstName;
     }
@@ -103,7 +103,7 @@ class User extends BaseUser
     /**
      * @return string
      */
-    public function getLastName() : string
+    public function getLastName() : ?string
     {
         return (string) $this->lastName;
     }
@@ -123,7 +123,7 @@ class User extends BaseUser
     /**
      * @return string
      */
-    public function getPicture() : string
+    public function getPicture() : ?string
     {
         return (string) $this->picture;
     }
@@ -133,7 +133,7 @@ class User extends BaseUser
      *
      * @return $this
      */
-    public function setPicture(string $picture) : self
+    public function setPicture(?string $picture) : self
     {
         $this->picture = $picture;
 
