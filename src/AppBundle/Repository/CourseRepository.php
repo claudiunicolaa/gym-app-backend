@@ -43,6 +43,7 @@ class CourseRepository extends EntityRepository
             ->innerJoin('c.trainer', 'u')
             ->leftJoin('c.registeredUsers', 'r')
             ->groupBy('c.id')
+            ->orderBy('c.eventDate', 'ASC')
         ;
 
         $this->applyFilters($queryBuilder, $user, $filters);
