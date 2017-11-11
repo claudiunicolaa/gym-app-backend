@@ -25,7 +25,7 @@ class Course
 
     /**
      * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(name="trainer_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="trainer_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $trainer;
 
@@ -84,7 +84,7 @@ class Course
     /**
      * @return User
      */
-    public function getTrainer() : User
+    public function getTrainer() : ?User
     {
         return $this->trainer;
     }
@@ -103,7 +103,7 @@ class Course
     /**
      * @return \DateTime
      */
-    public function getEventDate() : \DateTime
+    public function getEventDate() : ?\DateTime
     {
         return $this->eventDate;
     }
@@ -123,7 +123,7 @@ class Course
     /**
      * @return int
      */
-    public function getCapacity() : int
+    public function getCapacity() : ?int
     {
         return $this->capacity;
     }
@@ -185,7 +185,7 @@ class Course
      *
      * @return $this
      */
-    public function setImage(string $image) : self
+    public function setImage(?string $image) : self
     {
         $this->image = $image;
 
@@ -195,7 +195,7 @@ class Course
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -243,5 +243,33 @@ class Course
     public function reachedCapacity() : bool
     {
         return count($this->getRegisteredUsers()) >= $this->getCapacity();
+    }
+
+    /**
+     * Used for sonata admin purposes
+     *
+     * @return int|null
+     */
+    public function getTimestamp() : ?int
+    {
+        if (null === $this->getEventDate()) {
+            return null;
+        }
+
+        return $this->getEventDate()->getTimestamp();
+    }
+
+    /**
+     * Used for sonata admin purposes
+     *
+     * @param int $timestamp
+     *
+     * @return $this
+     */
+    public function setTimestamp(int $timestamp) : self
+    {
+        $this->setEventDate($timestamp);
+
+        return $this;
     }
 }

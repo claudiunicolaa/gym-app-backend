@@ -24,6 +24,7 @@ security:
                 provider: fos_userbundle
                 check_path: /admin/login_check
                 failure_path: /admin/login
+                login_path: /admin/login
                 always_use_default_target_path: true
                 default_target_path: /admin/dashboard
                 csrf_token_generator: security.csrf.token_manager

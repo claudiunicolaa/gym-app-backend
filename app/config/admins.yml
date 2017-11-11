@@ -8,3 +8,15 @@ services:
         arguments: [~, AppBundle\Entity\Product, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, label: Product }
+
+    sonata.course.admin:
+        class: AppBundle\Admin\CourseAdmin
+        arguments: [~, AppBundle\Entity\Course, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Course }
+
+    sonata.user.admin:
+        class: AppBundle\Admin\UserAdmin
+        arguments: [~, AppBundle\Entity\User, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: User }

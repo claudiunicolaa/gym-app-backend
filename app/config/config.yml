@@ -104,17 +104,18 @@ nelmio_cors:
 
 sonata_admin:
     title: GYM Admin
+    show_mosaic_button: false
     dashboard:
         groups:
             Entities:
                 label:                Entities
                 items:
                     - sonata.product.admin
+                    - sonata.course.admin
+                    - sonata.user.admin
 
 sonata_block:
     default_contexts: [cms]
     blocks:
         sonata.admin.block.admin_list:
-            contexts: [admin]
-        sonata.product.admin:
             contexts: [admin]

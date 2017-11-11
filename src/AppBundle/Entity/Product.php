@@ -66,7 +66,7 @@ class Product
     /**
      * @return float
      */
-    public function getPrice() : float
+    public function getPrice() : ?float
     {
         return $this->price;
     }
@@ -86,7 +86,7 @@ class Product
     /**
      * @return string
      */
-    public function getDescription() : string
+    public function getDescription() : ?string
     {
         if ($this->description) {
             return $this->description;
@@ -100,7 +100,7 @@ class Product
      *
      * @return $this
      */
-    public function setDescription(string $description) : self
+    public function setDescription(?string $description) : self
     {
         $this->description = $description;
 
@@ -110,7 +110,7 @@ class Product
     /**
      * @return string
      */
-    public function getImage() : string
+    public function getImage() : ?string
     {
         if ($this->image) {
             return $this->image;
@@ -124,7 +124,7 @@ class Product
      *
      * @return $this
      */
-    public function setImage(string $image) : self
+    public function setImage(?string $image) : self
     {
         $this->image = $image;
 
@@ -134,7 +134,7 @@ class Product
     /**
      * @return string
      */
-    public function getName() : string
+    public function getName() : ?string
     {
         return $this->name;
     }
@@ -154,7 +154,7 @@ class Product
     /**
      * @return string
      */
-    public function getCategory(): string
+    public function getCategory(): ?string
     {
         return $this->category;
     }

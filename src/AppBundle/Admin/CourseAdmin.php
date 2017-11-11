@@ -10,11 +10,11 @@ use Sonata\CoreBundle\Validator\ErrorElement;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 
 /**
- * Class ProductAdmin
+ * Class CourseAdmin
  *
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
  */
-class ProductAdmin extends AbstractAdmin
+class CourseAdmin extends AbstractAdmin
 {
     /**
      * @inheritdoc
@@ -22,11 +22,18 @@ class ProductAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('price', 'number', ['required' => true])
-            ->add('description', 'text', ['required' => false])
-            ->add('image', 'url', ['required' => true])
             ->add('name', 'text', ['required' => true])
-            ->add('category', 'text', ['required' => true])
+            ->add('trainer', null, ['required' => true])
+            ->add(
+                'timestamp',
+                'number',
+                [
+                    'required' => true,
+                    'help' => 'A valid timestamp will be one greater than the present one.'
+                ]
+            )
+            ->add('capacity', 'number', ['required' => true])
+            ->add('image', 'url', ['required' => true])
         ;
     }
 
@@ -37,9 +44,10 @@ class ProductAdmin extends AbstractAdmin
     {
         $datagridMapper
             ->add('id')
-            ->add('price')
             ->add('name')
-            ->add('category')
+            ->add('trainer')
+            ->add('eventDate')
+            ->add('capacity')
         ;
     }
 
@@ -50,11 +58,11 @@ class ProductAdmin extends AbstractAdmin
     {
         $listMapper
             ->addIdentifier('id')
-            ->addIdentifier('price')
-            ->addIdentifier('image')
             ->addIdentifier('name')
-            ->addIdentifier('category')
-            ->addIdentifier('description')
+            ->addIdentifier('trainer')
+            ->addIdentifier('timestamp', 'number')
+            ->addIdentifier('capacity')
+            ->addIdentifier('image')
         ;
     }
 
@@ -64,7 +72,10 @@ class ProductAdmin extends AbstractAdmin
     public function validate(ErrorElement $errorElement, $object)
     {
         $errorElement
-            ->with('price')
+            ->with('timestamp')
+            ->addConstraint(new GreaterThan((new \DateTime())->getTimestamp()))
+            ->end()
+            ->with('capacity')
             ->addConstraint(new GreaterThan(0))
             ->end()
         ;
