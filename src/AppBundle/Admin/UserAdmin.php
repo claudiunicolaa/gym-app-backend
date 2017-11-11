@@ -41,8 +41,7 @@ class UserAdmin extends AbstractAdmin
                     'required' => true,
                     'help' => 'Currently any password is valid! A validation will be implemented soon!'
                 ]
-            )
-        ;
+            );
     }
 
     /**
@@ -54,8 +53,7 @@ class UserAdmin extends AbstractAdmin
             ->add('id')
             ->add('email')
             ->add('firstName')
-            ->add('lastName')
-        ;
+            ->add('lastName');
     }
 
     /**
@@ -68,8 +66,7 @@ class UserAdmin extends AbstractAdmin
             ->add('email')
             ->add('firstName')
             ->add('lastName')
-            ->add('picture')
-        ;
+            ->add('picture');
     }
 
     /**

@@ -33,8 +33,7 @@ class CourseAdmin extends AbstractAdmin
                 ]
             )
             ->add('capacity', 'number', ['required' => true])
-            ->add('image', 'url', ['required' => true])
-        ;
+            ->add('image', 'url', ['required' => true]);
     }
 
     /**
@@ -47,8 +46,7 @@ class CourseAdmin extends AbstractAdmin
             ->add('name')
             ->add('trainer')
             ->add('eventDate')
-            ->add('capacity')
-        ;
+            ->add('capacity');
     }
 
     /**
@@ -62,8 +60,7 @@ class CourseAdmin extends AbstractAdmin
             ->addIdentifier('trainer')
             ->addIdentifier('timestamp', 'number')
             ->addIdentifier('capacity')
-            ->addIdentifier('image')
-        ;
+            ->addIdentifier('image');
     }
 
     /**
@@ -77,7 +74,6 @@ class CourseAdmin extends AbstractAdmin
             ->end()
             ->with('capacity')
             ->addConstraint(new GreaterThan(0))
-            ->end()
-        ;
+            ->end();
     }
 }

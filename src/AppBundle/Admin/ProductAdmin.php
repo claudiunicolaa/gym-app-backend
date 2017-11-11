@@ -26,8 +26,7 @@ class ProductAdmin extends AbstractAdmin
             ->add('description', 'text', ['required' => false])
             ->add('image', 'url', ['required' => true])
             ->add('name', 'text', ['required' => true])
-            ->add('category', 'text', ['required' => true])
-        ;
+            ->add('category', 'text', ['required' => true]);
     }
 
     /**
@@ -39,8 +38,7 @@ class ProductAdmin extends AbstractAdmin
             ->add('id')
             ->add('price')
             ->add('name')
-            ->add('category')
-        ;
+            ->add('category');
     }
 
     /**
@@ -54,8 +52,7 @@ class ProductAdmin extends AbstractAdmin
             ->addIdentifier('image')
             ->addIdentifier('name')
             ->addIdentifier('category')
-            ->addIdentifier('description')
-        ;
+            ->addIdentifier('description');
     }
 
     /**
@@ -66,7 +63,6 @@ class ProductAdmin extends AbstractAdmin
         $errorElement
             ->with('price')
             ->addConstraint(new GreaterThan(0))
-            ->end()
-        ;
+            ->end();
     }
 }
