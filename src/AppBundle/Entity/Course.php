@@ -224,7 +224,7 @@ class Course
             'capacity' => $this->getCapacity(),
             'name' => $this->getName(),
             'image' => $this->getImage(),
-            'registered_users' => count($this->getRegisteredUsers())
+            'registeredUsers' => count($this->getRegisteredUsers())
         ];
     }
 
