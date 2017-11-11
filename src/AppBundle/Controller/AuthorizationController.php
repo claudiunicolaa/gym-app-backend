@@ -53,8 +53,8 @@ class AuthorizationController extends Controller
      */
     public function loginAction(Request $request) : JsonResponse
     {
-        $email = $request->get('email');
-        $password = $request->get('password');
+        $email = $request->request->get('email');
+        $password = $request->request->get('password');
 
         if (!isset($email) || !isset($password)) {
             return new JsonResponse(['error' => 'Missing email or password'], 400);
@@ -105,7 +105,7 @@ class AuthorizationController extends Controller
      */
     public function registerUserAction(Request $request) : JsonResponse
     {
-        $queryParams = $request->query->all();
+        $queryParams = $request->request->all();
         $userValidator = $this->get(UserValidator::class);
         try {
             $userValidator->checkMandatoryFields($queryParams);

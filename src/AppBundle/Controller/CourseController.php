@@ -179,7 +179,7 @@ class CourseController extends Controller
             return new JsonResponse(['error' => 'Not Authorized!'], 403);
         }
 
-        $queryParameters = $request->query->all();
+        $queryParameters = $request->request->all();
         $courseValidator = $this->get(CourseValidator::class);
         try {
             $courseValidator->checkMandatoryFields($queryParameters);
