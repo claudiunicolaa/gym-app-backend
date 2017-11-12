@@ -66,11 +66,12 @@ class UserController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used to update information about the current user. Use the status code to understand the output.",
+     *  description="Used to update information about the current user. Request body must be x-www-form-urlencoded.",
      *  section="User",
      *  filters={
      *      {"name"="fullName", "dataType"="string"},
      *      {"name"="picture", "dataType"="string"},
+     *      {"name"="password", "dataType"="string"},
      *  },
      *  statusCodes={
      *      200="Returned when successful",
@@ -82,17 +83,17 @@ class UserController extends Controller
      */
     public function updateUserAction(Request $request) : JsonResponse
     {
-        $queryParams = $request->query->all();
+        $requestParams = $request->request->all();
         $userValidator = $this->get(UserValidator::class);
         try {
-            $userValidator->validate($queryParams);
+            $userValidator->validate($requestParams);
         } catch (UserValidationException $userValidationException) {
             return new JsonResponse(['error' => $userValidationException->getMessage()], 400);
         }
 
         /** @var UserManager $userManager */
         $userManager = $this->get('fos_user.user_manager');
-        $loggedUser = $this->getUser()->updateProperties($queryParams);
+        $loggedUser = $this->getUser()->updateProperties($requestParams);
         $userManager->updateUser($loggedUser);
 
         return new JsonResponse('', 200);
