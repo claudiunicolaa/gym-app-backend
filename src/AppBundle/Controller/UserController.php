@@ -66,7 +66,7 @@ class UserController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used to update information about the current user. Use the status code to understand the output.",
+     *  description="Used to update information about the current user. Request body must be x-www-form-urlencoded.",
      *  section="User",
      *  filters={
      *      {"name"="fullName", "dataType"="string"},
