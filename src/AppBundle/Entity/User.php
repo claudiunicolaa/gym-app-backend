@@ -260,6 +260,10 @@ class User extends BaseUser
             $this->setPicture($data['picture']);
         }
 
+        if (isset($data['password'])) {
+            $this->setPlainPassword($data['password']);
+        }
+
         return $this;
     }
 
