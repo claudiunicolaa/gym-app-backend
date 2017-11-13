@@ -3,6 +3,7 @@
 namespace AppBundle\Services\Validator;
 
 use AppBundle\Exception\UserValidationException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class UserValidator
@@ -13,6 +14,7 @@ class UserValidator
 {
     const ALLOWED_KEYS = ['email', 'fullName', 'picture', 'password'];
     const MANDATORY_REGISTER_FIELDS = ['email', 'password', 'fullName'];
+    const SUPPORTED_IMAGE_EXTENSIONS = ['gif', 'jpg', 'jpeg', 'png'];
 
     /**
      * @param $queryParams
@@ -79,17 +81,21 @@ class UserValidator
     }
 
     /**
-     * @param string $picture
+     * @param UploadedFile $picture
      *
      * @return void
      *
      * @throws UserValidationException if the picture is not valid
      */
-    private function validatePicture(string $picture) : void
+    private function validatePicture(UploadedFile $picture) : void
     {
-        $picture = trim($picture);
-        if (!filter_var($picture, FILTER_VALIDATE_URL)) {
-            throw new UserValidationException("Invalid image url given!");
+        $extension = strtolower($picture->getClientOriginalExtension());
+        if (!in_array($extension, self::SUPPORTED_IMAGE_EXTENSIONS)) {
+            throw new UserValidationException("Invalid picture extension given!");
+        }
+
+        if (strlen($picture->getClientOriginalName()) === 0) {
+            throw new UserValidationException("Picture must have a name!");
         }
     }
 

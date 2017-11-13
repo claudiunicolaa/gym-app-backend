@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Exception\UserValidationException;
+use AppBundle\Services\Helper\FileHelper;
 use AppBundle\Services\Validator\UserValidator;
 use FOS\UserBundle\Doctrine\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -58,7 +59,7 @@ class UserController extends Controller
     }
 
     /**
-     * @Route("/api/user", name="user_update", methods={"PUT"})
+     * @Route("/api/user", name="user_update", methods={"POST"})
      *
      * @param Request $request
      *
@@ -83,7 +84,7 @@ class UserController extends Controller
      */
     public function updateUserAction(Request $request) : JsonResponse
     {
-        $requestParams = $request->request->all();
+        $requestParams = array_merge($request->request->all(), ['picture' => $request->files->get('picture')]);
         $userValidator = $this->get(UserValidator::class);
         try {
             $userValidator->validate($requestParams);
@@ -93,6 +94,7 @@ class UserController extends Controller
 
         /** @var UserManager $userManager */
         $userManager = $this->get('fos_user.user_manager');
+        $requestParams['picture'] = $this->get(FileHelper::class)->uploadFile($request->files->get('picture'));
         $loggedUser = $this->getUser()->updateProperties($requestParams);
         $userManager->updateUser($loggedUser);
 

@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Exception\UserValidationException;
+use AppBundle\Services\Helper\FileHelper;
 use AppBundle\Services\Validator\UserValidator;
 use FOS\UserBundle\Model\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -121,6 +122,7 @@ class AuthorizationController extends Controller
 
         /** @var UserManager $userManager */
         $userManager = $this->get('fos_user.user_manager');
+        $queryParams['picture'] = $this->get(FileHelper::class)->uploadFile($request->files->get('picture'));
         $user = $userManager->createUser()->setProperties($queryParams);
         $userManager->updateUser($user);
 
