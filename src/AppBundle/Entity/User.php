@@ -256,8 +256,8 @@ class User extends BaseUser
             $this->setFirstName(explode(' ', $data['fullName'])[1]);
         }
 
-        if (isset($data['picture'])) {
-            $this->setPicture($data['picture']);
+        if (isset($data['picture']) && null !== $data['picture']) {
+            $this->setPicturePath($data['picture']);
         }
 
         if (isset($data['password'])) {

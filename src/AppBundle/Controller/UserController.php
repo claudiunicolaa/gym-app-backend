@@ -73,6 +73,7 @@ class UserController extends Controller
      *      {"name"="fullName", "dataType"="string"},
      *      {"name"="picture", "dataType"="string"},
      *      {"name"="password", "dataType"="string"},
+     *      {"name"="picture", "dataType"="File"},
      *  },
      *  statusCodes={
      *      200="Returned when successful",
@@ -84,7 +85,9 @@ class UserController extends Controller
      */
     public function updateUserAction(Request $request) : JsonResponse
     {
-        $requestParams = array_merge($request->request->all(), ['picture' => $request->files->get('picture')]);
+        $requestParams = $request->request->all();
+        $requestParams['picture'] = $request->files->get('picture');
+
         $userValidator = $this->get(UserValidator::class);
         try {
             $userValidator->validate($requestParams);
@@ -94,8 +97,13 @@ class UserController extends Controller
 
         /** @var UserManager $userManager */
         $userManager = $this->get('fos_user.user_manager');
-        $requestParams['picture'] = $this->get(FileHelper::class)->uploadFile($request->files->get('picture'));
-        $loggedUser = $this->getUser()->updateProperties($requestParams);
+        $fileHelper = $this->get(FileHelper::class);
+        $loggedUser = $this->getUser();
+
+        $fileHelper->removePicture($loggedUser);
+        $requestParams['picture'] = $fileHelper->uploadFile($request->files->get('picture'), 'user');
+        $loggedUser->updateProperties($requestParams);
+
         $userManager->updateUser($loggedUser);
 
         return new JsonResponse('', 200);

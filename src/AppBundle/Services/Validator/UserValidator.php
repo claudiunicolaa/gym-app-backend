@@ -14,7 +14,7 @@ class UserValidator
 {
     const ALLOWED_KEYS = ['email', 'fullName', 'picture', 'password'];
     const MANDATORY_REGISTER_FIELDS = ['email', 'password', 'fullName'];
-    const SUPPORTED_IMAGE_EXTENSIONS = ['gif', 'jpg', 'jpeg', 'png'];
+    const SUPPORTED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png'];
 
     /**
      * @param $queryParams
@@ -81,14 +81,18 @@ class UserValidator
     }
 
     /**
-     * @param UploadedFile $picture
+     * @param UploadedFile|string|null $picture
      *
      * @return void
      *
      * @throws UserValidationException if the picture is not valid
      */
-    private function validatePicture(UploadedFile $picture) : void
+    private function validatePicture($picture) : void
     {
+        if (!($picture instanceof UploadedFile)) {
+            throw new UserValidationException("Invalid picture given!");
+        }
+
         $extension = strtolower($picture->getClientOriginalExtension());
         if (!in_array($extension, self::SUPPORTED_IMAGE_EXTENSIONS)) {
             throw new UserValidationException("Invalid picture extension given!");

@@ -46,9 +46,9 @@ class Course
     /**
      * @var string
      *
-     * @ORM\Column(name="image", type="string")
+     * @ORM\Column(type="string", length=100, nullable=true)
      */
-    protected $image;
+    protected $imagePath;
 
     /**
      * @var string
@@ -70,7 +70,7 @@ class Course
     public function __construct()
     {
         $this->registeredUsers = new ArrayCollection();
-        $this->image = '';
+        $this->imagePath = '';
     }
 
     /**
@@ -175,19 +175,19 @@ class Course
     /**
      * @return string
      */
-    public function getImage() : ?string
+    public function getImagePath() : ?string
     {
-        return $this->image;
+        return $this->imagePath;
     }
 
     /**
-     * @param string $image
+     * @param string $imagePath
      *
      * @return $this
      */
-    public function setImage(?string $image) : self
+    public function setImagePath(?string $imagePath) : self
     {
-        $this->image = $image;
+        $this->imagePath = $imagePath;
 
         return $this;
     }
@@ -223,7 +223,7 @@ class Course
             'eventDate' => $this->getEventDate()->getTimestamp(),
             'capacity' => $this->getCapacity(),
             'name' => $this->getName(),
-            'image' => $this->getImage(),
+            'image' => $this->getImagePath(),
             'registeredUsers' => count($this->getRegisteredUsers())
         ];
     }
@@ -269,6 +269,22 @@ class Course
     public function setTimestamp(int $timestamp) : self
     {
         $this->setEventDate($timestamp);
+
+        return $this;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return $this
+     */
+    public function setProperties(array $data) : self
+    {
+        $this->setName($data['name']);
+        $this->setTrainer($data['trainer']);
+        $this->setImagePath($data['image'] ?? '');
+        $this->setCapacity($data['capacity']);
+        $this->setEventDate($data['eventDate']);
 
         return $this;
     }
