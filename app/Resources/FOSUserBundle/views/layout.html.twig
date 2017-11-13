@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>
+        Admin Log In
+    </title>
+    <link rel="stylesheet" type="text/css" href="{{ asset('styleModified.css') }}"/>
+</head>
+<body>
+<div class="outer">
+    <div class="middle">
+        <div class="inner">
+            {% trans_default_domain 'FOSUserBundle' %}
+
+            <form action="{{ path("fos_user_security_check") }}" method="post">
+                {% if csrf_token %}
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}"/>
+                {% endif %}
+
+                <h1>Administrator Log in</h1>
+
+                <div class="inset">
+                    <p>
+                        <label for="username">Email</label>
+                        <input type="text" id="username" name="_username" value="{{ last_username }}" required="required"/>
+                    </p>
+                    <p>
+                        <label for="password">{{ 'security.login.password'|trans }}</label>
+                        <input type="password" id="password" name="_password" required="required"/>
+                        {% if error %}
+                            <div id="error">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <p class="p-container">
+                    <input type="submit" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}"/>
+                </p>
+
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
