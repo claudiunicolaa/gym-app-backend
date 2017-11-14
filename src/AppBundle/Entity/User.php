@@ -264,6 +264,11 @@ class User extends BaseUser
             $this->setPlainPassword($data['password']);
         }
 
+        if (isset($data['email'])) {
+            $this->setEmail($data['email']);
+            $this->setEmailCanonical($data['email']);
+        }
+
         return $this;
     }
 

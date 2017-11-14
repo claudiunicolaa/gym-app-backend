@@ -47,7 +47,8 @@ class AuthorizationController extends Controller
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
      *      401="Returned when the request is valid, but the credentials are invalid",
-     *      405="Returned when the method called is not allowed"
+     *      405="Returned when the method called is not allowed",
+     *      413="Returned if the picture provided is too big. 2MB allowed"
      *
      *  }
      *  )
@@ -107,12 +108,14 @@ class AuthorizationController extends Controller
     public function registerUserAction(Request $request) : JsonResponse
     {
         $requestParams = $request->request->all();
-        $requestParams['picture'] = $request->files->get('picture');
+        if (null !== $request->files->get('picture')) {
+            $requestParams['picture'] = $request->files->get('picture');
+        }
 
         $userValidator = $this->get(UserValidator::class);
         try {
             $userValidator->checkMandatoryFields($requestParams);
-            $userValidator->validate($requestParams);
+            $userValidator->validate($requestParams, 'create');
         } catch (UserValidationException $ex) {
             return new JsonResponse(['error' => $ex->getMessage()], 400);
         }
@@ -124,7 +127,7 @@ class AuthorizationController extends Controller
 
         /** @var UserManager $userManager */
         $userManager = $this->get('fos_user.user_manager');
-        $requestParams['picture'] = $this->get(FileHelper::class)->uploadFile($requestParams['picture'], 'user');
+        $requestParams['picture'] = $this->get(FileHelper::class)->uploadFile($request->files->get('picture'), 'user');
         $user = $userManager->createUser()->setProperties($requestParams);
         $userManager->updateUser($user);
 

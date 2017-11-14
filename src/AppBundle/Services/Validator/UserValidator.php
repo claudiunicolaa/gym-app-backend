@@ -12,7 +12,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 class UserValidator
 {
-    const ALLOWED_KEYS = ['email', 'fullName', 'picture', 'password'];
+    const ALLOWED_KEYS_CREATE = ['email', 'fullName', 'picture', 'password'];
+    const ALLOWED_KEYS_UPDATE = ['fullName', 'picture', 'password'];
     const MANDATORY_REGISTER_FIELDS = ['email', 'password', 'fullName'];
     const SUPPORTED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png'];
 
@@ -31,15 +32,17 @@ class UserValidator
     }
 
     /**
-     * @param array $data
+     * @param array     $data
+     * @param string    $type
      *
      * @return void
      *
      * @throws UserValidationException if the course data is invalid
      */
-    public function validate(array $data) : void
+    public function validate(array $data, string $type = 'create') : void
     {
-        $filteredData = array_intersect_key($data, array_flip(self::ALLOWED_KEYS));
+        $allowedKeys = $type === 'create' ? self::ALLOWED_KEYS_CREATE : self::ALLOWED_KEYS_UPDATE;
+        $filteredData = array_intersect_key($data, array_flip($allowedKeys));
 
         if (count($filteredData) !== count($data)) {
             throw new UserValidationException("Invalid parameters given!");

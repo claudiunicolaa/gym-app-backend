@@ -2,11 +2,11 @@
 
 namespace AppBundle\Services\Helper;
 
-use AppBundle\Admin\CourseAdmin;
 use AppBundle\Entity\Course;
 use AppBundle\Entity\User;
-use Negotiation\Exception\InvalidArgument;
+use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
@@ -88,23 +88,24 @@ class FileHelper
      */
     public function removePicture($entity) : void
     {
-        if (!($entity instanceof User) || !($entity instanceof Course)) {
+        if (!($entity instanceof User) && !($entity instanceof Course)) {
             throw new InvalidArgumentException("Invalid object given!");
         }
 
         $fileSystem = new Filesystem();
+        $file = null;
         if ($entity instanceof User) {
-            $file = new File($this->webRoot . '/user/' . $entity->getPicturePath());
-            if ($fileSystem->exists($file)) {
+            try {
+                $file = new File($this->webRoot . '/uploads/user/' . $entity->getPicturePath());
                 $fileSystem->remove($file);
-            }
+            } catch (FileNotFoundException|IOException $ignored) {}
 
             return ;
         }
 
-        $file = new File($this->webRoot . '/course/' . $entity->getImagePath());
-        if ($fileSystem->exists($file)) {
+        try {
+            $file = new File($this->webRoot . '/uploads/course/' . $entity->getImagePath());
             $fileSystem->remove($file);
-        }
+        }  catch (FileNotFoundException|IOException $ignored) {}
     }
 }

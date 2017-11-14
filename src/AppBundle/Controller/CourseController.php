@@ -167,7 +167,8 @@ class CourseController extends Controller
      *      400="Returned when the request is invalid",
      *      401="Returned when the request is valid, but the token given is invalid or missing",
      *      403="Returned when user is not a trainer so he/she cannot create courses",
-     *      405="Returned when the method called is not allowed"
+     *      405="Returned when the method called is not allowed",
+     *      413="Returned if the image provided is too big. 2MB allowed"
      *  }
      *  )
      */
@@ -181,14 +182,17 @@ class CourseController extends Controller
         }
 
         $requestParams = $request->request->all();
-        $requestParams['image'] = $request->files->get('image');
+        if (null !== $request->files->get('image')) {
+            $requestParams['image'] = $request->files->get('image');
+        }
+
         $courseValidator = $this->get(CourseValidator::class);
         try {
             $courseValidator->checkMandatoryFields($requestParams);
             $courseValidator->validate($requestParams);
 
             $requestParams['trainer'] = $loggedUser;
-            $requestParams['image'] = $this->get(FileHelper::class)->uploadFile($requestParams['image'], 'course');
+            $requestParams['image'] = $this->get(FileHelper::class)->uploadFile($request->files->get('image'), 'course');
             $course = new Course();
             $course->setProperties($requestParams);
 
@@ -270,7 +274,8 @@ class CourseController extends Controller
      *      400="Returned when the request is invalid",
      *      401="Returned when the request is valid, but the token given is invalid or missing",
      *      403="Returned when user did not create the course or is not an admin",
-     *      405="Returned when the method called is not allowed"
+     *      405="Returned when the method called is not allowed",
+     *      413="Returned if the image provided is too big. 2MB allowed"
      *  }
      *  )
      */
@@ -287,7 +292,10 @@ class CourseController extends Controller
         }
 
         $requestParameters = $request->request->all();
-        $requestParams['imagePath'] = $request->files->get('image');
+        if (null !== $request->files->get('image')) {
+            $requestParameters['image'] = $request->files->get('image');
+        }
+
         try {
             $this->get(CourseValidator::class)->validate($requestParameters);
         } catch (CourseValidationException $ex) {
@@ -295,8 +303,12 @@ class CourseController extends Controller
         }
 
         $fileHelper = $this->get(FileHelper::class);
-        $fileHelper->removePicture($course);
-        $requestParams['imagePath'] = $fileHelper->uploadFile($request->files->get('imagePath'), 'course');
+        if (isset($requestParameters['image'])) {
+            $fileHelper->removePicture($course);
+            unset($requestParameters['image']);
+            $requestParameters['imagePath'] = $fileHelper->uploadFile($request->files->get('image'), 'course');
+        }
+
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
         foreach ($requestParameters as $key => $value) {
             $propertyAccessor->setValue($course, $key, $value);
