@@ -33,7 +33,6 @@ class UserAdmin extends AbstractAdmin
             ->add('email', 'email', ['required' => true])
             ->add('firstName', 'text', ['required' => true])
             ->add('lastName', 'text', ['required' => true])
-            ->add('picture', 'url', ['required' => false])
             ->add(
                 'plainPassword',
                 'password',
@@ -65,8 +64,7 @@ class UserAdmin extends AbstractAdmin
             ->add('id')
             ->add('email')
             ->add('firstName')
-            ->add('lastName')
-            ->add('picture');
+            ->add('lastName');
     }
 
     /**

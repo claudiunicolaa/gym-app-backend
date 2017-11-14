@@ -32,8 +32,7 @@ class CourseAdmin extends AbstractAdmin
                     'help' => 'A valid timestamp will be one greater than the present one.'
                 ]
             )
-            ->add('capacity', 'number', ['required' => true])
-            ->add('image', 'url', ['required' => true]);
+            ->add('capacity', 'number', ['required' => true]);
     }
 
     /**
@@ -59,8 +58,7 @@ class CourseAdmin extends AbstractAdmin
             ->addIdentifier('name')
             ->addIdentifier('trainer')
             ->addIdentifier('timestamp', 'number')
-            ->addIdentifier('capacity')
-            ->addIdentifier('image');
+            ->addIdentifier('capacity');
     }
 
     /**
