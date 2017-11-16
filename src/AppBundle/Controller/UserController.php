@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Exception\UserValidationException;
+use AppBundle\Services\Helper\FileHelper;
 use AppBundle\Services\Validator\UserValidator;
 use FOS\UserBundle\Doctrine\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -58,7 +59,7 @@ class UserController extends Controller
     }
 
     /**
-     * @Route("/api/user", name="user_update", methods={"PUT"})
+     * @Route("/api/user", name="user_update", methods={"POST"})
      *
      * @param Request $request
      *
@@ -70,30 +71,42 @@ class UserController extends Controller
      *  section="User",
      *  filters={
      *      {"name"="fullName", "dataType"="string"},
-     *      {"name"="picture", "dataType"="string"},
      *      {"name"="password", "dataType"="string"},
+     *      {"name"="picture", "dataType"="File"},
      *  },
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
      *      401="Returned when the request is valid, but the token given is invalid or missing",
-     *      405="Returned when the method called is not allowed"
+     *      405="Returned when the method called is not allowed",
      *  }
      *  )
      */
     public function updateUserAction(Request $request) : JsonResponse
     {
         $requestParams = $request->request->all();
+        if (null !== $request->files->get('picture')) {
+            $requestParams['picture'] = $request->files->get('picture');
+        }
+
         $userValidator = $this->get(UserValidator::class);
         try {
-            $userValidator->validate($requestParams);
+            $userValidator->validate($requestParams, 'update');
         } catch (UserValidationException $userValidationException) {
             return new JsonResponse(['error' => $userValidationException->getMessage()], 400);
         }
 
         /** @var UserManager $userManager */
         $userManager = $this->get('fos_user.user_manager');
-        $loggedUser = $this->getUser()->updateProperties($requestParams);
+        $fileHelper = $this->get(FileHelper::class);
+        $loggedUser = $this->getUser();
+
+        if (isset($requestParams['picture'])) {
+            $fileHelper->removePicture($loggedUser);
+            $requestParams['picture'] = $fileHelper->uploadFile($requestParams['picture'], 'user');
+        }
+
+        $loggedUser->updateProperties($requestParams);
         $userManager->updateUser($loggedUser);
 
         return new JsonResponse('', 200);

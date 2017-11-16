@@ -40,10 +40,10 @@ class User extends BaseUser
     protected $lastName;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=100, nullable=true)
      * @Groups({"user"})
      */
-    protected $picture;
+    protected $picturePath;
 
     /**
      * @var Collection
@@ -123,19 +123,19 @@ class User extends BaseUser
     /**
      * @return string
      */
-    public function getPicture() : ?string
+    public function getPicturePath() : ?string
     {
-        return (string) $this->picture;
+        return (string) $this->picturePath;
     }
 
     /**
-     * @param string $picture
+     * @param string $picturePath
      *
      * @return $this
      */
-    public function setPicture(?string $picture) : self
+    public function setPicturePath(?string $picturePath) : self
     {
-        $this->picture = $picture;
+        $this->picturePath = $picturePath;
 
         return $this;
     }
@@ -221,7 +221,7 @@ class User extends BaseUser
             'id' => $this->getId(),
             'fullName' => $this->getFullName(),
             'email' => $this->getEmail(),
-            'picture' => $this->getPicture()
+            'picturePath' => $this->getPicturePath()
         ];
     }
 
@@ -236,7 +236,7 @@ class User extends BaseUser
         $this->setUsername($this->getEmail());
         $this->setLastName(explode(' ', $data['fullName'])[0] ?? '');
         $this->setFirstName(explode(' ', $data['fullName'])[1] ?? '');
-        $this->setPicture($data['picture'] ?? '');
+        $this->setPicturePath($data['picture'] ?? '');
         $this->setPlainPassword($data['password'] ?? '');
         $this->addRole("ROLE_USER");
         $this->setEnabled(true);
@@ -256,12 +256,17 @@ class User extends BaseUser
             $this->setFirstName(explode(' ', $data['fullName'])[1]);
         }
 
-        if (isset($data['picture'])) {
-            $this->setPicture($data['picture']);
+        if (isset($data['picture']) && null !== $data['picture']) {
+            $this->setPicturePath($data['picture']);
         }
 
         if (isset($data['password'])) {
             $this->setPlainPassword($data['password']);
+        }
+
+        if (isset($data['email'])) {
+            $this->setEmail($data['email']);
+            $this->setEmailCanonical($data['email']);
         }
 
         return $this;

@@ -6,6 +6,7 @@ use AppBundle\Entity\Course;
 use AppBundle\Exception\CourseValidationException;
 use AppBundle\Exception\CourseRepositoryException;
 use AppBundle\Repository\CourseRepository;
+use AppBundle\Services\Helper\FileHelper;
 use AppBundle\Services\Validator\CourseFiltersValidator;
 use AppBundle\Services\Validator\CourseValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -166,7 +167,8 @@ class CourseController extends Controller
      *      400="Returned when the request is invalid",
      *      401="Returned when the request is valid, but the token given is invalid or missing",
      *      403="Returned when user is not a trainer so he/she cannot create courses",
-     *      405="Returned when the method called is not allowed"
+     *      405="Returned when the method called is not allowed",
+     *      413="Returned if the image provided is too big. 2MB allowed"
      *  }
      *  )
      */
@@ -179,20 +181,20 @@ class CourseController extends Controller
             return new JsonResponse(['error' => 'Not Authorized!'], 403);
         }
 
-        $queryParameters = $request->request->all();
+        $requestParams = $request->request->all();
+        if (null !== $request->files->get('image')) {
+            $requestParams['image'] = $request->files->get('image');
+        }
+
         $courseValidator = $this->get(CourseValidator::class);
         try {
-            $courseValidator->checkMandatoryFields($queryParameters);
-            $courseValidator->validate($queryParameters);
+            $courseValidator->checkMandatoryFields($requestParams);
+            $courseValidator->validate($requestParams);
 
+            $requestParams['trainer'] = $loggedUser;
+            $requestParams['image'] = $this->get(FileHelper::class)->uploadFile($request->files->get('image'), 'course');
             $course = new Course();
-            $course->setTrainer($loggedUser);
-            $course->setName($queryParameters['name']);
-            if (isset($queryParameters['image'])) {
-                $course->setImage($queryParameters['image']);
-            }
-            $course->setCapacity($queryParameters['capacity']);
-            $course->setEventDate($queryParameters['eventDate']);
+            $course->setProperties($requestParams);
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($course);
@@ -250,7 +252,7 @@ class CourseController extends Controller
     }
 
     /**
-     * @Route("/api/course/{id}", name="course_update", methods={"PUT"})
+     * @Route("/api/course/{id}", name="course_update", methods={"POST"})
      *
      * @param Request $request
      * @param Course $course
@@ -272,18 +274,16 @@ class CourseController extends Controller
      *      400="Returned when the request is invalid",
      *      401="Returned when the request is valid, but the token given is invalid or missing",
      *      403="Returned when user did not create the course or is not an admin",
-     *      405="Returned when the method called is not allowed"
+     *      405="Returned when the method called is not allowed",
+     *      413="Returned if the image provided is too big. 2MB allowed"
      *  }
      *  )
      */
     public function updateCourseAction(Request $request, ?Course $course) : JsonResponse
     {
-        $queryParameters = $request->query->all();
-
         if (null === $course) {
             return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
         }
-
         $loggedUser = $this->getUser();
         if (!($course->getTrainer()->getId() === $loggedUser->getId()) &&
             !in_array('ROLE_ADMIN', $loggedUser->getRoles())
@@ -291,14 +291,26 @@ class CourseController extends Controller
             return new JsonResponse(['error' => 'Not Authorized'], 403);
         }
 
+        $requestParameters = $request->request->all();
+        if (null !== $request->files->get('image')) {
+            $requestParameters['image'] = $request->files->get('image');
+        }
+
         try {
-            $this->get(CourseValidator::class)->validate($queryParameters);
+            $this->get(CourseValidator::class)->validate($requestParameters);
         } catch (CourseValidationException $ex) {
             return new JsonResponse(['error' => $ex->getMessage()], 400);
         }
 
+        $fileHelper = $this->get(FileHelper::class);
+        if (isset($requestParameters['image'])) {
+            $fileHelper->removePicture($course);
+            unset($requestParameters['image']);
+            $requestParameters['imagePath'] = $fileHelper->uploadFile($request->files->get('image'), 'course');
+        }
+
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
-        foreach ($queryParameters as $key => $value) {
+        foreach ($requestParameters as $key => $value) {
             $propertyAccessor->setValue($course, $key, $value);
         }
 

@@ -3,6 +3,7 @@
 namespace AppBundle\Services\Validator;
 
 use AppBundle\Exception\UserValidationException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class UserValidator
@@ -11,8 +12,10 @@ use AppBundle\Exception\UserValidationException;
  */
 class UserValidator
 {
-    const ALLOWED_KEYS = ['email', 'fullName', 'picture', 'password'];
+    const ALLOWED_KEYS_CREATE = ['email', 'fullName', 'picture', 'password'];
+    const ALLOWED_KEYS_UPDATE = ['fullName', 'picture', 'password'];
     const MANDATORY_REGISTER_FIELDS = ['email', 'password', 'fullName'];
+    const SUPPORTED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png'];
 
     /**
      * @param $queryParams
@@ -29,15 +32,17 @@ class UserValidator
     }
 
     /**
-     * @param array $data
+     * @param array     $data
+     * @param string    $type
      *
      * @return void
      *
      * @throws UserValidationException if the course data is invalid
      */
-    public function validate(array $data) : void
+    public function validate(array $data, string $type = 'create') : void
     {
-        $filteredData = array_intersect_key($data, array_flip(self::ALLOWED_KEYS));
+        $allowedKeys = $type === 'create' ? self::ALLOWED_KEYS_CREATE : self::ALLOWED_KEYS_UPDATE;
+        $filteredData = array_intersect_key($data, array_flip($allowedKeys));
 
         if (count($filteredData) !== count($data)) {
             throw new UserValidationException("Invalid parameters given!");
@@ -79,17 +84,25 @@ class UserValidator
     }
 
     /**
-     * @param string $picture
+     * @param UploadedFile|string|null $picture
      *
      * @return void
      *
      * @throws UserValidationException if the picture is not valid
      */
-    private function validatePicture(string $picture) : void
+    private function validatePicture($picture) : void
     {
-        $picture = trim($picture);
-        if (!filter_var($picture, FILTER_VALIDATE_URL)) {
-            throw new UserValidationException("Invalid image url given!");
+        if (!($picture instanceof UploadedFile)) {
+            throw new UserValidationException("Invalid picture given!");
+        }
+
+        $extension = strtolower($picture->getClientOriginalExtension());
+        if (!in_array($extension, self::SUPPORTED_IMAGE_EXTENSIONS)) {
+            throw new UserValidationException("Invalid picture extension given!");
+        }
+
+        if (strlen($picture->getClientOriginalName()) === 0) {
+            throw new UserValidationException("Picture must have a name!");
         }
     }
 
