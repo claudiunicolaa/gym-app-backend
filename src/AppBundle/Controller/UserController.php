@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\User;
 use AppBundle\Exception\UserValidationException;
 use AppBundle\Services\Helper\FileHelper;
 use AppBundle\Services\Validator\UserValidator;
@@ -45,6 +46,7 @@ class UserController extends Controller
      */
     public function getUserAction() : JsonResponse
     {
+        /** @var User $loggedUser */
         $loggedUser = $this->getUser();
 
         return new JsonResponse(
@@ -52,7 +54,7 @@ class UserController extends Controller
                 'id' => $loggedUser->getId(),
                 'fullName' => $loggedUser->getFullName(),
                 'email' => $loggedUser->getEmail(),
-                'picture' => $loggedUser->getPicture()
+                'picture' => $loggedUser->getPicturePath()
             ],
             200
         );
