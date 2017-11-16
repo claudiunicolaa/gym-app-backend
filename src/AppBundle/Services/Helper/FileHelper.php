@@ -21,6 +21,9 @@ class FileHelper
     const PICTURE_NAME_SIZE = 8;
     const ALLOWED_TARGET_FOLDERS = ['user', 'course'];
     const CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const UPLOADS_FOLDER_NAME = 'uploads';
+    const USER_UPLOADS_FOLDER_NAME = self::UPLOADS_FOLDER_NAME . '/user';
+    const COURSE_UPLOADS_FOLDER_NAME = self::UPLOADS_FOLDER_NAME . '/course';
 
     /**
      * @var string
@@ -69,7 +72,7 @@ class FileHelper
         }
 
         $fileExtension = '.' . $file->getClientOriginalExtension();
-        $picturesLocation = $this->webRoot . '/uploads/' . $targetFolder . '/';
+        $picturesLocation = $this->webRoot . '/' . self::UPLOADS_FOLDER_NAME .'/' . $targetFolder . '/';
         $existingPictures = glob($this->webRoot . '/uploads/' . $targetFolder . '/*.*');
         do {
             $fileName = $this->generateRandomString(self::PICTURE_NAME_SIZE) . $fileExtension;
@@ -96,7 +99,7 @@ class FileHelper
         $file = null;
         if ($entity instanceof User) {
             try {
-                $file = new File($this->webRoot . '/uploads/user/' . $entity->getPicturePath());
+                $file = new File($this->webRoot . '/' . self::USER_UPLOADS_FOLDER_NAME . '/' . $entity->getPicturePath());
                 $fileSystem->remove($file);
             } catch (FileNotFoundException|IOException $ignored) {}
 
@@ -104,7 +107,7 @@ class FileHelper
         }
 
         try {
-            $file = new File($this->webRoot . '/uploads/course/' . $entity->getImagePath());
+            $file = new File($this->webRoot . '/' . self::COURSE_UPLOADS_FOLDER_NAME . '/' . $entity->getImagePath());
             $fileSystem->remove($file);
         }  catch (FileNotFoundException|IOException $ignored) {}
     }
