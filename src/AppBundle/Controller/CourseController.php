@@ -261,13 +261,14 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used for course update. Only an admin or the trainer can update the course.",
+     *  description="Course update. Only an admin or the trainer can update the course. Send it as a POST request (and see mandatory parameters)",
      *  section="Course",
      *  filters={
      *      {"name"="eventDate", "dataType"="timestamp", "description"="Optional"},
      *      {"name"="capacity", "dataType"="int", "description"="Optional"},
      *      {"name"="image", "dataType"="string", "description"="Optional"},
      *      {"name"="name", "dataType"="string", "description"="Optional"},
+     *      {"name"="_method", "dataType"="string", "description"="Mandatory: value = PUT"},
      *  },
      *  statusCodes={
      *      200="Returned when successful",
@@ -284,6 +285,7 @@ class CourseController extends Controller
         if (null === $course) {
             return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
         }
+
         $loggedUser = $this->getUser();
         if (!($course->getTrainer()->getId() === $loggedUser->getId()) &&
             !in_array('ROLE_ADMIN', $loggedUser->getRoles())
@@ -292,6 +294,7 @@ class CourseController extends Controller
         }
 
         $requestParameters = $request->request->all();
+        unset($requestParameters['_method']);
         if (null !== $request->files->get('image')) {
             $requestParameters['image'] = $request->files->get('image');
         }
@@ -418,12 +421,12 @@ class CourseController extends Controller
             $result[$key]['trainer']['id'] = $courseData["trainer_id"];
             $result[$key]['trainer']['fullName'] = $courseData['lastName'] . ' ' .$courseData['firstName'];
             $result[$key]['trainer']['email'] = $courseData['email'];
-            $result[$key]['trainer']['picture'] = $courseData['picture'];
+            $result[$key]['trainer']['picture'] = $courseData['picturePath'];
             $result[$key]['eventDate'] = $courseData['eventDate']->getTimestamp();
             $result[$key]['id'] = $courseData['id'];
             $result[$key]['capacity'] = $courseData['capacity'];
             $result[$key]['name'] = $courseData['name'];
-            $result[$key]['image'] = $courseData['image'];
+            $result[$key]['image'] = $courseData['imagePath'];
             $result[$key]['registeredUsers'] = $courseData['registered_users'];
         }
 

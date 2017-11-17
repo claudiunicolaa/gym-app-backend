@@ -26,7 +26,7 @@ class UserController extends Controller
      *         "id" : "1",
      *         "fullName" : "Smith Adam",
      *         "email" : "smithadam@gmail.com"
-     *         "picture" : "https://i.imgur.com/NiCqGa3.jpg"
+     *         "picture" : "abcdefg.jpg"
      *     }
      *
      * @Route("/api/user", name="user_get", methods={"GET"})
@@ -35,7 +35,7 @@ class UserController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used to get information about the current user",
+     *  description="Get the current user",
      *  section="User",
      *  statusCodes={
      *      200="Returned when successful",
@@ -69,12 +69,13 @@ class UserController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used to update information about the current user. Request body must be x-www-form-urlencoded.",
+     *  description="Update the current user. Send it as a POST request (and see mandatory parameters).",
      *  section="User",
      *  filters={
      *      {"name"="fullName", "dataType"="string"},
      *      {"name"="password", "dataType"="string"},
      *      {"name"="picture", "dataType"="File"},
+     *      {"name"="_method", "dataType"="string", "description"="Mandatory: value = PUT"},
      *  },
      *  statusCodes={
      *      200="Returned when successful",
@@ -87,6 +88,7 @@ class UserController extends Controller
     public function updateUserAction(Request $request) : JsonResponse
     {
         $requestParams = $request->request->all();
+        unset($requestParams['_method']);
         if (null !== $request->files->get('picture')) {
             $requestParams['picture'] = $request->files->get('picture');
         }
