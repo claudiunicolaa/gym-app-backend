@@ -61,7 +61,7 @@ class UserController extends Controller
     }
 
     /**
-     * @Route("/api/user", name="user_update", methods={"POST"})
+     * @Route("/api/user", name="user_update", methods={"PUT"})
      *
      * @param Request $request
      *

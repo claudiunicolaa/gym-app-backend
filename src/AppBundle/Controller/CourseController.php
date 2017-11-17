@@ -252,7 +252,7 @@ class CourseController extends Controller
     }
 
     /**
-     * @Route("/api/course/{id}", name="course_update", methods={"POST"})
+     * @Route("/api/course/{id}", name="course_update", methods={"PUT"})
      *
      * @param Request $request
      * @param Course $course
