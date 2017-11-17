@@ -355,6 +355,7 @@ class CourseController extends Controller
             return new JsonResponse(['error' => 'Not authorized'], 403);
         }
 
+        $this->get(FileHelper::class)->removePicture($course);
         $em = $this->getDoctrine()->getManager();
         $em->remove($course);
         $em->flush();
