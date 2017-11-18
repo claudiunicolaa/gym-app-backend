@@ -154,7 +154,7 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used for course creation. The assigned trainer will be the user that makes the request. Use the status code to understand the output. No JSON provided.",
+     *  description="Used for course creation. The assigned trainer will be the user that makes the request.",
      *  section="Course",
      *  filters={
      *      {"name"="eventDate", "dataType"="timestamp", "description" : "Mandatory"},

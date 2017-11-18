@@ -24,7 +24,6 @@ class ProductAdmin extends AbstractAdmin
         $formMapper
             ->add('price', 'number', ['required' => true])
             ->add('description', 'text', ['required' => false])
-            ->add('image', 'url', ['required' => true])
             ->add('name', 'text', ['required' => true])
             ->add('category', 'text', ['required' => true]);
     }
