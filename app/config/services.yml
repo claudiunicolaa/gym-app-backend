@@ -1,10 +1,8 @@
 imports:
     - { resource: repositories.yml }
+    - { resource: admins.yml }
 
 services:
-    _defaults:
-        autowire: true
-
     AppBundle\:
         resource: '../../src/AppBundle/*'
         exclude: '../../src/AppBundle/{Entity,Repository,Tests}'
@@ -17,3 +15,6 @@ services:
     AppBundle\Services\Validator\CourseValidator: ~
     AppBundle\Services\Validator\CourseFiltersValidator: ~
     AppBundle\Services\Validator\UserValidator: ~
+
+    AppBundle\Services\Helper\FileHelper:
+        arguments: ['%kernel.root_dir%']

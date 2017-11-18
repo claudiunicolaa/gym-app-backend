@@ -25,7 +25,7 @@ class Course
 
     /**
      * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(name="trainer_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="trainer_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $trainer;
 
@@ -46,9 +46,9 @@ class Course
     /**
      * @var string
      *
-     * @ORM\Column(name="image", type="string")
+     * @ORM\Column(type="string", length=100, nullable=true)
      */
-    protected $image;
+    protected $imagePath;
 
     /**
      * @var string
@@ -70,7 +70,7 @@ class Course
     public function __construct()
     {
         $this->registeredUsers = new ArrayCollection();
-        $this->image = '';
+        $this->imagePath = '';
     }
 
     /**
@@ -84,7 +84,7 @@ class Course
     /**
      * @return User
      */
-    public function getTrainer() : User
+    public function getTrainer() : ?User
     {
         return $this->trainer;
     }
@@ -103,7 +103,7 @@ class Course
     /**
      * @return \DateTime
      */
-    public function getEventDate() : \DateTime
+    public function getEventDate() : ?\DateTime
     {
         return $this->eventDate;
     }
@@ -123,7 +123,7 @@ class Course
     /**
      * @return int
      */
-    public function getCapacity() : int
+    public function getCapacity() : ?int
     {
         return $this->capacity;
     }
@@ -175,19 +175,19 @@ class Course
     /**
      * @return string
      */
-    public function getImage() : ?string
+    public function getImagePath() : ?string
     {
-        return $this->image;
+        return $this->imagePath;
     }
 
     /**
-     * @param string $image
+     * @param string $imagePath
      *
      * @return $this
      */
-    public function setImage(string $image) : self
+    public function setImagePath(?string $imagePath) : self
     {
-        $this->image = $image;
+        $this->imagePath = $imagePath;
 
         return $this;
     }
@@ -195,7 +195,7 @@ class Course
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -223,8 +223,8 @@ class Course
             'eventDate' => $this->getEventDate()->getTimestamp(),
             'capacity' => $this->getCapacity(),
             'name' => $this->getName(),
-            'image' => $this->getImage(),
-            'registered_users' => count($this->getRegisteredUsers())
+            'image' => $this->getImagePath(),
+            'registeredUsers' => count($this->getRegisteredUsers())
         ];
     }
 
@@ -243,5 +243,49 @@ class Course
     public function reachedCapacity() : bool
     {
         return count($this->getRegisteredUsers()) >= $this->getCapacity();
+    }
+
+    /**
+     * Used for sonata admin purposes
+     *
+     * @return int|null
+     */
+    public function getTimestamp() : ?int
+    {
+        if (null === $this->getEventDate()) {
+            return null;
+        }
+
+        return $this->getEventDate()->getTimestamp();
+    }
+
+    /**
+     * Used for sonata admin purposes
+     *
+     * @param int $timestamp
+     *
+     * @return $this
+     */
+    public function setTimestamp(int $timestamp) : self
+    {
+        $this->setEventDate($timestamp);
+
+        return $this;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return $this
+     */
+    public function setProperties(array $data) : self
+    {
+        $this->setName($data['name']);
+        $this->setTrainer($data['trainer']);
+        $this->setImagePath($data['image'] ?? '');
+        $this->setCapacity($data['capacity']);
+        $this->setEventDate($data['eventDate']);
+
+        return $this;
     }
 }

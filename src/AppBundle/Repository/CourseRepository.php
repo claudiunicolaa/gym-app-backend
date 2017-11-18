@@ -33,16 +33,17 @@ class CourseRepository extends EntityRepository
                    u.email,
                    u.lastName,
                    u.firstName,
-                   u.picture,
+                   u.picturePath,
                    c.eventDate,
                    c.capacity,
-                   c.image,
+                   c.imagePath,
                    c.name,
                    COUNT(r.id) As registered_users'
             )
             ->innerJoin('c.trainer', 'u')
             ->leftJoin('c.registeredUsers', 'r')
             ->groupBy('c.id')
+            ->orderBy('c.eventDate', 'ASC')
         ;
 
         $this->applyFilters($queryBuilder, $user, $filters);

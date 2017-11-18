@@ -3,6 +3,7 @@
 namespace AppBundle\Services\Validator;
 
 use AppBundle\Exception\CourseValidationException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class CourseValidator
@@ -13,6 +14,7 @@ class CourseValidator
 {
     const ALLOWED_KEYS = ['eventDate', 'capacity', 'image', 'name'];
     const MANDATORY_CREATE_FIELDS = ['name', 'capacity', 'eventDate'];
+    const SUPPORTED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png'];
 
     /**
     * @param $queryParams
@@ -53,7 +55,7 @@ class CourseValidator
      *
      * @return void
      *
-     * @throws \Exception
+     * @throws CourseValidationException if the event date is not valid
      */
     private function validateEventDate(string $eventDate) : void
     {
@@ -73,7 +75,7 @@ class CourseValidator
      *
      * @return void
      *
-     * @throws \Exception
+     * @throws CourseValidationException if the capacity is not valid
      */
     private function validateCapacity(string $capacity) : void
     {
@@ -87,12 +89,21 @@ class CourseValidator
      *
      * @return void
      *
-     * @throws \Exception
+     * @throws CourseValidationException if the image is not valid
      */
-    private function validateImage(string $image) : void
+    private function validateImage($image) : void
     {
-        if (!is_string($image) || !filter_var($image, FILTER_VALIDATE_URL)) {
-            throw new CourseValidationException("Invalid image url given!");
+        if (!($image instanceof UploadedFile)) {
+            throw new CourseValidationException("Invalid image given!");
+        }
+
+        $extension = strtolower($image->getClientOriginalExtension());
+        if (!in_array($extension, self::SUPPORTED_IMAGE_EXTENSIONS)) {
+            throw new CourseValidationException("Invalid image extension given!");
+        }
+
+        if (strlen($image->getClientOriginalName()) === 0) {
+            throw new CourseValidationException("Image must have a name!");
         }
     }
 
@@ -101,7 +112,7 @@ class CourseValidator
      *
      * @return void
      *
-     * @throws \Exception
+     * @throws CourseValidationException if the name is not valid
      */
     private function validateName(string $name) : void
     {
