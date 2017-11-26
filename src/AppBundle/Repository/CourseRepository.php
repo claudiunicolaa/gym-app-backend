@@ -63,12 +63,18 @@ class CourseRepository extends EntityRepository
         $usersCourses = $this
             ->createQueryBuilder('c')
             ->select('c.id')
-            ->where(':user IN c.registeredUsers')
+            ->where(':user MEMBER OF c.registeredUsers')
             ->setParameter('user', $loggedUser)
             ->getQuery()
             ->getResult();
 
-        return (in_array($courseId, $usersCourses)) ? 1 : 0;
+        foreach ($usersCourses as $course) {
+            if ($course['id'] === $courseId) {
+                return 1;
+            }
+        }
+
+        return 0;
     }
 
     /**
