@@ -38,7 +38,8 @@ class CourseController extends Controller
      *              "capacity" : "30",
      *              "name" : "Course A",
      *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
-     *              "registeredUsers" : "15"
+     *              "registeredUsers" : "15",
+     *              "amRegistered" : "0"
      *         },
      *         {
      *              {
@@ -53,7 +54,8 @@ class CourseController extends Controller
      *              "capacity" : "25",
      *              "name" : "Course B",
      *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
-     *              "registeredUsers" : "25"
+     *              "registeredUsers" : "25",
+     *              "amRegistered" : "1"
      *         }
      *     }
      *
@@ -114,7 +116,8 @@ class CourseController extends Controller
      *              "capacity" : "30",
      *              "name" : "Course A",
      *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
-     *              "registeredUsers" : "15"
+     *              "registeredUsers" : "15",
+     *              "amRegistered" : "1"
      *         }
      *     }
      *
@@ -142,7 +145,10 @@ class CourseController extends Controller
             return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
         }
 
-        return new JsonResponse($course->toArray(), 200);
+        $result = $course->toArray();
+        $result['amRegistered'] = $course->getRegisteredUsers()->contains($this->getUser()) ? 1 : 0;
+
+        return new JsonResponse($result, 200);
     }
 
     /**
@@ -429,6 +435,10 @@ class CourseController extends Controller
             $result[$key]['name'] = $courseData['name'];
             $result[$key]['image'] = $courseData['imagePath'];
             $result[$key]['registeredUsers'] = $courseData['registered_users'];
+            $result[$key]['amRegistered'] = $this
+                ->getDoctrine()
+                ->getRepository(Course::class)
+                ->isRegistered($this->getUser(), $courseData['id']);
         }
 
         return $result;
