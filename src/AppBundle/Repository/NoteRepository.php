@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: andu
- * Date: 27.11.2017
- * Time: 00:29
- */
 
 namespace AppBundle\Repository;
 
@@ -12,7 +6,7 @@ use AppBundle\Entity\User;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * Class CourseRepository
+ * Class NoteRepository
  *
  * @author Alexandru Emil Popa <a.pope95@yahoo.com>
  */
@@ -29,16 +23,13 @@ class NoteRepository extends EntityRepository
     {
         $queryBuilder = $this
             ->createQueryBuilder('n')
-            ->select(
-                'n.id,
+            ->select('n.id,
                    n.text,
                    n.creationDate'
             )
-            ->groupBy('n.id')
             ->orderBy('n.creationDate', 'ASC')
-            ->andWhere('n.user = ' . ':user')
-            ->setParameter('user',$user)
-        ;
+            ->andWhere('n.user = :user')
+            ->setParameter('user', $user);
 
         return $queryBuilder->getQuery()->getResult();
     }

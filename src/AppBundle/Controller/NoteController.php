@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: andu
- * Date: 27.11.2017
- * Time: 00:51
- */
 
 namespace AppBundle\Controller;
 
@@ -18,13 +12,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 /**
- * Class UserController
+ * Class NoteController
  *
  * @author Alexandru Emil Popa <a.pope95@yahoo.com>
  */
 class NoteController extends Controller
 {
-
     /**
      * ### Example Response ###
      *      {
@@ -57,18 +50,13 @@ class NoteController extends Controller
      */
     public function getNotesAction() : JsonResponse
     {
-        try {
-            $notes = $this
-                ->get(NoteRepository::class)
-                ->getUserNotes(
-                    $this->getUser()
-                )
-            ;
+        $notes = $this
+            ->get(NoteRepository::class)
+            ->getUserNotes(
+                $this->getUser()
+            );
 
-            return new JsonResponse($this->formatResult($notes), 200);
-        } catch (NoteRepositoryException $ex) {
-            return new JsonResponse(['error' => $ex->getMessage()], 400);
-        }
+        return new JsonResponse($notes, 200);
     }
 
     /**
@@ -87,7 +75,7 @@ class NoteController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Returns the note with the given id",
+     *  description="Returns the note with the given id for the current user",
      *  section="Note",
      *  statusCodes={
      *      200="Returned when successful",
@@ -103,9 +91,7 @@ class NoteController extends Controller
             return new JsonResponse(['error' => 'Note with given id doesn\'t exist'], 400);
         }
 
-        $result = $note->toArray();
-
-        return new JsonResponse($result, 200);
+        return new JsonResponse($note->toArray(), 200);
     }
 
     /**
@@ -130,34 +116,27 @@ class NoteController extends Controller
     public function addNoteAction(?Request $request) : JsonResponse
     {
         $loggedUser = $this->getUser();
+        $requestParams = $request->request->all();
 
-        $note = new Note();
-        $note->setUser($loggedUser);
-        $note->setText($request->get('text'));
+        if(count($requestParams) > 1) {
+            return new JsonResponse(['error' => 'Too many parameters given!'], 400);
+        }
+
+        if (!isset($requestParams['text'])) {
+            return new JsonResponse(['error' => 'Note has to have text!'], 400);
+        }
+
+        if ($requestParams['text'] === "") {
+            return new JsonResponse(['error' => 'Note text can\'t be empty!'], 400);
+        }
+
+        $note = (new Note())->setUser($loggedUser)->setText($request->get('text'));
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($note);
         $em->flush();
 
         return new JsonResponse('', 200);
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return array
-     */
-    private function formatResult(array $data) : array
-    {
-        $result = [];
-
-        foreach ($data as $key => $noteData) {
-            $result[$key]['creationDate'] = $noteData['creationDate']->getTimestamp();
-            $result[$key]['id'] = $noteData['id'];
-            $result[$key]['text'] = $noteData['text'];
-        }
-
-        return $result;
     }
 
 }

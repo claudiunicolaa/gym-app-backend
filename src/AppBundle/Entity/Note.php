@@ -1,23 +1,15 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: andu
- * Date: 27.11.2017
- * Time: 00:28
- */
 
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Gedmo\Mapping\Annotation as Gedmo;
 /**
  * @author Alexandru Emil Popa <a.pope95@yahoo.com>
  *
- * @ORM\Entity
  * @ORM\Table(name="notes")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\NoteRepository")
  */
-
 class Note
 {
     /**
@@ -30,14 +22,14 @@ class Note
     /**
      * @var string
      *
-     * @ORM\Column(name="text", type="string")
+     * @ORM\Column(name="text", type="string", length=500)
      */
     protected $text;
 
     /**
      * @var \DateTime
-     *
-     * @ORM\Column(name="creation_date", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(type="datetime")
      */
     protected $creationDate;
 
@@ -46,11 +38,6 @@ class Note
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $user;
-
-    public function __construct()
-    {
-        $this->creationDate = new \DateTime();
-    }
 
     /**
      * @return int
@@ -89,17 +76,6 @@ class Note
     }
 
     /**
-     * @param int $timestamp
-     * @return $this
-     */
-    public function setCreationDate(int $timestamp) : self
-    {
-        $this->creationDate = (new \DateTime())->setTimestamp($timestamp);
-
-        return $this;
-    }
-
-    /**
      * @return User
      */
     public function getUser() : User
@@ -118,20 +94,6 @@ class Note
         return $this;
     }
 
-    /**
-     * @param array $data
-     *
-     * @return $this
-     */
-    public function setProperties(array $data) : self
-    {
-        $this->setText($data['text']);
-        $this->setCreationDate($data['creationDate']);
-        $this->setUser($data['user']);
-
-        return $this;
-    }
-
     public function toArray() : array
     {
         return [
@@ -141,6 +103,4 @@ class Note
             'text' => $this->getText()
         ];
     }
-
-
 }
