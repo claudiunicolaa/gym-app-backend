@@ -18,3 +18,7 @@ services:
 
     AppBundle\Services\Helper\FileHelper:
         arguments: ['%kernel.root_dir%']
+
+    AppBundle\Security\CourseVoter:
+        autowire: true
+        tags: [security.voter]
