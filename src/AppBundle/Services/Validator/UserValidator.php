@@ -13,9 +13,10 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class UserValidator
 {
     const ALLOWED_KEYS_CREATE = ['email', 'fullName', 'picture', 'password'];
-    const ALLOWED_KEYS_UPDATE = ['fullName', 'picture', 'password'];
+    const ALLOWED_KEYS_UPDATE = ['fullName', 'picture', 'password', 'isAtTheGym'];
     const MANDATORY_REGISTER_FIELDS = ['email', 'password', 'fullName'];
     const SUPPORTED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png'];
+    const SUPPORTED_BOOLEAN_VALUES = ['true', 'false'];
 
     /**
      * @param $queryParams
@@ -62,7 +63,7 @@ class UserValidator
      */
     private function validateEmail(string $email) : void
     {
-        $email = trim($email);
+        $email = trim(strtolower($email));
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new UserValidationException("Invalid email given!");
         }
@@ -123,6 +124,21 @@ class UserValidator
     {
         if (0 === preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/', $password)) {
             throw new UserValidationException("Invalid password given!");
+        }
+    }
+
+    /**
+     * @param string $isAtTheGym
+     *
+     * @return void
+     *
+     * @throws UserValidationException if the value is not valid
+     */
+    private function validateIsAtTheGym(string $isAtTheGym) : void
+    {
+        $isAtTheGym = trim(strtolower($isAtTheGym));
+        if (!in_array($isAtTheGym, self::SUPPORTED_BOOLEAN_VALUES)) {
+            throw new UserValidationException("Invalid value given for isAtTheGym!");
         }
     }
 }
