@@ -28,6 +28,12 @@ class User extends BaseUser
     protected $email;
 
     /**
+     * @ORM\Column(type="boolean", length=255)
+     * @Groups({"user"})
+     */
+    protected $isSubscribed;
+
+    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"user"})
      */
@@ -79,7 +85,30 @@ class User extends BaseUser
 
         $this->trainedCourses = new ArrayCollection();
         $this->attendingCourses = new ArrayCollection();
+        $this->isSubscribed = false;
     }
+
+    /**
+     * @return bool
+     */
+    public function getIsSubscribed() : bool
+    {
+        return $this->isSubscribed;
+    }
+
+    /**
+     * @param bool $isSubscribed
+     *
+     * @return User $this
+     */
+    public function setIsSubscribed(bool $isSubscribed) : self
+    {
+        $this->isSubscribed = $isSubscribed;
+
+        return $this;
+    }
+
+
 
     /**
      * @return string
