@@ -5,6 +5,7 @@ namespace AppBundle\Security;
 use AppBundle\Entity\Course;
 use AppBundle\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 /**
@@ -17,6 +18,16 @@ class CourseVoter extends Voter
     const CREATE = 'create';
     const UPDATE = 'update';
     const DELETE = 'delete';
+
+    /**
+     * @var AccessDecisionManagerInterface
+     */
+    private $decisionManager;
+
+    public function __construct(AccessDecisionManagerInterface $decisionManager)
+    {
+        $this->decisionManager = $decisionManager;
+    }
 
     /**
      * @inheritdoc
@@ -49,46 +60,46 @@ class CourseVoter extends Voter
         $course = $subject;
         switch ($attribute) {
             case self::CREATE:
-                return $this->canCreate($user);
+                return $this->canCreate($token);
             case self::UPDATE:
-                return $this->canUpdate($course, $user);
+                return $this->canUpdate($course, $token);
             case self::DELETE:
-                return $this->canUpdate($course, $user);
+                return $this->canUpdate($course, $token);
+        }
+
+        throw new \LogicException('This code should not be reached!');
+    }
+
+    /**
+     * @param TokenInterface $token
+     *
+     * @return bool
+     */
+    private function canCreate(TokenInterface $token) : bool
+    {
+        if ($this->decisionManager->decide($token, array('ROLE_TRAINER'))) {
+            return true;
         }
 
         return false;
     }
 
     /**
-     * @param User $user
-     *
-     * @return bool
-     */
-    private function canCreate(User $user) : bool
-    {
-        $userRoles = $user->getRoles();
-        if (!in_array('ROLE_TRAINER', $userRoles) && !in_array('ROLE_ADMIN', $userRoles)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * @param Course $course
-     * @param User $user
+     * @param TokenInterface $token
      *
      * @return bool
      */
-    private function canUpdate(Course $course, User $user) : bool
+    private function canUpdate(Course $course, TokenInterface $token) : bool
     {
-        $userRoles = $user->getRoles();
-        if (!in_array('ROLE_ADMIN', $userRoles) &&
-            $user->getId() !== $course->getTrainer()->getId()
-        ) {
-            return false;
+        if ($this->decisionManager->decide($token, array('ROLE_ADMIN'))) {
+            return true;
         }
 
-        return true;
+        if ($token->getUser()->getId() === $course->getTrainer()->getId()) {
+            return true;
+        }
+
+        return false;
     }
 }
