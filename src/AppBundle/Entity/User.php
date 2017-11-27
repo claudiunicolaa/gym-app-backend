@@ -3,15 +3,15 @@
 namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  */
 class User extends BaseUser
 {
@@ -31,7 +31,7 @@ class User extends BaseUser
      * @ORM\Column(type="boolean", length=255)
      * @Groups({"user"})
      */
-    protected $isSubscribed;
+    protected $subscribed;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -85,25 +85,25 @@ class User extends BaseUser
 
         $this->trainedCourses = new ArrayCollection();
         $this->attendingCourses = new ArrayCollection();
-        $this->isSubscribed = false;
+        $this->subscribed = false;
     }
 
     /**
      * @return bool
      */
-    public function getIsSubscribed() : bool
+    public function isSubscribed() : bool
     {
-        return $this->isSubscribed;
+        return $this->subscribed;
     }
 
     /**
-     * @param bool $isSubscribed
+     * @param bool $subscribed
      *
      * @return User $this
      */
-    public function setIsSubscribed(bool $isSubscribed) : self
+    public function setSubscribed(bool $subscribed) : self
     {
-        $this->isSubscribed = $isSubscribed;
+        $this->subscribed = $subscribed;
 
         return $this;
     }

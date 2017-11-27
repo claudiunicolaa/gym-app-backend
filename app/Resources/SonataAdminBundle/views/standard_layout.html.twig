@@ -42,6 +42,13 @@ file that was distributed with this source code.
                     margin-left: 30px;
                     color: black;
                 }
+                #newsletter_button {
+                    line-height: 50px;
+                    vertical-align: middle;
+                    font-size: 20px;
+                    margin-left: 30px;
+                    color: black;
+                }
             </style>
         {% endfor %}
     {% endblock %}
@@ -157,6 +164,9 @@ file that was distributed with this source code.
 
                     <a id="logout_button" href="{{ path('fos_user_security_logout') }}">
                         Logout
+                    </a>
+                    <a id="newsletter_button" href="{{ path('newsletter_form') }}">
+                        Newsletter
                     </a>
 
                     <div class="navbar-left">
