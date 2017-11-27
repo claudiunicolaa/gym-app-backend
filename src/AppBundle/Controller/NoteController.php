@@ -20,18 +20,35 @@ class NoteController extends Controller
 {
     /**
      * ### Example Response ###
-     *      {
+     *      [
      *          {
-     *              "id" : "1",
-     *              "text" : "Take 1 more course",
-     *              "creationDate" : "1508916731"
+     *              "id": 1,
+     *              "text": "Do more push-ups!",
+     *              "creationDate": {
+     *                  "date": "2017-11-27 01:41:03.000000",
+     *                  "timezone_type": 3,
+     *                  "timezone": "Europe/Helsinki"
+     *              }
      *          },
      *          {
-     *              "id" : "2",
-     *              "text" : "Exercise more",
-     *              "creationDate" : "1508916731"
+     *              "id": 2,
+     *              "text": "Another note",
+     *              "creationDate": {
+     *                  "date": "2017-11-27 19:45:26.000000",
+     *                  "timezone_type": 3,
+     *                  "timezone": "Europe/Helsinki"
+     *              }
+     *          },
+     *          {
+     *              "id": 3,
+     *              "text": "Yet Another note",
+     *              "creationDate": {
+     *                  "date": "2017-11-27 21:00:50.000000",
+     *                  "timezone_type": 3,
+     *                  "timezone": "Europe/Helsinki"
+     *              }
      *          }
-     *      }
+     *      ]
      *
      * @Route("/api/user/notes", name="notes_get", methods={"GET"})
      *
@@ -62,9 +79,15 @@ class NoteController extends Controller
     /**
      * ### Example Response ###
      *      {
-     *          "id" : "1",
-     *          "text" : "Take 1 more course",
-     *          "creationDate" : "1508916731"
+     *          "id": 2,
+     *          "user": {
+     *              "id": 5,
+     *              "fullName": "John Doe",
+     *              "email": "j.doe@yahoo.com",
+     *              "picturePath": "aHs8sJD0.jpg"
+     *          },
+     *          "creationDate": 1511739663,
+     *          "text": "Do more push-ups!"
      *      }
      *
      * @Route("/api/user/note/{id}", name="note_get", methods={"GET"})
