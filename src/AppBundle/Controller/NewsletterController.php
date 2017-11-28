@@ -15,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -43,15 +44,21 @@ class NewsletterController extends Controller
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid())
         {
-            $emails = $this
+            $emailsArray = $this
                 ->get(UserRepository::class)
                 ->getSubscribedUsers();
 
-            var_dump($emails);die;
+            $recipients = "";
+
+            foreach ($emailsArray as $email) {
+                $recipients = $recipients . $email['email'];
+            }
 
             $message = (new \Swift_Message('Gym App Newsletter'))
-                ->setTo($emails)
+                ->setFrom('gymappnewsletter@gmail.com')
+                ->setTo('andu.hulkmaniac@gmail.com')
                 ->setBody($form->getData());
+
 
             $this->get('mailer')->send($message);
         }
