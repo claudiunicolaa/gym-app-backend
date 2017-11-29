@@ -98,7 +98,6 @@ class Note
     {
         return [
             'id' => $this->getId(),
-            'user' => $this->getUser()->toArray(),
             'creationDate' => $this->getCreationDate()->getTimestamp(),
             'text' => $this->getText()
         ];

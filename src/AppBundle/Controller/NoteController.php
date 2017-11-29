@@ -4,7 +4,9 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Note;
 use AppBundle\Exception\NoteRepositoryException;
+use AppBundle\Exception\NoteValidationException;
 use AppBundle\Repository\NoteRepository;
+use AppBundle\Services\Validator\NoteValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,29 +26,17 @@ class NoteController extends Controller
      *          {
      *              "id": 1,
      *              "text": "Do more push-ups!",
-     *              "creationDate": {
-     *                  "date": "2017-11-27 01:41:03.000000",
-     *                  "timezone_type": 3,
-     *                  "timezone": "Europe/Helsinki"
-     *              }
+     *              "creationDate": 1511739663
      *          },
      *          {
      *              "id": 2,
      *              "text": "Another note",
-     *              "creationDate": {
-     *                  "date": "2017-11-27 19:45:26.000000",
-     *                  "timezone_type": 3,
-     *                  "timezone": "Europe/Helsinki"
-     *              }
+     *              "creationDate": 1511804726
      *          },
      *          {
      *              "id": 3,
      *              "text": "Yet Another note",
-     *              "creationDate": {
-     *                  "date": "2017-11-27 21:00:50.000000",
-     *                  "timezone_type": 3,
-     *                  "timezone": "Europe/Helsinki"
-     *              }
+     *              "creationDate": 1511809250
      *          }
      *      ]
      *
@@ -80,12 +70,6 @@ class NoteController extends Controller
      * ### Example Response ###
      *      {
      *          "id": 2,
-     *          "user": {
-     *              "id": 5,
-     *              "fullName": "John Doe",
-     *              "email": "j.doe@yahoo.com",
-     *              "picturePath": "aHs8sJD0.jpg"
-     *          },
      *          "creationDate": 1511739663,
      *          "text": "Do more push-ups!"
      *      }
@@ -141,25 +125,21 @@ class NoteController extends Controller
         $loggedUser = $this->getUser();
         $requestParams = $request->request->all();
 
-        if(count($requestParams) > 1) {
-            return new JsonResponse(['error' => 'Too many parameters given!'], 400);
+        $noteValidator = $this->get(NoteValidator::class);
+
+        try {
+            $noteValidator->checkMandatoryFields($requestParams);
+            $noteValidator->validate($requestParams);
+            $note = (new Note())->setUser($loggedUser)->setText($request->get('text'));
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($note);
+            $em->flush();
+
+            return new JsonResponse('', 200);
+        } catch (NoteValidationException $ex) {
+            return new JsonResponse(['error' => $ex->getMessage()], 400);
         }
-
-        if (!isset($requestParams['text'])) {
-            return new JsonResponse(['error' => 'Note has to have text!'], 400);
-        }
-
-        if ($requestParams['text'] === "") {
-            return new JsonResponse(['error' => 'Note text can\'t be empty!'], 400);
-        }
-
-        $note = (new Note())->setUser($loggedUser)->setText($request->get('text'));
-
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($note);
-        $em->flush();
-
-        return new JsonResponse('', 200);
     }
 
 }
