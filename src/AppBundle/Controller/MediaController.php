@@ -16,6 +16,8 @@ use Symfony\Component\Security\Acl\Exception\Exception;
  */
 class MediaController extends Controller
 {
+    const PATH_TO_GYM_PHOTOS = '/../web/uploads/gym-photos';
+    
     /**
      * ### Example Response ###
      *      [
@@ -43,7 +45,7 @@ class MediaController extends Controller
      */
     public function getPhotosAction() : JsonResponse
     {
-        $photoPath = $this->getParameter('kernel.root_dir') . '/../web/uploads/gym-photos';
+        $photoPath = $this->getParameter('kernel.root_dir') . self::PATH_TO_GYM_PHOTOS;
         $fileNames = [];
 
         if (file_exists($photoPath) && is_dir($photoPath)) {
