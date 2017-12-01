@@ -5,7 +5,7 @@ services:
 
     sonata.product.admin:
         class: AppBundle\Admin\ProductAdmin
-        arguments: [~, AppBundle\Entity\Product, ~]
+        arguments: [~, AppBundle\Entity\Product, ~, '@AppBundle\Services\Helper\FileHelper']
         tags:
             - { name: sonata.admin, manager_type: orm, label: Product }
 
