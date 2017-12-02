@@ -109,7 +109,23 @@ input[type=password] {
             0 1px 0 rgba(255,255,255,0.1);
     border-radius:0.3em;
     margin-bottom:20px;
+    height:200px;
 
+
+}
+
+textarea {
+    color: white;
+    width:100%;
+    padding:8px 5px;
+    background:linear-gradient(#1f2124, #27292c);
+    border:1px solid #222;
+    box-shadow:
+            0 1px 0 rgba(255,255,255,0.1);
+    border-radius:0.3em;
+    margin-bottom:20px;
+    height:200px;
+    resize: none;
 }
 
 label[for=remember]{

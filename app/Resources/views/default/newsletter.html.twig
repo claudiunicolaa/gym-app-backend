@@ -1,3 +1,30 @@
-{{ form_start(form) }}
-{{ form_widget(form) }}
-{{ form_end(form) }}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>
+        Newsletter
+    </title>
+    <link rel="stylesheet" type="text/css" href="{{ asset('styleModified.css') }}"/>
+</head>
+<body>
+<div class="outer">
+    <div class="middle">
+        <div class="inner">
+
+            <form>
+                <h1>Newsletter message</h1>
+                <div class="inset">
+
+                    {{ form_start(form) }}
+                    {{ form_widget(form.text) }}
+                    {{ form_end(form) }}
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

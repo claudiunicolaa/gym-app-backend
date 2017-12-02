@@ -11,6 +11,7 @@ namespace AppBundle\Controller;
 use AppBundle\Exception\CourseRepositoryException;
 use AppBundle\Repository\CourseRepository;
 use AppBundle\Repository\UserRepository;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -37,7 +38,7 @@ class NewsletterController extends Controller
     {
         //$form = $this->createForm(NewsletterType::class);
         $form = $this->createFormBuilder()
-            ->add('text', TextType::class)
+            ->add('text', TextareaType::class)
             ->add('send',SubmitType::class, array('label' => 'Send newsletter'))
             ->getForm();
 
@@ -59,6 +60,7 @@ class NewsletterController extends Controller
                 ->setTo('andu.hulkmaniac@gmail.com')
                 ->setBody($form->getData());
 
+            var_dump($message->getBody()); die();
 
             $this->get('mailer')->send($message);
         }
