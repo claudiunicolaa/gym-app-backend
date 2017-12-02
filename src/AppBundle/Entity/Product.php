@@ -56,6 +56,14 @@ class Product
     protected $category;
 
     /**
+     * Product constructor.
+     */
+    public function __construct()
+    {
+        $this->image = 'default.png';
+    }
+
+    /**
      * @return int
      */
     public function getId() : int

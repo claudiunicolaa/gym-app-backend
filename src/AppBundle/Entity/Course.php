@@ -70,7 +70,7 @@ class Course
     public function __construct()
     {
         $this->registeredUsers = new ArrayCollection();
-        $this->imagePath = '';
+        $this->imagePath = 'default.jpg';
     }
 
     /**

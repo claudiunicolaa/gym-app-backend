@@ -87,6 +87,8 @@ class User extends BaseUser
 
         $this->trainedCourses = new ArrayCollection();
         $this->attendingCourses = new ArrayCollection();
+        $this->picturePath = 'default.jpg';
+        $this->isAtTheGym = false;
     }
 
     /**
