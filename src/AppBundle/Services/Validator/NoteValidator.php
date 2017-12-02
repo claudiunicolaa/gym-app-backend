@@ -1,16 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: andu
- * Date: 30.11.2017
- * Time: 00:45
- */
 
 namespace AppBundle\Services\Validator;
 
-
 use AppBundle\Exception\NoteValidationException;
 
+/**
+ * Class NoteValidator
+ *
+ * @author Alexandru Emil Popa <a.pope95@yahoo.com>
+ */
 class NoteValidator
 {
     const ALLOWED_KEYS = ['text'];

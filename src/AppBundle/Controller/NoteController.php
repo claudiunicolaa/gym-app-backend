@@ -120,7 +120,7 @@ class NoteController extends Controller
      *  }
      *  )
      */
-    public function addNoteAction(?Request $request) : JsonResponse
+    public function addNoteAction(Request $request) : JsonResponse
     {
         $loggedUser = $this->getUser();
         $requestParams = $request->request->all();

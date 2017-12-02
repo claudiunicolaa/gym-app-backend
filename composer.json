@@ -25,7 +25,6 @@
         "doctrine/doctrine-bundle": "1.6.13",
         "doctrine/orm": "^2.5",
         "friendsofsymfony/user-bundle": "~2.0",
-        "gedmo/doctrine-extensions": "^2.4",
         "incenteev/composer-parameter-handler": "^2.0",
         "lexik/jwt-authentication-bundle": "^2.4",
         "nelmio/api-doc-bundle": "^2.13",
