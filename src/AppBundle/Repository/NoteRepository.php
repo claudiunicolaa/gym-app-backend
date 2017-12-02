@@ -26,19 +26,14 @@ class NoteRepository extends EntityRepository
             ->select('
                    n.id,
                    n.text,
-                   n.creationDate
+                   unix_timestamp(n.creationDate) as creationDate
                    ')
             ->orderBy('n.creationDate', 'ASC')
             ->andWhere('n.user = :user')
             ->setParameter('user', $user);
 
-        $result = [];
 
-        foreach ($queryBuilder->getQuery()->getResult() as $note) {
-            $note['creationDate'] = $note['creationDate']->getTimestamp();
-            array_push($result,$note);
-        }
 
-        return $result;
+        return $queryBuilder->getQuery()->getResult();
     }
 }

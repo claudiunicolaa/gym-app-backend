@@ -98,7 +98,7 @@ class Note
     {
         return [
             'id' => $this->getId(),
-            'creationDate' => $this->getCreationDate()->getTimestamp(),
+            'creationDate' => "" . $this->getCreationDate()->getTimestamp(),
             'text' => $this->getText()
         ];
     }

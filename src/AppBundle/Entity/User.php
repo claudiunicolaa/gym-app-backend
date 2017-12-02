@@ -3,15 +3,15 @@
 namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  */
 class User extends BaseUser
 {
@@ -38,6 +38,14 @@ class User extends BaseUser
      * @Groups({"user"})
      */
     protected $lastName;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean")
+     * @Groups({"user"})
+     */
+    protected $isAtTheGym;
 
     /**
      * @ORM\Column(type="string", length=100, nullable=true)
@@ -213,6 +221,26 @@ class User extends BaseUser
     }
 
     /**
+     * @return bool
+     */
+    public function isAtTheGym(): bool
+    {
+        return $this->isAtTheGym;
+    }
+
+    /**
+     * @param bool $isAtTheGym
+     *
+     * @return $this
+     */
+    public function setIsAtTheGym(bool $isAtTheGym): self
+    {
+        $this->isAtTheGym = $isAtTheGym;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function toArray() : array
@@ -221,7 +249,8 @@ class User extends BaseUser
             'id' => $this->getId(),
             'fullName' => $this->getFullName(),
             'email' => $this->getEmail(),
-            'picturePath' => $this->getPicturePath()
+            'picturePath' => $this->getPicturePath(),
+            'isAtTheGym' => $this->isAtTheGym()
         ];
     }
 
@@ -240,6 +269,7 @@ class User extends BaseUser
         $this->setPlainPassword($data['password'] ?? '');
         $this->addRole("ROLE_USER");
         $this->setEnabled(true);
+        $this->setIsAtTheGym(false);
 
         return $this;
     }
@@ -267,6 +297,10 @@ class User extends BaseUser
         if (isset($data['email'])) {
             $this->setEmail($data['email']);
             $this->setEmailCanonical($data['email']);
+        }
+
+        if (isset($data['isAtTheGym'])) {
+            $this->setIsAtTheGym($data['isAtTheGym'] === 'true' ? 1 : 0);
         }
 
         return $this;

@@ -26,17 +26,17 @@ class NoteController extends Controller
      *          {
      *              "id": 1,
      *              "text": "Do more push-ups!",
-     *              "creationDate": 1511739663
+     *              "creationDate": "1511739663"
      *          },
      *          {
      *              "id": 2,
      *              "text": "Another note",
-     *              "creationDate": 1511804726
+     *              "creationDate": "1511804726"
      *          },
      *          {
      *              "id": 3,
      *              "text": "Yet Another note",
-     *              "creationDate": 1511809250
+     *              "creationDate": "1511809250"
      *          }
      *      ]
      *
@@ -70,7 +70,7 @@ class NoteController extends Controller
      * ### Example Response ###
      *      {
      *          "id": 2,
-     *          "creationDate": 1511739663,
+     *          "creationDate": "1511739663",
      *          "text": "Do more push-ups!"
      *      }
      *

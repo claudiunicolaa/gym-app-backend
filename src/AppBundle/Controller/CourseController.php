@@ -180,12 +180,10 @@ class CourseController extends Controller
      */
     public function createCourseAction(Request $request) : JsonResponse
     {
+        $course = new Course();
         $loggedUser = $this->getUser();
-        if (!in_array('ROLE_TRAINER', $loggedUser->getRoles()) &&
-            !in_array('ROLE_ADMIN', $loggedUser->getRoles())
-        ) {
-            return new JsonResponse(['error' => 'Not Authorized!'], 403);
-        }
+
+        $this->denyAccessUnlessGranted('create', $course);
 
         $requestParams = $request->request->all();
         if (null !== $request->files->get('image')) {
@@ -199,7 +197,6 @@ class CourseController extends Controller
 
             $requestParams['trainer'] = $loggedUser;
             $requestParams['image'] = $this->get(FileHelper::class)->uploadFile($request->files->get('image'), 'course');
-            $course = new Course();
             $course->setProperties($requestParams);
 
             $em = $this->getDoctrine()->getManager();
@@ -292,12 +289,7 @@ class CourseController extends Controller
             return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
         }
 
-        $loggedUser = $this->getUser();
-        if (!($course->getTrainer()->getId() === $loggedUser->getId()) &&
-            !in_array('ROLE_ADMIN', $loggedUser->getRoles())
-        ) {
-            return new JsonResponse(['error' => 'Not Authorized'], 403);
-        }
+        $this->denyAccessUnlessGranted('update', $course);
 
         $requestParameters = $request->request->all();
         unset($requestParameters['_method']);
@@ -354,12 +346,7 @@ class CourseController extends Controller
             return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
         }
 
-        $loggedUser = $this->getUser();
-        if (!($course->getTrainer()->getId() === $loggedUser->getId()) &&
-            !in_array('ROLE_ADMIN', $loggedUser->getRoles()))
-        {
-            return new JsonResponse(['error' => 'Not authorized'], 403);
-        }
+        $this->denyAccessUnlessGranted('delete', $course);
 
         $this->get(FileHelper::class)->removePicture($course);
         $em = $this->getDoctrine()->getManager();
