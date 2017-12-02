@@ -23,7 +23,7 @@ class ProductController extends Controller
      *              "id" : "1",
      *              "price" : "45",
      *              "description" : "Example description #1",
-     *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
+     *              "image" : "abcdefg.jpg",
      *              "name" : "Example Product B",
      *              "category" : "Category A"
      *         },
@@ -31,7 +31,7 @@ class ProductController extends Controller
      *              "id" : "2",
      *              "price" : "23.6",
      *              "description" : "Example description #2",
-     *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
+     *              "image" : "abcdefg.jpg",
      *              "name" : "Example Product A",
      *              "category" : "Category A"
      *         }
@@ -71,7 +71,7 @@ class ProductController extends Controller
      *              "id" : "1",
      *              "price" : "45",
      *              "description" : "Example description #1",
-     *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
+     *              "image" : "abcdefg.jpg",
      *              "name" : "Example Product B",
      *              "category" : "Category A"
      *         }
