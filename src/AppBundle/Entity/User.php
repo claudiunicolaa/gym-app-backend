@@ -46,6 +46,14 @@ class User extends BaseUser
     protected $lastName;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean")
+     * @Groups({"user"})
+     */
+    protected $isAtTheGym;
+
+    /**
      * @ORM\Column(type="string", length=100, nullable=true)
      * @Groups({"user"})
      */
@@ -242,6 +250,26 @@ class User extends BaseUser
     }
 
     /**
+     * @return bool
+     */
+    public function isAtTheGym(): bool
+    {
+        return $this->isAtTheGym;
+    }
+
+    /**
+     * @param bool $isAtTheGym
+     *
+     * @return $this
+     */
+    public function setIsAtTheGym(bool $isAtTheGym): self
+    {
+        $this->isAtTheGym = $isAtTheGym;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function toArray() : array
@@ -250,7 +278,8 @@ class User extends BaseUser
             'id' => $this->getId(),
             'fullName' => $this->getFullName(),
             'email' => $this->getEmail(),
-            'picturePath' => $this->getPicturePath()
+            'picturePath' => $this->getPicturePath(),
+            'isAtTheGym' => $this->isAtTheGym()
         ];
     }
 
@@ -269,6 +298,7 @@ class User extends BaseUser
         $this->setPlainPassword($data['password'] ?? '');
         $this->addRole("ROLE_USER");
         $this->setEnabled(true);
+        $this->setIsAtTheGym(false);
 
         return $this;
     }
@@ -296,6 +326,10 @@ class User extends BaseUser
         if (isset($data['email'])) {
             $this->setEmail($data['email']);
             $this->setEmailCanonical($data['email']);
+        }
+
+        if (isset($data['isAtTheGym'])) {
+            $this->setIsAtTheGym($data['isAtTheGym'] === 'true' ? 1 : 0);
         }
 
         return $this;

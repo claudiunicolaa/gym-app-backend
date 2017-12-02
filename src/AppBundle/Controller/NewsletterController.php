@@ -49,18 +49,16 @@ class NewsletterController extends Controller
                 ->get(UserRepository::class)
                 ->getSubscribedUsers();
 
-            $recipients = "";
+            $recipients = array();
 
             foreach ($emailsArray as $email) {
-                $recipients = $recipients . $email['email'];
+                array_push($recipients,$email['email']);
             }
 
             $message = (new \Swift_Message('Gym App Newsletter'))
                 ->setFrom('gymappnewsletter@gmail.com')
-                ->setTo('andu.hulkmaniac@gmail.com')
+                ->setTo($recipients)
                 ->setBody($form->getData());
-
-            var_dump($message->getBody()); die();
 
             $this->get('mailer')->send($message);
         }
