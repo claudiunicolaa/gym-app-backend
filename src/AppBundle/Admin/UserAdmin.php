@@ -18,29 +18,16 @@ class UserAdmin extends AbstractAdmin
     /**
      * @inheritdoc
      */
-    protected function configureRoutes(RouteCollection $collection)
-    {
-        $collection->remove('delete');
-        $collection->remove('edit');
-    }
-
-    /**
-     * @inheritdoc
-     */
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
             ->add('email', 'email', ['required' => true])
             ->add('firstName', 'text', ['required' => true])
             ->add('lastName', 'text', ['required' => true])
-            ->add(
-                'plainPassword',
-                'password',
-                [
-                    'required' => true,
-                    'help' => 'Currently any password is valid! A validation will be implemented soon!'
-                ]
-            );
+            ->add('plainPassword', 'password', [
+                'required' => false,
+                'label' => 'Password',
+            ]);
     }
 
     /**
@@ -64,7 +51,12 @@ class UserAdmin extends AbstractAdmin
             ->add('id')
             ->add('email')
             ->add('firstName')
-            ->add('lastName');
+            ->add('lastName')
+            ->add('_action', 'actions', array(
+                'actions' => array(
+                    'edit' => array(),
+                )
+            ));
     }
 
     /**
