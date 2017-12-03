@@ -15,6 +15,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 class User extends BaseUser
 {
+    const DEFAULT_IMAGE_NAME = 'default.jpg';
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -51,13 +53,13 @@ class User extends BaseUser
      * @ORM\Column(type="boolean")
      * @Groups({"user"})
      */
-    protected $isAtTheGym;
+    protected $isAtTheGym = 0;
 
     /**
      * @ORM\Column(type="string", length=100, nullable=true)
      * @Groups({"user"})
      */
-    protected $picturePath;
+    protected $picture;
 
     /**
      * @var Collection
@@ -93,7 +95,10 @@ class User extends BaseUser
 
         $this->trainedCourses = new ArrayCollection();
         $this->attendingCourses = new ArrayCollection();
+
         $this->subscribed = false;
+        $this->picture = self::DEFAULT_IMAGE_NAME;
+        $this->isAtTheGym = false;
     }
 
     /**
@@ -114,6 +119,7 @@ class User extends BaseUser
         $this->subscribed = $subscribed;
 
         return $this;
+
     }
 
     /**
@@ -158,19 +164,19 @@ class User extends BaseUser
     /**
      * @return string
      */
-    public function getPicturePath() : ?string
+    public function getPicture() : ?string
     {
-        return (string) $this->picturePath;
+        return (string) $this->picture;
     }
 
     /**
-     * @param string $picturePath
+     * @param string $picture
      *
      * @return $this
      */
-    public function setPicturePath(?string $picturePath) : self
+    public function setPicture(?string $picture) : self
     {
-        $this->picturePath = $picturePath;
+        $this->picture = $picture;
 
         return $this;
     }
@@ -276,7 +282,7 @@ class User extends BaseUser
             'id' => $this->getId(),
             'fullName' => $this->getFullName(),
             'email' => $this->getEmail(),
-            'picturePath' => $this->getPicturePath(),
+            'picturePath' => $this->getPicture(),
             'isAtTheGym' => $this->isAtTheGym()
         ];
     }
@@ -292,7 +298,7 @@ class User extends BaseUser
         $this->setUsername($this->getEmail());
         $this->setLastName(explode(' ', $data['fullName'])[0] ?? '');
         $this->setFirstName(explode(' ', $data['fullName'])[1] ?? '');
-        $this->setPicturePath($data['picture'] ?? '');
+        $this->setPicture($data['picture'] ?? '');
         $this->setPlainPassword($data['password'] ?? '');
         $this->addRole("ROLE_USER");
         $this->setEnabled(true);
@@ -314,7 +320,7 @@ class User extends BaseUser
         }
 
         if (isset($data['picture']) && null !== $data['picture']) {
-            $this->setPicturePath($data['picture']);
+            $this->setPicture($data['picture']);
         }
 
         if (isset($data['password'])) {

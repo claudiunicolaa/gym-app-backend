@@ -12,18 +12,10 @@ use Sonata\AdminBundle\Route\RouteCollection;
  * Class UserAdmin
  *
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
+ * @author Claudiu Nicola <claudiunicola96@gmail.com>
  */
 class UserAdmin extends AbstractAdmin
 {
-    /**
-     * @inheritdoc
-     */
-    protected function configureRoutes(RouteCollection $collection)
-    {
-        $collection->remove('delete');
-        $collection->remove('edit');
-    }
-
     /**
      * @inheritdoc
      */
@@ -33,14 +25,11 @@ class UserAdmin extends AbstractAdmin
             ->add('email', 'email', ['required' => true])
             ->add('firstName', 'text', ['required' => true])
             ->add('lastName', 'text', ['required' => true])
-            ->add(
-                'plainPassword',
-                'password',
-                [
-                    'required' => true,
-                    'help' => 'Currently any password is valid! A validation will be implemented soon!'
-                ]
-            );
+            ->add('plainPassword', 'password', [
+                'required' => false,
+                'label'    => 'Password',
+            ])
+            ->add('isAtTheGym');
     }
 
     /**
@@ -52,7 +41,8 @@ class UserAdmin extends AbstractAdmin
             ->add('id')
             ->add('email')
             ->add('firstName')
-            ->add('lastName');
+            ->add('lastName')
+            ->add('isAtTheGym');
     }
 
     /**
@@ -64,7 +54,17 @@ class UserAdmin extends AbstractAdmin
             ->add('id')
             ->add('email')
             ->add('firstName')
-            ->add('lastName');
+            ->add('lastName')
+            ->add('isAtTheGym', 'choice', [
+                'editable' => true,
+                'choices'  => [0 => 'no', 1 => 'yes'],
+
+            ])
+            ->add('_action', 'actions', [
+                'actions' => [
+                    'edit' => [],
+                ]
+            ]);
     }
 
     /**
