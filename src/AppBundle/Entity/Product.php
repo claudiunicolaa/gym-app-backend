@@ -13,6 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Product
 {
+    const DEFAULT_IMAGE_NAME = 'default.png';
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -60,7 +62,7 @@ class Product
      */
     public function __construct()
     {
-        $this->image = 'default.png';
+        $this->image = self::DEFAULT_IMAGE_NAME;
     }
 
     /**

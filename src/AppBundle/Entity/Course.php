@@ -16,6 +16,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Course
 {
+    const DEFAULT_IMAGE_NAME = 'default.jpg';
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -48,7 +50,7 @@ class Course
      *
      * @ORM\Column(type="string", length=100, nullable=true)
      */
-    protected $imagePath;
+    protected $image;
 
     /**
      * @var string
@@ -70,7 +72,7 @@ class Course
     public function __construct()
     {
         $this->registeredUsers = new ArrayCollection();
-        $this->imagePath = 'default.jpg';
+        $this->image = self::DEFAULT_IMAGE_NAME;
     }
 
     /**
@@ -175,19 +177,19 @@ class Course
     /**
      * @return string
      */
-    public function getImagePath() : ?string
+    public function getImage() : ?string
     {
-        return $this->imagePath;
+        return $this->image;
     }
 
     /**
-     * @param string $imagePath
+     * @param string $image
      *
      * @return $this
      */
-    public function setImagePath(?string $imagePath) : self
+    public function setImage(?string $image) : self
     {
-        $this->imagePath = $imagePath;
+        $this->image = $image;
 
         return $this;
     }
@@ -223,7 +225,7 @@ class Course
             'eventDate' => $this->getEventDate()->getTimestamp(),
             'capacity' => $this->getCapacity(),
             'name' => $this->getName(),
-            'image' => $this->getImagePath(),
+            'image' => $this->getImage(),
             'registeredUsers' => count($this->getRegisteredUsers())
         ];
     }
@@ -282,7 +284,7 @@ class Course
     {
         $this->setName($data['name']);
         $this->setTrainer($data['trainer']);
-        $this->setImagePath($data['image'] ?? '');
+        $this->setImage($data['image'] ?? '');
         $this->setCapacity($data['capacity']);
         $this->setEventDate($data['eventDate']);
 
