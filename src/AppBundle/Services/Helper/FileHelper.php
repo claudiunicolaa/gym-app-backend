@@ -101,7 +101,7 @@ class FileHelper
         $file = null;
         if ($entity instanceof User) {
             try {
-                $file = new File($this->webRoot . '/' . self::USER_UPLOADS_FOLDER_NAME . '/' . $entity->getPicturePath());
+                $file = new File($this->webRoot . '/' . self::USER_UPLOADS_FOLDER_NAME . '/' . $entity->getPicture());
                 $fileSystem->remove($file);
             } catch (FileNotFoundException|IOException $ignored) {}
 
@@ -118,7 +118,7 @@ class FileHelper
         }
 
         try {
-            $file = new File($this->webRoot . '/' . self::COURSE_UPLOADS_FOLDER_NAME . '/' . $entity->getImagePath());
+            $file = new File($this->webRoot . '/' . self::COURSE_UPLOADS_FOLDER_NAME . '/' . $entity->getImage());
             $fileSystem->remove($file);
         }  catch (FileNotFoundException|IOException $ignored) {}
     }
