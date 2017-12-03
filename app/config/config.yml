@@ -124,5 +124,4 @@ sonata_block:
 stof_doctrine_extensions:
     orm:
         default:
-            sluggable: true
             timestampable: true

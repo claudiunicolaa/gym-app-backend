@@ -141,5 +141,4 @@ class NoteController extends Controller
             return new JsonResponse(['error' => $ex->getMessage()], 400);
         }
     }
-
 }

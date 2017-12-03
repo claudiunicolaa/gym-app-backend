@@ -32,8 +32,6 @@ class NoteRepository extends EntityRepository
             ->andWhere('n.user = :user')
             ->setParameter('user', $user);
 
-
-
         return $queryBuilder->getQuery()->getResult();
     }
 }
