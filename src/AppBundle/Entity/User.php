@@ -47,7 +47,7 @@ class User extends BaseUser
      * @ORM\Column(type="boolean")
      * @Groups({"user"})
      */
-    protected $isAtTheGym;
+    protected $isAtTheGym = 0;
 
     /**
      * @ORM\Column(type="string", length=100, nullable=true)

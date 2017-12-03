@@ -26,7 +26,7 @@ class Course
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="trainedCourses")
      * @ORM\JoinColumn(name="trainer_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $trainer;

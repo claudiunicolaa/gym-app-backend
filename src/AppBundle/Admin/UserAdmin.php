@@ -12,6 +12,7 @@ use Sonata\AdminBundle\Route\RouteCollection;
  * Class UserAdmin
  *
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
+ * @author Claudiu Nicola <claudiunicola96@gmail.com>
  */
 class UserAdmin extends AbstractAdmin
 {
@@ -26,8 +27,9 @@ class UserAdmin extends AbstractAdmin
             ->add('lastName', 'text', ['required' => true])
             ->add('plainPassword', 'password', [
                 'required' => false,
-                'label' => 'Password',
-            ]);
+                'label'    => 'Password',
+            ])
+            ->add('isAtTheGym');
     }
 
     /**
@@ -39,7 +41,8 @@ class UserAdmin extends AbstractAdmin
             ->add('id')
             ->add('email')
             ->add('firstName')
-            ->add('lastName');
+            ->add('lastName')
+            ->add('isAtTheGym');
     }
 
     /**
@@ -52,11 +55,16 @@ class UserAdmin extends AbstractAdmin
             ->add('email')
             ->add('firstName')
             ->add('lastName')
-            ->add('_action', 'actions', array(
-                'actions' => array(
-                    'edit' => array(),
-                )
-            ));
+            ->add('isAtTheGym', 'choice', [
+                'editable' => true,
+                'choices'  => [0 => 'no', 1 => 'yes'],
+
+            ])
+            ->add('_action', 'actions', [
+                'actions' => [
+                    'edit' => [],
+                ]
+            ]);
     }
 
     /**
