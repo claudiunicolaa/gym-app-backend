@@ -28,7 +28,7 @@ class User extends BaseUser
     protected $email;
 
     /**
-     * @ORM\Column(type="boolean", length=255)
+     * @ORM\Column(type="boolean")
      * @Groups({"user"})
      */
     protected $subscribed;
@@ -107,7 +107,7 @@ class User extends BaseUser
     /**
      * @param bool $subscribed
      *
-     * @return User $this
+     * @return $this
      */
     public function setSubscribed(bool $subscribed) : self
     {
@@ -128,7 +128,7 @@ class User extends BaseUser
 
     /**
      * @param string $firstName
-     * @return User $this
+     * @return $this
      */
     public function setFirstName(string $firstName) : self
     {

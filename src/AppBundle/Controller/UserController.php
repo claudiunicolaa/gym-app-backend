@@ -130,9 +130,7 @@ class UserController extends Controller
         $loggedUser = $this->getUser();
 
         $loggedUser->setSubscribed(true);
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($loggedUser);
-        $em->flush();
+        $this->getDoctrine()->getManager()->flush();
 
         return new JsonResponse('', 200);
     }
@@ -159,9 +157,7 @@ class UserController extends Controller
         $loggedUser = $this->getUser();
 
         $loggedUser->setSubscribed(false);
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($loggedUser);
-        $em->flush();
+        $this->getDoctrine()->getManager()->flush();
 
         return new JsonResponse('', 200);
     }

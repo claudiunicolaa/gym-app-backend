@@ -9,15 +9,15 @@
 </head>
 <body>
 <div class="outer">
-
     <div class="middle">
         <div class="inner">
-            <form method="post">
-                <h1>Newsletter message</h1>
+            <form>
+                <h1>Newsletter sent successfully</h1>
                 <div class="inset">
-                    {{ form_start(form) }}
-                    {{ form_widget(form) }}
-                    {{ form_end(form) }}
+                    <label>The newsletter with the message you provided was successfully sent.</label>
+                    <a id="dashboardButton" href="{{ path('sonata_admin_dashboard') }}">
+                        Dashboard
+                    </a>
                 </div>
             </form>
         </div>

@@ -1,16 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: andu
- * Date: 27.11.2017
- * Time: 16:43
- */
 
 namespace AppBundle\Controller;
 
 use AppBundle\Exception\CourseRepositoryException;
 use AppBundle\Repository\CourseRepository;
 use AppBundle\Repository\UserRepository;
+use AppBundle\Form\Type\NewsletterType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -36,11 +31,7 @@ class NewsletterController extends Controller
      */
     public function newAction(Request $request) : Response
     {
-        //$form = $this->createForm(NewsletterType::class);
-        $form = $this->createFormBuilder()
-            ->add('text', TextareaType::class)
-            ->add('send',SubmitType::class, array('label' => 'Send newsletter'))
-            ->getForm();
+        $form = $this->createForm(NewsletterType::class);
 
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid())
@@ -49,22 +40,19 @@ class NewsletterController extends Controller
                 ->get(UserRepository::class)
                 ->getSubscribedUsers();
 
-            $recipients = array();
-
-            foreach ($emailsArray as $email) {
-                array_push($recipients,$email['email']);
-            }
-
             $message = (new \Swift_Message('Gym App Newsletter'))
                 ->setFrom('gymappnewsletter@gmail.com')
-                ->setTo($recipients)
-                ->setBody($form->getData());
+                ->setTo(array_column($emailsArray,'email'))
+                ->setBody($form->get('message')->getData());
 
             $this->get('mailer')->send($message);
+
+            return $this->render('default/newsletter_success.html.twig');
         }
 
         return $this->render('default/newsletter.html.twig', array(
             'form' => $form->createView(),
         ));
     }
+
 }
