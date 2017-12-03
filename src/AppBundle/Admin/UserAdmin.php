@@ -7,6 +7,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 /**
  * Class UserAdmin
@@ -28,6 +29,15 @@ class UserAdmin extends AbstractAdmin
             ->add('plainPassword', 'password', [
                 'required' => false,
                 'label'    => 'Password',
+            ])
+            ->add('roles', 'choice', [
+                'required' => false,
+                'multiple' => true,
+                'choices' => [
+                    'Regular User'=> "ROLE_USER",
+                    'Trainer' => 'ROLE_TRAINER',
+                    'Administrator' => 'ROLE_ADMIN'
+                ]
             ])
             ->add('isAtTheGym');
     }
