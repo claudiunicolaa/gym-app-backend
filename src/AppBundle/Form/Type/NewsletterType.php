@@ -26,9 +26,9 @@ class NewsletterType extends AbstractType
     {
         $builder
             ->add('message', TextareaType::class)
-            ->add('send', SubmitType::class, array('label' => 'Send newsletter'));
+            ->add('send', SubmitType::class, array(
+                'label' => 'Send newsletter',
+                'attr' => array('class' => 'dashboardButton')
+            ));
     }
-
-
-
 }

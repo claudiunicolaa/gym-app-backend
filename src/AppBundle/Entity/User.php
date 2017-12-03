@@ -116,8 +116,6 @@ class User extends BaseUser
         return $this;
     }
 
-
-
     /**
      * @return string
      */
@@ -351,7 +349,6 @@ class User extends BaseUser
                 return $role;
             }
         }
-
         return 'ROLE_USER';
     }
 }
