@@ -24,14 +24,11 @@ class UserAdmin extends AbstractAdmin
             ->add('email', 'email', ['required' => true])
             ->add('firstName', 'text', ['required' => true])
             ->add('lastName', 'text', ['required' => true])
-            ->add(
-                'plainPassword',
-                'password',
-                [
-                    'required' => true,
-                    'help'     => 'Currently any password is valid! A validation will be implemented soon!'
-                ]
-            )
+            ->add('plainPassword', 'password',[
+
+                    'required' => false,
+                    'label' => 'Password',
+            ])
             ->add('isAtTheGym');
     }
 
@@ -65,6 +62,12 @@ class UserAdmin extends AbstractAdmin
                     'choices'  => [0 => 'no', 1 => 'yes'],
 
                 ]);
+            ->add('lastName')
+            ->add('_action', 'actions', array(
+                'actions' => array(
+                    'edit' => array(),
+                )
+            ));
     }
 
     /**
