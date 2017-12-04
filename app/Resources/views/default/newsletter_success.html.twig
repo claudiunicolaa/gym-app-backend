@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>
+        Newsletter
+    </title>
+    <link rel="stylesheet" type="text/css" href="{{ asset('styleModified.css') }}"/>
+</head>
+<body>
+<div class="outer">
+    <div class="middle">
+        <div class="inner">
+            <form>
+                <h1>Newsletter sent successfully</h1>
+                <div class="inset">
+                    <label>The newsletter with the message you provided was successfully sent.</label>
+                    <a class="dashboardButton" href="{{ path('sonata_admin_dashboard') }}">
+                        Dashboard
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

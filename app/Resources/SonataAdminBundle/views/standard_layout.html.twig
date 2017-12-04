@@ -42,6 +42,13 @@ file that was distributed with this source code.
                     margin-left: 30px;
                     color: black;
                 }
+                #newsletter_button {
+                    line-height: 50px;
+                    vertical-align: middle;
+                    font-size: 20px;
+                    margin-left: 30px;
+                    color: black;
+                }
             </style>
         {% endfor %}
     {% endblock %}
@@ -153,6 +160,10 @@ file that was distributed with this source code.
                 <nav class="navbar navbar-static-top" role="navigation">
                     <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
                         <span class="sr-only">Toggle navigation</span>
+                    </a>
+
+                    <a id="newsletter_button" href="{{ path('newsletter_form') }}">
+                        Newsletter
                     </a>
 
                     <a id="logout_button" href="{{ path('fos_user_security_logout') }}">

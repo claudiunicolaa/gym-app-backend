@@ -30,6 +30,12 @@ class User extends BaseUser
     protected $email;
 
     /**
+     * @ORM\Column(type="boolean")
+     * @Groups({"user"})
+     */
+    protected $subscribed;
+
+    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"user"})
      */
@@ -89,8 +95,31 @@ class User extends BaseUser
 
         $this->trainedCourses = new ArrayCollection();
         $this->attendingCourses = new ArrayCollection();
+
+        $this->subscribed = false;
         $this->picture = self::DEFAULT_IMAGE_NAME;
         $this->isAtTheGym = false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSubscribed() : bool
+    {
+        return $this->subscribed;
+    }
+
+    /**
+     * @param bool $subscribed
+     *
+     * @return $this
+     */
+    public function setSubscribed(bool $subscribed) : self
+    {
+        $this->subscribed = $subscribed;
+
+        return $this;
+
     }
 
     /**
@@ -103,7 +132,7 @@ class User extends BaseUser
 
     /**
      * @param string $firstName
-     * @return User $this
+     * @return $this
      */
     public function setFirstName(string $firstName) : self
     {
@@ -326,7 +355,6 @@ class User extends BaseUser
                 return $role;
             }
         }
-
         return 'ROLE_USER';
     }
 }

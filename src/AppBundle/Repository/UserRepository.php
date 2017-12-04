@@ -13,6 +13,21 @@ use Doctrine\ORM\EntityRepository;
 class UserRepository extends EntityRepository
 {
     /**
+     * Returns all users that have subscribed to the newsletter
+     *
+     * @return array
+     */
+    public function getSubscribedUsers() : array
+    {
+        $queryBuilder = $this
+            ->createQueryBuilder('u')
+            ->select('u.email')
+            ->andWhere('u.subscribed = 1');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    /**
      * @return int
      */
     public function getNoOfUsersAtTheGym() : int

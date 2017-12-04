@@ -109,6 +109,60 @@ class UserController extends Controller
     }
 
     /**
+     * @Route("/api/newsletter/subscription", name="newsletter_subscribe", methods={"POST"})
+     *
+     * @return JsonResponse
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Used when a user wants to subscribe to the newsletter.",
+     *  section="User",
+     *  statusCodes={
+     *      200="Returned when successful",
+     *      400="Returned when the request is invalid.",
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      405="Returned when the method called is not allowed"
+     *  }
+     *  )
+     */
+    public function subscribeAction() : JsonResponse
+    {
+        $loggedUser = $this->getUser();
+
+        $loggedUser->setSubscribed(true);
+        $this->getDoctrine()->getManager()->flush();
+
+        return new JsonResponse('', 200);
+    }
+
+    /**
+     * @Route("/api/newsletter/subscription", name="newsletter_unsubscribe", methods={"DELETE"})
+     *
+     * @return JsonResponse
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Used when a user wants to unsubscribe from the newsletter",
+     *  section="User",
+     *  statusCodes={
+     *      200="Returned when successful",
+     *      400="Returned when the request is invalid",
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      405="Returned when the method called is not allowed"
+     *  }
+     *  )
+     */
+    public function unsubscribeAction() : JsonResponse
+    {
+        $loggedUser = $this->getUser();
+
+        $loggedUser->setSubscribed(false);
+        $this->getDoctrine()->getManager()->flush();
+
+        return new JsonResponse('', 200);
+    }
+
+    /**
      * ### Example Response ###
      *      {
      *          "numberOfUsers": 2
