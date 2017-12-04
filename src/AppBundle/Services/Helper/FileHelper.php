@@ -3,6 +3,7 @@
 namespace AppBundle\Services\Helper;
 
 use AppBundle\Entity\Course;
+use AppBundle\Entity\Product;
 use AppBundle\Entity\User;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
@@ -19,11 +20,12 @@ use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
 class FileHelper
 {
     const PICTURE_NAME_SIZE = 8;
-    const ALLOWED_TARGET_FOLDERS = ['user', 'course'];
+    const ALLOWED_TARGET_FOLDERS = ['user', 'course', 'product'];
     const CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const UPLOADS_FOLDER_NAME = 'uploads';
     const USER_UPLOADS_FOLDER_NAME = self::UPLOADS_FOLDER_NAME . '/user';
     const COURSE_UPLOADS_FOLDER_NAME = self::UPLOADS_FOLDER_NAME . '/course';
+    const PRODUCT_UPLOADS_FOLDER_NAME = self::UPLOADS_FOLDER_NAME . '/product';
 
     /**
      * @var string
@@ -85,13 +87,13 @@ class FileHelper
     }
 
     /**
-     * @param User|Course $entity
+     * @param User|Course|Product $entity
      *
      * @throws InvalidArgumentException if the argument is invalid
      */
     public function removePicture($entity) : void
     {
-        if (!($entity instanceof User) && !($entity instanceof Course)) {
+        if (!($entity instanceof User) && !($entity instanceof Course) && !($entity instanceof Product)) {
             throw new InvalidArgumentException("Invalid object given!");
         }
 
@@ -99,7 +101,16 @@ class FileHelper
         $file = null;
         if ($entity instanceof User) {
             try {
-                $file = new File($this->webRoot . '/' . self::USER_UPLOADS_FOLDER_NAME . '/' . $entity->getPicturePath());
+                $file = new File($this->webRoot . '/' . self::USER_UPLOADS_FOLDER_NAME . '/' . $entity->getPicture());
+                $fileSystem->remove($file);
+            } catch (FileNotFoundException|IOException $ignored) {}
+
+            return ;
+        }
+
+        if ($entity instanceof Product) {
+            try {
+                $file = new File($this->webRoot . '/' . self::PRODUCT_UPLOADS_FOLDER_NAME . '/' . $entity->getImage());
                 $fileSystem->remove($file);
             } catch (FileNotFoundException|IOException $ignored) {}
 
@@ -107,7 +118,7 @@ class FileHelper
         }
 
         try {
-            $file = new File($this->webRoot . '/' . self::COURSE_UPLOADS_FOLDER_NAME . '/' . $entity->getImagePath());
+            $file = new File($this->webRoot . '/' . self::COURSE_UPLOADS_FOLDER_NAME . '/' . $entity->getImage());
             $fileSystem->remove($file);
         }  catch (FileNotFoundException|IOException $ignored) {}
     }

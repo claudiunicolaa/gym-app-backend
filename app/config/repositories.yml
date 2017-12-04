@@ -16,3 +16,9 @@ services:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
             - AppBundle\Entity\Product
+
+    AppBundle\Repository\NoteRepository:
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - AppBundle\Entity\Note
+

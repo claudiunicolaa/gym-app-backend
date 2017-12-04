@@ -2,6 +2,7 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\Course;
 use AppBundle\Entity\User;
 use AppBundle\Exception\CourseRepositoryException;
 use Doctrine\ORM\EntityRepository;
@@ -49,6 +50,31 @@ class CourseRepository extends EntityRepository
         $this->applyFilters($queryBuilder, $user, $filters);
 
         return $queryBuilder->getQuery()->getResult();
+    }
+
+    /**
+     * @param User $loggedUser
+     * @param int  $courseId
+     *
+     * @return int
+     */
+    public function isRegistered(User $loggedUser, int $courseId) : int
+    {
+        $usersCourses = $this
+            ->createQueryBuilder('c')
+            ->select('c.id')
+            ->where(':user MEMBER OF c.registeredUsers')
+            ->setParameter('user', $loggedUser)
+            ->getQuery()
+            ->getResult();
+
+        foreach ($usersCourses as $course) {
+            if ($course['id'] === $courseId) {
+                return 1;
+            }
+        }
+
+        return 0;
     }
 
     /**

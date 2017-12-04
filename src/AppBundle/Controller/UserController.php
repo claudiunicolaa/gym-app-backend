@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
 use AppBundle\Exception\UserValidationException;
+use AppBundle\Repository\UserRepository;
 use AppBundle\Services\Helper\FileHelper;
 use AppBundle\Services\Validator\UserValidator;
 use FOS\UserBundle\Doctrine\UserManager;
@@ -25,8 +26,9 @@ class UserController extends Controller
      *      {
      *         "id" : "1",
      *         "fullName" : "Smith Adam",
-     *         "email" : "smithadam@gmail.com"
-     *         "picture" : "abcdefg.jpg"
+     *         "email" : "smithadam@gmail.com",
+     *         "picture" : "abcdefg.jpg",
+     *         "isAtTheGym" : "1"
      *     }
      *
      * @Route("/api/user", name="user_get", methods={"GET"})
@@ -46,18 +48,7 @@ class UserController extends Controller
      */
     public function getUserAction() : JsonResponse
     {
-        /** @var User $loggedUser */
-        $loggedUser = $this->getUser();
-
-        return new JsonResponse(
-            [
-                'id' => $loggedUser->getId(),
-                'fullName' => $loggedUser->getFullName(),
-                'email' => $loggedUser->getEmail(),
-                'picture' => $loggedUser->getPicturePath()
-            ],
-            200
-        );
+        return new JsonResponse($this->getUser()->toArray(),200);
     }
 
     /**
@@ -75,6 +66,7 @@ class UserController extends Controller
      *      {"name"="fullName", "dataType"="string"},
      *      {"name"="password", "dataType"="string"},
      *      {"name"="picture", "dataType"="File"},
+     *      {"name"="isAtTheGym", "dataType"="boolean"},
      *      {"name"="_method", "dataType"="string", "description"="Mandatory: value = PUT"},
      *  },
      *  statusCodes={
@@ -114,5 +106,88 @@ class UserController extends Controller
         $userManager->updateUser($loggedUser);
 
         return new JsonResponse('', 200);
+    }
+
+    /**
+     * @Route("/api/newsletter/subscription", name="newsletter_subscribe", methods={"POST"})
+     *
+     * @return JsonResponse
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Used when a user wants to subscribe to the newsletter.",
+     *  section="User",
+     *  statusCodes={
+     *      200="Returned when successful",
+     *      400="Returned when the request is invalid.",
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      405="Returned when the method called is not allowed"
+     *  }
+     *  )
+     */
+    public function subscribeAction() : JsonResponse
+    {
+        $loggedUser = $this->getUser();
+
+        $loggedUser->setSubscribed(true);
+        $this->getDoctrine()->getManager()->flush();
+
+        return new JsonResponse('', 200);
+    }
+
+    /**
+     * @Route("/api/newsletter/subscription", name="newsletter_unsubscribe", methods={"DELETE"})
+     *
+     * @return JsonResponse
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Used when a user wants to unsubscribe from the newsletter",
+     *  section="User",
+     *  statusCodes={
+     *      200="Returned when successful",
+     *      400="Returned when the request is invalid",
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      405="Returned when the method called is not allowed"
+     *  }
+     *  )
+     */
+    public function unsubscribeAction() : JsonResponse
+    {
+        $loggedUser = $this->getUser();
+
+        $loggedUser->setSubscribed(false);
+        $this->getDoctrine()->getManager()->flush();
+
+        return new JsonResponse('', 200);
+    }
+
+    /**
+     * ### Example Response ###
+     *      {
+     *          "numberOfUsers": 2
+     *      }
+     *
+     * @Route("/api/users/at-the-gym", name="users_at_the_gym", methods={"GET"})
+     *
+     * @return JsonResponse
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Returns the number of users currently at the gym",
+     *  section="User",
+     *  statusCodes={
+     *      200="Returned when successful",
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      405="Returned when the method called is not allowed",
+     *  }
+     *  )
+     */
+    public function usersAtTheGymAction() : JsonResponse
+    {
+        return new JsonResponse(
+            ['numberOfUsers' => $this->get(UserRepository::class)->getNoOfUsersAtTheGym()],
+            200
+        );
     }
 }

@@ -38,7 +38,8 @@ class CourseController extends Controller
      *              "capacity" : "30",
      *              "name" : "Course A",
      *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
-     *              "registeredUsers" : "15"
+     *              "registeredUsers" : "15",
+     *              "amRegistered" : "0"
      *         },
      *         {
      *              {
@@ -53,7 +54,8 @@ class CourseController extends Controller
      *              "capacity" : "25",
      *              "name" : "Course B",
      *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
-     *              "registeredUsers" : "25"
+     *              "registeredUsers" : "25",
+     *              "amRegistered" : "1"
      *         }
      *     }
      *
@@ -114,7 +116,8 @@ class CourseController extends Controller
      *              "capacity" : "30",
      *              "name" : "Course A",
      *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
-     *              "registeredUsers" : "15"
+     *              "registeredUsers" : "15",
+     *              "amRegistered" : "1"
      *         }
      *     }
      *
@@ -142,7 +145,10 @@ class CourseController extends Controller
             return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
         }
 
-        return new JsonResponse($course->toArray(), 200);
+        $result = $course->toArray();
+        $result['amRegistered'] = $course->getRegisteredUsers()->contains($this->getUser()) ? 1 : 0;
+
+        return new JsonResponse($result, 200);
     }
 
     /**
@@ -154,7 +160,7 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used for course creation. The assigned trainer will be the user that makes the request. Use the status code to understand the output. No JSON provided.",
+     *  description="Used for course creation. The assigned trainer will be the user that makes the request.",
      *  section="Course",
      *  filters={
      *      {"name"="eventDate", "dataType"="timestamp", "description" : "Mandatory"},
@@ -174,12 +180,10 @@ class CourseController extends Controller
      */
     public function createCourseAction(Request $request) : JsonResponse
     {
+        $course = new Course();
         $loggedUser = $this->getUser();
-        if (!in_array('ROLE_TRAINER', $loggedUser->getRoles()) &&
-            !in_array('ROLE_ADMIN', $loggedUser->getRoles())
-        ) {
-            return new JsonResponse(['error' => 'Not Authorized!'], 403);
-        }
+
+        $this->denyAccessUnlessGranted('create', $course);
 
         $requestParams = $request->request->all();
         if (null !== $request->files->get('image')) {
@@ -193,7 +197,6 @@ class CourseController extends Controller
 
             $requestParams['trainer'] = $loggedUser;
             $requestParams['image'] = $this->get(FileHelper::class)->uploadFile($request->files->get('image'), 'course');
-            $course = new Course();
             $course->setProperties($requestParams);
 
             $em = $this->getDoctrine()->getManager();
@@ -286,12 +289,7 @@ class CourseController extends Controller
             return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
         }
 
-        $loggedUser = $this->getUser();
-        if (!($course->getTrainer()->getId() === $loggedUser->getId()) &&
-            !in_array('ROLE_ADMIN', $loggedUser->getRoles())
-        ) {
-            return new JsonResponse(['error' => 'Not Authorized'], 403);
-        }
+        $this->denyAccessUnlessGranted('update', $course);
 
         $requestParameters = $request->request->all();
         unset($requestParameters['_method']);
@@ -348,12 +346,7 @@ class CourseController extends Controller
             return new JsonResponse(['error' => 'Course with given id doesn\'t exist'], 400);
         }
 
-        $loggedUser = $this->getUser();
-        if (!($course->getTrainer()->getId() === $loggedUser->getId()) &&
-            !in_array('ROLE_ADMIN', $loggedUser->getRoles()))
-        {
-            return new JsonResponse(['error' => 'Not authorized'], 403);
-        }
+        $this->denyAccessUnlessGranted('delete', $course);
 
         $this->get(FileHelper::class)->removePicture($course);
         $em = $this->getDoctrine()->getManager();
@@ -429,6 +422,10 @@ class CourseController extends Controller
             $result[$key]['name'] = $courseData['name'];
             $result[$key]['image'] = $courseData['imagePath'];
             $result[$key]['registeredUsers'] = $courseData['registered_users'];
+            $result[$key]['amRegistered'] = $this
+                ->getDoctrine()
+                ->getRepository(Course::class)
+                ->isRegistered($this->getUser(), $courseData['id']);
         }
 
         return $result;

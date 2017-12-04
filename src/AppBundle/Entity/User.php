@@ -3,18 +3,20 @@
 namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  */
 class User extends BaseUser
 {
+    const DEFAULT_IMAGE_NAME = 'default.jpg';
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -26,6 +28,12 @@ class User extends BaseUser
      * @Groups({"user"})
      */
     protected $email;
+
+    /**
+     * @ORM\Column(type="boolean")
+     * @Groups({"user"})
+     */
+    protected $subscribed;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -40,10 +48,18 @@ class User extends BaseUser
     protected $lastName;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean")
+     * @Groups({"user"})
+     */
+    protected $isAtTheGym = 0;
+
+    /**
      * @ORM\Column(type="string", length=100, nullable=true)
      * @Groups({"user"})
      */
-    protected $picturePath;
+    protected $picture;
 
     /**
      * @var Collection
@@ -79,6 +95,31 @@ class User extends BaseUser
 
         $this->trainedCourses = new ArrayCollection();
         $this->attendingCourses = new ArrayCollection();
+
+        $this->subscribed = false;
+        $this->picture = self::DEFAULT_IMAGE_NAME;
+        $this->isAtTheGym = false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSubscribed() : bool
+    {
+        return $this->subscribed;
+    }
+
+    /**
+     * @param bool $subscribed
+     *
+     * @return $this
+     */
+    public function setSubscribed(bool $subscribed) : self
+    {
+        $this->subscribed = $subscribed;
+
+        return $this;
+
     }
 
     /**
@@ -91,7 +132,7 @@ class User extends BaseUser
 
     /**
      * @param string $firstName
-     * @return User $this
+     * @return $this
      */
     public function setFirstName(string $firstName) : self
     {
@@ -123,19 +164,19 @@ class User extends BaseUser
     /**
      * @return string
      */
-    public function getPicturePath() : ?string
+    public function getPicture() : ?string
     {
-        return (string) $this->picturePath;
+        return (string) $this->picture;
     }
 
     /**
-     * @param string $picturePath
+     * @param string $picture
      *
      * @return $this
      */
-    public function setPicturePath(?string $picturePath) : self
+    public function setPicture(?string $picture) : self
     {
-        $this->picturePath = $picturePath;
+        $this->picture = $picture;
 
         return $this;
     }
@@ -213,6 +254,26 @@ class User extends BaseUser
     }
 
     /**
+     * @return bool
+     */
+    public function isAtTheGym(): bool
+    {
+        return $this->isAtTheGym;
+    }
+
+    /**
+     * @param bool $isAtTheGym
+     *
+     * @return $this
+     */
+    public function setIsAtTheGym(bool $isAtTheGym): self
+    {
+        $this->isAtTheGym = $isAtTheGym;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function toArray() : array
@@ -221,7 +282,8 @@ class User extends BaseUser
             'id' => $this->getId(),
             'fullName' => $this->getFullName(),
             'email' => $this->getEmail(),
-            'picturePath' => $this->getPicturePath()
+            'picturePath' => $this->getPicture(),
+            'isAtTheGym' => $this->isAtTheGym()
         ];
     }
 
@@ -236,10 +298,11 @@ class User extends BaseUser
         $this->setUsername($this->getEmail());
         $this->setLastName(explode(' ', $data['fullName'])[0] ?? '');
         $this->setFirstName(explode(' ', $data['fullName'])[1] ?? '');
-        $this->setPicturePath($data['picture'] ?? '');
+        $this->setPicture($data['picture'] ?? '');
         $this->setPlainPassword($data['password'] ?? '');
         $this->addRole("ROLE_USER");
         $this->setEnabled(true);
+        $this->setIsAtTheGym(false);
 
         return $this;
     }
@@ -257,7 +320,7 @@ class User extends BaseUser
         }
 
         if (isset($data['picture']) && null !== $data['picture']) {
-            $this->setPicturePath($data['picture']);
+            $this->setPicture($data['picture']);
         }
 
         if (isset($data['password'])) {
@@ -267,6 +330,10 @@ class User extends BaseUser
         if (isset($data['email'])) {
             $this->setEmail($data['email']);
             $this->setEmailCanonical($data['email']);
+        }
+
+        if (isset($data['isAtTheGym'])) {
+            $this->setIsAtTheGym($data['isAtTheGym'] === 'true' ? 1 : 0);
         }
 
         return $this;
@@ -288,7 +355,6 @@ class User extends BaseUser
                 return $role;
             }
         }
-
         return 'ROLE_USER';
     }
 }
