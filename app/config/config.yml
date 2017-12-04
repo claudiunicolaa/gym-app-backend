@@ -59,6 +59,9 @@ doctrine:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
+        dql:
+            datetime_functions:
+                unix_timestamp: DoctrineExtensions\Query\Mysql\UnixTimestamp
 
 # Swiftmailer Configuration
 swiftmailer:
@@ -117,3 +120,8 @@ sonata_block:
     blocks:
         sonata.admin.block.admin_list:
             contexts: [admin]
+
+stof_doctrine_extensions:
+    orm:
+        default:
+            timestampable: true
