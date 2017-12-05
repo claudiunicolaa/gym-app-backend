@@ -100,6 +100,10 @@ class FileHelper
         $fileSystem = new Filesystem();
         $file = null;
         if ($entity instanceof User) {
+            if ($entity->getPicture() === User::DEFAULT_IMAGE_NAME) {
+                return ;
+            }
+
             try {
                 $file = new File($this->webRoot . '/' . self::USER_UPLOADS_FOLDER_NAME . '/' . $entity->getPicture());
                 $fileSystem->remove($file);
@@ -109,6 +113,10 @@ class FileHelper
         }
 
         if ($entity instanceof Product) {
+            if ($entity->getImage() === Product::DEFAULT_IMAGE_NAME) {
+                return ;
+            }
+
             try {
                 $file = new File($this->webRoot . '/' . self::PRODUCT_UPLOADS_FOLDER_NAME . '/' . $entity->getImage());
                 $fileSystem->remove($file);
@@ -118,6 +126,10 @@ class FileHelper
         }
 
         try {
+            if ($entity->getImage() === Course::DEFAULT_IMAGE_NAME) {
+                return ;
+            }
+
             $file = new File($this->webRoot . '/' . self::COURSE_UPLOADS_FOLDER_NAME . '/' . $entity->getImage());
             $fileSystem->remove($file);
         }  catch (FileNotFoundException|IOException $ignored) {}
