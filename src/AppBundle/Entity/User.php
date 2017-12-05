@@ -282,7 +282,7 @@ class User extends BaseUser
             'id' => $this->getId(),
             'fullName' => $this->getFullName(),
             'email' => $this->getEmail(),
-            'picturePath' => $this->getPicture(),
+            'picture' => $this->getPicture(),
             'isAtTheGym' => $this->isAtTheGym()
         ];
     }
