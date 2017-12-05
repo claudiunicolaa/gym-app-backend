@@ -307,7 +307,7 @@ class CourseController extends Controller
         if (isset($requestParameters['image'])) {
             $fileHelper->removePicture($course);
             unset($requestParameters['image']);
-            $requestParameters['imagePath'] = $fileHelper->uploadFile($request->files->get('image'), 'course');
+            $requestParameters['image'] = $fileHelper->uploadFile($request->files->get('image'), 'course');
         }
 
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
@@ -415,12 +415,12 @@ class CourseController extends Controller
             $result[$key]['trainer']['id'] = $courseData["trainer_id"];
             $result[$key]['trainer']['fullName'] = $courseData['lastName'] . ' ' .$courseData['firstName'];
             $result[$key]['trainer']['email'] = $courseData['email'];
-            $result[$key]['trainer']['picture'] = $courseData['picturePath'];
+            $result[$key]['trainer']['picture'] = $courseData['picture'];
             $result[$key]['eventDate'] = $courseData['eventDate']->getTimestamp();
             $result[$key]['id'] = $courseData['id'];
             $result[$key]['capacity'] = $courseData['capacity'];
             $result[$key]['name'] = $courseData['name'];
-            $result[$key]['image'] = $courseData['imagePath'];
+            $result[$key]['image'] = $courseData['image'];
             $result[$key]['registeredUsers'] = $courseData['registered_users'];
             $result[$key]['amRegistered'] = $this
                 ->getDoctrine()

@@ -34,10 +34,10 @@ class CourseRepository extends EntityRepository
                    u.email,
                    u.lastName,
                    u.firstName,
-                   u.picturePath,
+                   u.picture,
                    c.eventDate,
                    c.capacity,
-                   c.imagePath,
+                   c.image,
                    c.name,
                    COUNT(r.id) As registered_users'
             )
