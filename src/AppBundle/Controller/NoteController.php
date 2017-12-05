@@ -102,6 +102,38 @@ class NoteController extends Controller
     }
 
     /**
+     * @Route("/api/user/note/{id}", name="note_delete", methods={"DELETE"})
+     *
+     * @param Note $note
+     *
+     * @return JsonResponse
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Removes the note with the given id for the current user",
+     *  section="Note",
+     *  statusCodes={
+     *      200="Returned when successful",
+     *      400="Returned when the request is invalid",
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      405="Returned when the method called is not allowed"
+     *  }
+     *  )
+     */
+    public function deleteNoteAction(?Note $note) : JsonResponse
+    {
+        if (null === $note) {
+            return new JsonResponse(['error' => 'Note with given id doesn\'t exist'], 400);
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($note);
+        $em->flush();
+
+        return new JsonResponse('', 200);
+    }
+
+    /**
      * @Route("/api/user/note", name="note_creation", methods={"POST"})
      *
      * @param Request  $request
