@@ -35,14 +35,7 @@ file that was distributed with this source code.
         {% for stylesheet in sonata_admin.adminPool.getOption('stylesheets', []) %}
             <link rel="stylesheet" href="{{ asset(stylesheet) }}">
             <style>
-                #logout_button {
-                    line-height: 50px;
-                    vertical-align: middle;
-                    font-size: 20px;
-                    margin-left: 30px;
-                    color: black;
-                }
-                #newsletter_button {
+                .top_bar_button {
                     line-height: 50px;
                     vertical-align: middle;
                     font-size: 20px;
@@ -162,11 +155,15 @@ file that was distributed with this source code.
                         <span class="sr-only">Toggle navigation</span>
                     </a>
 
-                    <a id="newsletter_button" href="{{ path('newsletter_form') }}">
+                    <a id="api_doc_button" class="top_bar_button" target="_blank" href="{{ path('nelmio_api_doc_index') }}">
+                        API Doc
+                    </a>
+
+                    <a id="newsletter_button" class="top_bar_button" href="{{ path('newsletter_form') }}">
                         Newsletter
                     </a>
 
-                    <a id="logout_button" href="{{ path('fos_user_security_logout') }}">
+                    <a id="logout_button" class="top_bar_button" href="{{ path('fos_user_security_logout') }}">
                         Logout
                     </a>
 
