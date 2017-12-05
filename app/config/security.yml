@@ -38,7 +38,6 @@ security:
             security: false
 
     access_control:
-        - { path: ^/api/doc, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, role: ROLE_USER }
