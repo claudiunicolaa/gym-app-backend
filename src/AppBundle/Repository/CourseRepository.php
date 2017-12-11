@@ -2,7 +2,6 @@
 
 namespace AppBundle\Repository;
 
-use AppBundle\Entity\Course;
 use AppBundle\Entity\User;
 use AppBundle\Exception\CourseRepositoryException;
 use Doctrine\ORM\EntityRepository;

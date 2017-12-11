@@ -2,12 +2,16 @@
 
 namespace AppBundle\Admin;
 
+use AppBundle\Entity\Course;
+use AppBundle\Repository\CourseRepository;
+use AppBundle\Services\Helper\FileHelper;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\CoreBundle\Validator\ErrorElement;
 use Symfony\Component\Validator\Constraints\GreaterThan;
+use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 
 /**
  * Class CourseAdmin
@@ -16,6 +20,27 @@ use Symfony\Component\Validator\Constraints\GreaterThan;
  */
 class CourseAdmin extends AbstractAdmin
 {
+    /**
+     * @var FileHelper
+     */
+    protected $fileHelper;
+
+    /**
+     * @var CourseRepository
+     */
+    protected $courseRepository;
+
+    /**
+     * @inheritdoc
+     */
+    public function __construct($code, $class, $baseControllerName, FileHelper $fileHelper, CourseRepository $courseRepository)
+    {
+        parent::__construct($code, $class, $baseControllerName);
+
+        $this->fileHelper = $fileHelper;
+        $this->courseRepository = $courseRepository;
+    }
+
     /**
      * @inheritdoc
      */
@@ -73,5 +98,30 @@ class CourseAdmin extends AbstractAdmin
             ->with('capacity')
             ->addConstraint(new GreaterThan(0))
             ->end();
+    }
+
+    public function preRemove($object)
+    {
+        /** @var Course $object */
+        $this->fileHelper->removePicture($object);
+    }
+
+    public function preBatchAction($actionName, ProxyQueryInterface $query, array &$idx, $allElements)
+    {
+        if ('delete' === $actionName) {
+            if ($allElements) {
+                $allCourses = $this->courseRepository->findAll();
+                /** @var Course $product */
+                foreach ($allCourses as $course) {
+                    $this->fileHelper->removePicture($course);
+                }
+            } else {
+                foreach ($idx as $id) {
+                    /** @var Course $course */
+                    $course = $this->courseRepository->find($id);
+                    $this->fileHelper->removePicture($course);
+                }
+            }
+        }
     }
 }
