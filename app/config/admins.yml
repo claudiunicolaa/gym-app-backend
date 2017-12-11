@@ -11,7 +11,7 @@ services:
 
     sonata.course.admin:
         class: AppBundle\Admin\CourseAdmin
-        arguments: [~, AppBundle\Entity\Course, ~]
+        arguments: [~, AppBundle\Entity\Course, ~, '@AppBundle\Services\Helper\FileHelper']
         tags:
             - { name: sonata.admin, manager_type: orm, label: Course }
 

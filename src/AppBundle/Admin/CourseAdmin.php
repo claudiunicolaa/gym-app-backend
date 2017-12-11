@@ -2,9 +2,6 @@
 
 namespace AppBundle\Admin;
 
-use AppBundle\Entity\Course;
-use AppBundle\Services\Helper\FileHelper;
-use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
@@ -16,20 +13,8 @@ use Symfony\Component\Validator\Constraints\GreaterThan;
  *
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
  */
-class CourseAdmin extends AbstractAdmin
+class CourseAdmin extends BaseAdmin
 {
-    /**
-     * @var FileHelper
-     */
-    protected $fileHelper;
-
-    public function __construct($code, $class, $baseControllerName, FileHelper $fileHelper)
-    {
-        parent::__construct($code, $class, $baseControllerName);
-        $this->fileHelper = $fileHelper;
-    }
-
-
     /**
      * @inheritdoc
      */
@@ -48,8 +33,9 @@ class CourseAdmin extends AbstractAdmin
             )
             ->add('capacity', 'number', ['required' => true])
             ->add('image', 'file', [
-                'required'   => false,
-                'data_class' => null
+                'mapped'      => false,
+                'required'    => false,
+                'constraints' => new ImageExtension()
             ]);
     }
 
@@ -97,20 +83,16 @@ class CourseAdmin extends AbstractAdmin
     /**
      * @inheritdoc
      */
-    public function preUpdate($object)
+    public function prePersist($object)
     {
-        $this->manageFileUpload($object);
+        $this->manageImageUpload($object, 'course');
     }
 
-
-    public function manageFileUpload(Course $object)
+    /**
+     * @inheritdoc
+     */
+    public function preUpdate($newObject)
     {
-        $request = $this->getRequest();
-        $uniqId  = $this->getUniqid();
-//        $uniqId     = $request->query->get('uniqid');
-        $image      = $request->files->get($uniqId)['image'];
-        $fileHelper = $this->get(FileHelper::class);
-        $fileHelper->removePicture($object);
-        $fileHelper->uploadFile($image, 'course');
+        $this->manageImageUpload($newObject, 'course');
     }
 }

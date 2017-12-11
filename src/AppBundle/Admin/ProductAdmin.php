@@ -2,9 +2,7 @@
 
 namespace AppBundle\Admin;
 
-use AppBundle\Services\Helper\FileHelper;
 use AppBundle\Validator\Constraints\ImageExtension;
-use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
@@ -16,23 +14,8 @@ use Symfony\Component\Validator\Constraints\GreaterThan;
  *
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
  */
-class ProductAdmin extends AbstractAdmin
+class ProductAdmin extends BaseAdmin
 {
-    /**
-     * @var FileHelper
-     */
-    protected $fileHelper;
-
-    /**
-     * @inheritdoc
-     */
-    public function __construct($code, $class, $baseControllerName, FileHelper $fileHelper)
-    {
-        parent::__construct($code, $class, $baseControllerName);
-
-        $this->fileHelper = $fileHelper;
-    }
-
     /**
      * @inheritdoc
      */
@@ -44,8 +27,8 @@ class ProductAdmin extends AbstractAdmin
             ->add('category', 'text', ['required' => true])
             ->add('description', 'text', ['required' => false])
             ->add('image', 'file', [
-                'mapped' => false,
-                'required' => false,
+                'mapped'      => false,
+                'required'    => false,
                 'constraints' => new ImageExtension()
             ]);
     }
@@ -92,11 +75,7 @@ class ProductAdmin extends AbstractAdmin
      */
     public function prePersist($object)
     {
-        $image = $this->getForm()->get('image')->getData();
-        if (null !== $image) {
-            $fileName = $this->fileHelper->uploadFile($image, 'product');
-            $object->setImage($fileName);
-        }
+        $this->manageImageUpload($object, 'product');
     }
 
     /**
@@ -104,11 +83,6 @@ class ProductAdmin extends AbstractAdmin
      */
     public function preUpdate($newObject)
     {
-        $image = $this->getForm()->get('image')->getData();
-        if (null !== $image) {
-            $this->fileHelper->removePicture($newObject);
-            $fileName = $this->fileHelper->uploadFile($image, 'product');
-            $newObject->setImage($fileName);
-        }
+        $this->manageImageUpload($newObject, 'product');
     }
 }
