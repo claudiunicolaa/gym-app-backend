@@ -21,6 +21,14 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 class AuthorizationController extends Controller
 {
     /**
+     * @Route("/", name="default_route")
+     */
+    public function homepageAction()
+    {
+        return $this->redirectToRoute('sonata_admin_dashboard');
+    }
+
+    /**
      * ### Example Response ###
      *     {
      *         "token" : <token>,
