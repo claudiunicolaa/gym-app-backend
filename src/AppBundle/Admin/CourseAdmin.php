@@ -2,6 +2,8 @@
 
 namespace AppBundle\Admin;
 
+use AppBundle\Entity\Course;
+use AppBundle\Services\Helper\FileHelper;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
@@ -17,6 +19,18 @@ use Symfony\Component\Validator\Constraints\GreaterThan;
 class CourseAdmin extends AbstractAdmin
 {
     /**
+     * @var FileHelper
+     */
+    protected $fileHelper;
+
+    public function __construct($code, $class, $baseControllerName, FileHelper $fileHelper)
+    {
+        parent::__construct($code, $class, $baseControllerName);
+        $this->fileHelper = $fileHelper;
+    }
+
+
+    /**
      * @inheritdoc
      */
     protected function configureFormFields(FormMapper $formMapper)
@@ -29,10 +43,14 @@ class CourseAdmin extends AbstractAdmin
                 'number',
                 [
                     'required' => true,
-                    'help' => 'A valid timestamp will be one greater than the present one.'
+                    'help'     => 'A valid timestamp will be one greater than the present one.'
                 ]
             )
-            ->add('capacity', 'number', ['required' => true]);
+            ->add('capacity', 'number', ['required' => true])
+            ->add('image', 'file', [
+                'required'   => false,
+                'data_class' => null
+            ]);
     }
 
     /**
@@ -58,7 +76,8 @@ class CourseAdmin extends AbstractAdmin
             ->addIdentifier('name')
             ->addIdentifier('trainer')
             ->addIdentifier('timestamp', 'number')
-            ->addIdentifier('capacity');
+            ->addIdentifier('capacity')
+            ->addIdentifier('image');
     }
 
     /**
@@ -73,5 +92,25 @@ class CourseAdmin extends AbstractAdmin
             ->with('capacity')
             ->addConstraint(new GreaterThan(0))
             ->end();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function preUpdate($object)
+    {
+        $this->manageFileUpload($object);
+    }
+
+
+    public function manageFileUpload(Course $object)
+    {
+        $request = $this->getRequest();
+        $uniqId  = $this->getUniqid();
+//        $uniqId     = $request->query->get('uniqid');
+        $image      = $request->files->get($uniqId)['image'];
+        $fileHelper = $this->get(FileHelper::class);
+        $fileHelper->removePicture($object);
+        $fileHelper->uploadFile($image, 'course');
     }
 }
