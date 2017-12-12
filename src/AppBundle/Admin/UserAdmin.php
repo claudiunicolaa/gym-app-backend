@@ -2,12 +2,14 @@
 
 namespace AppBundle\Admin;
 
+use AppBundle\Entity\User;
+use AppBundle\Repository\UserRepository;
+use AppBundle\Services\Helper\FileHelper;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Route\RouteCollection;
-use Symfony\Component\Validator\Constraints\NotNull;
+use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 
 /**
  * Class UserAdmin
@@ -17,6 +19,27 @@ use Symfony\Component\Validator\Constraints\NotNull;
  */
 class UserAdmin extends AbstractAdmin
 {
+    /**
+     * @var FileHelper
+     */
+    protected $fileHelper;
+
+    /**
+     * @var UserRepository
+     */
+    protected $userRepository;
+
+    /**
+     * @inheritdoc
+     */
+    public function __construct($code, $class, $baseControllerName, FileHelper $fileHelper, UserRepository $userRepository)
+    {
+        parent::__construct($code, $class, $baseControllerName);
+
+        $this->fileHelper = $fileHelper;
+        $this->userRepository = $userRepository;
+    }
+
     /**
      * @inheritdoc
      */
@@ -85,5 +108,30 @@ class UserAdmin extends AbstractAdmin
     public function prePersist($object)
     {
         $object->setUsername($object->getEmail());
+    }
+
+    public function preRemove($object)
+    {
+        /** @var User $object */
+        $this->fileHelper->removePicture($object);
+    }
+
+    public function preBatchAction($actionName, ProxyQueryInterface $query, array &$idx, $allElements)
+    {
+        if ('delete' === $actionName) {
+            if ($allElements) {
+                $allUsers = $this->userRepository->findAll();
+                /** @var User $user */
+                foreach ($allUsers as $user) {
+                    $this->fileHelper->removePicture($user);
+                }
+            } else {
+                foreach ($idx as $id) {
+                    /** @var User $user */
+                    $user = $this->userRepository->find($id);
+                    $this->fileHelper->removePicture($user);
+                }
+            }
+        }
     }
 }
