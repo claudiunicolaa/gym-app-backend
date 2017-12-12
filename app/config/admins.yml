@@ -5,18 +5,18 @@ services:
 
     sonata.product.admin:
         class: AppBundle\Admin\ProductAdmin
-        arguments: [~, AppBundle\Entity\Product, ~, '@AppBundle\Services\Helper\FileHelper']
+        arguments: [~, AppBundle\Entity\Product, ~, '@AppBundle\Services\Helper\FileHelper', '@AppBundle\Repository\ProductRepository']
         tags:
             - { name: sonata.admin, manager_type: orm, label: Product }
 
     sonata.course.admin:
         class: AppBundle\Admin\CourseAdmin
-        arguments: [~, AppBundle\Entity\Course, ~, '@AppBundle\Services\Helper\FileHelper']
+        arguments: [~, AppBundle\Entity\Course, ~, '@AppBundle\Services\Helper\FileHelper', '@AppBundle\Repository\CourseRepository']
         tags:
             - { name: sonata.admin, manager_type: orm, label: Course }
 
     sonata.user.admin:
         class: AppBundle\Admin\UserAdmin
-        arguments: [~, AppBundle\Entity\User, ~]
+        arguments: [~, AppBundle\Entity\User, ~, '@AppBundle\Services\Helper\FileHelper', '@AppBundle\Repository\UserRepository']
         tags:
             - { name: sonata.admin, manager_type: orm, label: User }

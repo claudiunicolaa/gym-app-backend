@@ -2,12 +2,15 @@
 
 namespace AppBundle\Admin;
 
+use AppBundle\Entity\User;
+use AppBundle\Repository\UserRepository;
+use AppBundle\Services\Helper\FileHelper;
+use Doctrine\ORM\EntityRepository;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Route\RouteCollection;
-use Symfony\Component\Validator\Constraints\NotNull;
+use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 
 /**
  * Class UserAdmin
@@ -15,7 +18,7 @@ use Symfony\Component\Validator\Constraints\NotNull;
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
  * @author Claudiu Nicola <claudiunicola96@gmail.com>
  */
-class UserAdmin extends AbstractAdmin
+class UserAdmin extends BaseAdmin
 {
     /**
      * @inheritdoc
@@ -33,9 +36,9 @@ class UserAdmin extends AbstractAdmin
             ->add('roles', 'choice', [
                 'required' => false,
                 'multiple' => true,
-                'choices' => [
-                    'Regular User'=> "ROLE_USER",
-                    'Trainer' => 'ROLE_TRAINER',
+                'choices'  => [
+                    'Regular User'  => "ROLE_USER",
+                    'Trainer'       => 'ROLE_TRAINER',
                     'Administrator' => 'ROLE_ADMIN'
                 ]
             ])
