@@ -114,5 +114,12 @@ class CourseRepository extends EntityRepository
                 ->setParameter('intervalStop', $date)
             ;
         }
+
+        if (isset($filters['expired'])) {
+            $op = $filters['expired'] === 'true' ? '<=' : '>';
+            $queryBuilder->andWhere('c.eventDate ' . $op . ' :today')
+                ->setParameter('today', new \DateTime())
+            ;
+        }
     }
 }
