@@ -13,6 +13,7 @@ use Symfony\Component\Security\Acl\Exception\Exception;
  * Class MediaController
  *
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
+ * @author Alexandru Emil Popa <a.pope95@yahoo.com>
  */
 class MediaController extends Controller
 {
@@ -57,5 +58,27 @@ class MediaController extends Controller
         }
 
         return new JsonResponse($fileNames, 200);
+    }
+
+    /**
+     * @Route("/admin/photos", name="photo_gallery_route")
+     */
+    public function homepageAction()
+    {
+        $photoPath = $this->getParameter('kernel.root_dir') . self::PATH_TO_GYM_PHOTOS;
+        $fileNames = [];
+
+        if (file_exists($photoPath) && is_dir($photoPath)) {
+            $finder = new Finder();
+            $finder->files()->in($photoPath);
+            foreach ($finder as $file) {
+                $fileNames[] = $file->getBasename();
+            }
+        }
+
+        return $this->render(
+            'default/gallery.html.twig',
+            array('photos' => $fileNames)
+        );
     }
 }
