@@ -69,16 +69,14 @@ class BaseAdmin extends AbstractAdmin
     {
         if ('delete' === $actionName) {
             if ($allElements) {
-                $allCourses = $this->repository->findAll();
-                /** @var Course $product */
-                foreach ($allCourses as $course) {
-                    $this->fileHelper->removePicture($course);
+                $entities = $this->repository->findAll();
+                foreach ($entities as $entity) {
+                    $this->fileHelper->removePicture($entity);
                 }
             } else {
                 foreach ($idx as $id) {
-                    /** @var Course $course */
-                    $course = $this->repository->find($id);
-                    $this->fileHelper->removePicture($course);
+                    $entity = $this->repository->find($id);
+                    $this->fileHelper->removePicture($entity);
                 }
             }
         }
