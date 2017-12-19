@@ -2,6 +2,7 @@
 
 namespace AppBundle\Admin;
 
+use AppBundle\Validator\Constraints\ImageExtension;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
@@ -35,6 +36,11 @@ class UserAdmin extends BaseAdmin
                     'Trainer'       => 'ROLE_TRAINER',
                     'Administrator' => 'ROLE_ADMIN'
                 ]
+            ])
+            ->add('image', 'file', [
+                'mapped'      => false,
+                'required'    => false,
+                'constraints' => new ImageExtension()
             ])
             ->add('isAtTheGym');
     }

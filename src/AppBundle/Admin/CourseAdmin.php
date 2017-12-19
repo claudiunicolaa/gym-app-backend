@@ -64,8 +64,7 @@ class CourseAdmin extends BaseAdmin
             ->addIdentifier('name')
             ->addIdentifier('trainer')
             ->addIdentifier('timestamp', 'number')
-            ->addIdentifier('capacity')
-            ->addIdentifier('image');
+            ->addIdentifier('capacity');
     }
 
     /**

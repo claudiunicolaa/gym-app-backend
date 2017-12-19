@@ -100,12 +100,12 @@ class FileHelper
         $fileSystem = new Filesystem();
         $file = null;
         if ($entity instanceof User) {
-            if ($entity->getPicture() === User::DEFAULT_IMAGE_NAME) {
+            if ($entity->getImage() === User::DEFAULT_IMAGE_NAME) {
                 return ;
             }
 
             try {
-                $file = new File($this->webRoot . '/' . self::USER_UPLOADS_FOLDER_NAME . '/' . $entity->getPicture());
+                $file = new File($this->webRoot . '/' . self::USER_UPLOADS_FOLDER_NAME . '/' . $entity->getImage());
                 $fileSystem->remove($file);
             } catch (FileNotFoundException|IOException $ignored) {}
 

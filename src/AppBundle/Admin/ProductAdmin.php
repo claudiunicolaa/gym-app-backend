@@ -53,7 +53,6 @@ class ProductAdmin extends BaseAdmin
         $listMapper
             ->addIdentifier('id')
             ->addIdentifier('price')
-            ->addIdentifier('image')
             ->addIdentifier('name')
             ->addIdentifier('category')
             ->addIdentifier('description');
