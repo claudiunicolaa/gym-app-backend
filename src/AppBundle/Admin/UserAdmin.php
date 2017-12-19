@@ -2,15 +2,9 @@
 
 namespace AppBundle\Admin;
 
-use AppBundle\Entity\User;
-use AppBundle\Repository\UserRepository;
-use AppBundle\Services\Helper\FileHelper;
-use Doctrine\ORM\EntityRepository;
-use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 
 /**
  * Class UserAdmin
@@ -88,5 +82,14 @@ class UserAdmin extends BaseAdmin
     public function prePersist($object)
     {
         $object->setUsername($object->getEmail());
+        $this->manageImageUpload($object, 'user');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function preUpdate($newObject)
+    {
+        $this->manageImageUpload($newObject, 'user');
     }
 }

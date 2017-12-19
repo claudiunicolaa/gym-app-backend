@@ -7,7 +7,6 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\CoreBundle\Validator\ErrorElement;
-use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 
 /**
@@ -85,36 +84,5 @@ class ProductAdmin extends BaseAdmin
     public function preUpdate($newObject)
     {
         $this->manageImageUpload($newObject, 'product');
-    }
-
-    /**
-     * @param object $object
-     */
-    public function preRemove($object)
-    {
-        /** @var Product $object */
-        $this->fileHelper->removePicture($object);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function preBatchAction($actionName, ProxyQueryInterface $query, array &$idx, $allElements)
-    {
-        if ('delete' === $actionName) {
-            if ($allElements) {
-                $allProducts = $this->repository->findAll();
-                /** @var Product $product */
-                foreach ($allProducts as $product) {
-                    $this->fileHelper->removePicture($product);
-                }
-            } else {
-                foreach ($idx as $id) {
-                    /** @var Product $product */
-                    $product = $this->repository->find($id);
-                    $this->fileHelper->removePicture($product);
-                }
-            }
-        }
     }
 }

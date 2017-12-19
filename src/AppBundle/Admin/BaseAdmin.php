@@ -1,6 +1,5 @@
 <?php
 
-
 namespace AppBundle\Admin;
 
 use AppBundle\Services\Helper\FileHelper;
@@ -10,6 +9,7 @@ use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 
 /**
  * Class BaseAdmin
+ *
  * @author Claudiu Nicola <claudiunicola96@gmail.com>
  */
 class BaseAdmin extends AbstractAdmin
@@ -42,6 +42,7 @@ class BaseAdmin extends AbstractAdmin
     /**
      * @param        $object
      * @param string $targetFolder
+     *
      * @return void
      */
     public function manageImageUpload($object, string $targetFolder): void
@@ -55,7 +56,7 @@ class BaseAdmin extends AbstractAdmin
     }
 
     /**
-     * @param object $object
+     * @inheritdoc
      */
     public function preRemove($object)
     {
