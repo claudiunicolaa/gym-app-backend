@@ -18,6 +18,11 @@ use Symfony\Component\Validator\Constraints\GreaterThan;
 class CourseAdmin extends BaseAdmin
 {
     /**
+     * @var string
+     */
+    protected $imageTargetFolder = 'course';
+
+    /**
      * @inheritdoc
      */
     protected function configureFormFields(FormMapper $formMapper)
@@ -79,21 +84,5 @@ class CourseAdmin extends BaseAdmin
             ->with('capacity')
             ->addConstraint(new GreaterThan(0))
             ->end();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function prePersist($object)
-    {
-        $this->manageImageUpload($object, 'course');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function preUpdate($newObject)
-    {
-        $this->manageImageUpload($newObject, 'course');
     }
 }

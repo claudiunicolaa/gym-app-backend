@@ -17,6 +17,11 @@ use Symfony\Component\Validator\Constraints\GreaterThan;
 class ProductAdmin extends BaseAdmin
 {
     /**
+     * @var string
+     */
+    protected $imageTargetFolder = 'product';
+
+    /**
      * @inheritdoc
      */
     protected function configureFormFields(FormMapper $formMapper)
@@ -67,21 +72,5 @@ class ProductAdmin extends BaseAdmin
             ->with('price')
             ->addConstraint(new GreaterThan(0))
             ->end();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function prePersist($object)
-    {
-        $this->manageImageUpload($object, 'product');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function preUpdate($newObject)
-    {
-        $this->manageImageUpload($newObject, 'product');
     }
 }

@@ -15,6 +15,11 @@ use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 class BaseAdmin extends AbstractAdmin
 {
     /**
+     * @var string
+     */
+    protected $imageTargetFolder = 'default';
+
+    /**
      * @var FileHelper
      */
     protected $fileHelper;
@@ -31,8 +36,13 @@ class BaseAdmin extends AbstractAdmin
      * @param FileHelper       $fileHelper
      * @param EntityRepository $repository
      */
-    public function __construct($code, $class, $baseControllerName, FileHelper $fileHelper, EntityRepository $repository)
-    {
+    public function __construct(
+        $code,
+        $class,
+        $baseControllerName,
+        FileHelper $fileHelper,
+        EntityRepository $repository
+    ) {
         parent::__construct($code, $class, $baseControllerName);
 
         $this->fileHelper = $fileHelper;
@@ -55,6 +65,22 @@ class BaseAdmin extends AbstractAdmin
             $fileName = $this->fileHelper->uploadFile($image, $targetFolder);
             $object->setImage($fileName);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function prePersist($object)
+    {
+        $this->manageImageUpload($object, $this->imageTargetFolder);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function preUpdate($newObject)
+    {
+        $this->manageImageUpload($newObject, $this->imageTargetFolder);
     }
 
     /**

@@ -16,6 +16,11 @@ use Sonata\AdminBundle\Form\FormMapper;
 class UserAdmin extends BaseAdmin
 {
     /**
+     * @var string
+     */
+    protected $imageTargetFolder = 'user';
+
+    /**
      * @inheritdoc
      */
     protected function configureFormFields(FormMapper $formMapper)
@@ -87,15 +92,7 @@ class UserAdmin extends BaseAdmin
      */
     public function prePersist($object)
     {
+        parent::prePersist($object);
         $object->setUsername($object->getEmail());
-        $this->manageImageUpload($object, 'user');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function preUpdate($newObject)
-    {
-        $this->manageImageUpload($newObject, 'user');
     }
 }
