@@ -68,7 +68,7 @@ class MediaController extends Controller
     /**
      * @Route("/admin/photos", name="photo_gallery_route")
      */
-    public function homepageAction()
+    public function photoGalleryAction()
     {
         $photoPath = $this->getParameter('kernel.root_dir') . self::PATH_TO_GYM_PHOTOS;
         $fileNames = [];
@@ -88,7 +88,7 @@ class MediaController extends Controller
     }
 
     /**
-     * @Route("/admin/photos", name="delete_picture", methods={"DELETE"})
+     * @Route("/photos", name="delete_picture", methods={"DELETE"})
      *
      * @param Request $request
      * @return JsonResponse
@@ -108,7 +108,7 @@ class MediaController extends Controller
     {
         $id = $request->get('id');
         if (null === $id) {
-            return new JsonResponse(['error' => 'Picture with given id doesn\'t exist'], 400);
+            return new JsonResponse(['error' => 'Picture name can\'t be empty/null'], 400);
         }
 
         $photoPath = $this->getParameter('kernel.root_dir') . self::PATH_TO_GYM_PHOTOS;
