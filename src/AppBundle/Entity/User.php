@@ -172,7 +172,7 @@ class User extends BaseUser
     /**
      * @param null|string $image
      *
-     * @return \AppBundle\Entity\User
+     * @return $this
      */
     public function setImage(?string $image): self
     {
@@ -282,7 +282,7 @@ class User extends BaseUser
             'id'         => $this->getId(),
             'fullName'   => $this->getFullName(),
             'email'      => $this->getEmail(),
-            'picture'    => $this->getPicture(),
+            'picture'    => $this->getImage(),
             'isAtTheGym' => $this->isAtTheGym()
         ];
     }
@@ -298,7 +298,7 @@ class User extends BaseUser
         $this->setUsername($this->getEmail());
         $this->setLastName(explode(' ', $data['fullName'])[0] ?? '');
         $this->setFirstName(explode(' ', $data['fullName'])[1] ?? '');
-        $this->setPicture($data['picture'] ?? '');
+        $this->setImage($data['picture'] ?? '');
         $this->setPlainPassword($data['password'] ?? '');
         $this->addRole("ROLE_USER");
         $this->setEnabled(true);
@@ -320,7 +320,7 @@ class User extends BaseUser
         }
 
         if (isset($data['picture']) && null !== $data['picture']) {
-            $this->setPicture($data['picture']);
+            $this->setImage($data['picture']);
         }
 
         if (isset($data['password'])) {

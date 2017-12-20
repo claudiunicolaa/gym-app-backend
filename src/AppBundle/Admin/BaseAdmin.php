@@ -44,6 +44,8 @@ class BaseAdmin extends AbstractAdmin
      * @param string $targetFolder
      *
      * @return void
+     *
+     * @throws InvalidArgumentException if the argument is invalid
      */
     public function manageImageUpload($object, string $targetFolder): void
     {
