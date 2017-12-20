@@ -88,15 +88,15 @@ class CourseRepository extends EntityRepository
     protected function applyFilters(QueryBuilder $queryBuilder, User $loggedUser, array $filters = []) : void
     {
         if (isset($filters['usersCourses'])) {
-            $op = $filters['usersCourses'] === 'true' ? 'MEMBER OF' : 'NOT MEMBER OF';
-            $queryBuilder->andWhere(':loggedUser ' . $op . ' c.registeredUsers')
+            $operator = $filters['usersCourses'] === 'true' ? 'MEMBER OF' : 'NOT MEMBER OF';
+            $queryBuilder->andWhere(':loggedUser ' . $operator . ' c.registeredUsers')
                 ->setParameter('loggedUser', $loggedUser)
             ;
         }
 
         if (isset($filters['ownedCourses'])) {
-            $op = $filters['ownedCourses'] === 'true' ? '=' : '!=';
-            $queryBuilder->andWhere('c.trainer ' . $op . ' :loggedUser')
+            $operator = $filters['ownedCourses'] === 'true' ? '=' : '!=';
+            $queryBuilder->andWhere('c.trainer ' . $operator . ' :loggedUser')
                 ->setParameter('loggedUser', $loggedUser)
             ;
         }
@@ -116,8 +116,8 @@ class CourseRepository extends EntityRepository
         }
 
         if (isset($filters['expired'])) {
-            $op = $filters['expired'] === 'true' ? '<=' : '>';
-            $queryBuilder->andWhere('c.eventDate ' . $op . ' :today')
+            $operator = $filters['expired'] === 'true' ? '<=' : '>';
+            $queryBuilder->andWhere('c.eventDate ' . $operator . ' :today')
                 ->setParameter('today', new \DateTime())
             ;
         }
