@@ -73,7 +73,8 @@ class CourseController extends Controller
      *      {"name"="usersCourses", "dataType"="string", "description"="Returns the courses the user is registered to. Optional. Values: true or false"},
      *      {"name"="ownedCourses", "dataType"="string", "description"="Returns the courses the current user is training. Optional. Values: true or false"},
      *      {"name"="intervalStart", "dataType"="timestamp", "description"="Returns the courses that start before the given time. Optional"},
-     *      {"name"="intervalStop", "dataType"="timestamp", "description"="Returns the courses that start until the given time. Optional"}
+     *      {"name"="intervalStop", "dataType"="timestamp", "description"="Returns the courses that start until the given time. Optional"},
+     *      {"name"="expired", "dataType"="string", "description"="Returns the courses based on expired status. Optional. Values: true or false"}
      *  },
      *  statusCodes={
      *      200="Returned when successful",
