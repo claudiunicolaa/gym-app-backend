@@ -7,6 +7,7 @@ use AppBundle\Entity\Product;
 use AppBundle\Entity\User;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -26,6 +27,7 @@ class FileHelper
     const USER_UPLOADS_FOLDER_NAME = self::UPLOADS_FOLDER_NAME . '/user';
     const COURSE_UPLOADS_FOLDER_NAME = self::UPLOADS_FOLDER_NAME . '/course';
     const PRODUCT_UPLOADS_FOLDER_NAME = self::UPLOADS_FOLDER_NAME . '/product';
+    const PATH_TO_GYM_PHOTOS = '/uploads/gym-photos';
 
     /**
      * @var string
@@ -40,6 +42,39 @@ class FileHelper
     public function __construct(string $rootDir)
     {
         $this->webRoot = realpath($rootDir . '/../web');
+    }
+
+    /**
+     * @return array
+     */
+    public function getGymPhotos() : array
+    {
+        $photosPath = $this->webRoot . self::PATH_TO_GYM_PHOTOS;
+        $fileNames = [];
+
+        if (file_exists($photosPath) && is_dir($photosPath)) {
+            $finder = new Finder();
+            $finder->files()->in($photosPath);
+            foreach ($finder as $file) {
+                $fileNames[] = $file->getBasename();
+            }
+        }
+
+        return $fileNames;
+    }
+
+    /**
+     * @param $photosPath
+     * @param $id
+     */
+    public function removeGalleryPhoto($photosPath, $id)
+    {
+        try {
+            $fileSystem = new Filesystem();
+            $file = new File($photosPath . '/' . $id);
+
+            $fileSystem->remove($file);
+        } catch (FileNotFoundException|IOException $ignored) {}
     }
 
     /**

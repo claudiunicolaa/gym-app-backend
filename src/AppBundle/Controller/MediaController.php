@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Services\Helper\FileHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
@@ -22,7 +23,22 @@ use Symfony\Component\Security\Acl\Exception\Exception;
  */
 class MediaController extends Controller
 {
-    const PATH_TO_GYM_PHOTOS = '/../web/uploads/gym-photos';
+    const PATH_TO_GYM_PHOTOS = '/uploads/gym-photos';
+
+    /**
+     * @var string
+     */
+    private $webRoot;
+
+    /**
+     * MediaController constructor.
+     *
+     * @param string $rootDir
+     */
+    public function __construct(string $rootDir)
+    {
+        $this->webRoot = realpath($rootDir . '/../web');
+    }
     
     /**
      * ### Example Response ###
@@ -51,16 +67,8 @@ class MediaController extends Controller
      */
     public function getPhotosAction() : JsonResponse
     {
-        $photoPath = $this->getParameter('kernel.root_dir') . self::PATH_TO_GYM_PHOTOS;
-        $fileNames = [];
-
-        if (file_exists($photoPath) && is_dir($photoPath)) {
-            $finder = new Finder();
-            $finder->files()->in($photoPath);
-            foreach ($finder as $file) {
-                $fileNames[] = $file->getBasename();
-            }
-        }
+        $fileHelper = $this->get(FileHelper::class);
+        $fileNames = $fileHelper->getGymPhotos();
 
         return new JsonResponse($fileNames, 200);
     }
@@ -70,21 +78,18 @@ class MediaController extends Controller
      */
     public function photoGalleryAction()
     {
-        $photoPath = $this->getParameter('kernel.root_dir') . self::PATH_TO_GYM_PHOTOS;
-        $fileNames = [];
-
-        if (file_exists($photoPath) && is_dir($photoPath)) {
-            $finder = new Finder();
-            $finder->files()->in($photoPath);
-            foreach ($finder as $file) {
-                $fileNames[] = $file->getBasename();
-            }
-        }
+        $fileHelper = $this->get(FileHelper::class);
+        $fileNames = $fileHelper->getGymPhotos();
 
         return $this->render(
             'default/gallery.html.twig',
             array('photos' => $fileNames)
         );
+    }
+
+    public function getPhotosPath() : string
+    {
+        return $this->webRoot . self::PATH_TO_GYM_PHOTOS;
     }
 
     /**
@@ -99,8 +104,6 @@ class MediaController extends Controller
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
-     *      401="Returned when the request is valid, but the token given is invalid or missing",
-     *      405="Returned when the method called is not allowed",
      *  }
      *  )
      */
@@ -108,20 +111,16 @@ class MediaController extends Controller
     {
         $id = $request->get('id');
         if (null === $id) {
-            return new JsonResponse(['error' => 'Picture name can\'t be empty/null'], 400);
+            return new JsonResponse(['error' => 'Picture id can\'t be empty/null'], 400);
         }
 
-        $photoPath = $this->getParameter('kernel.root_dir') . self::PATH_TO_GYM_PHOTOS;
+        $photosPath = $this->getPhotosPath();
 
-        try {
-            $fileSystem = new Filesystem();
-            $file = new File($photoPath . '/' . $id);
-
-            $fileSystem->remove($file);
-        } catch (FileNotFoundException|IOException $ignored) {
-            return new JsonResponse($ignored->getMessage(), 400);
-        }
+        $fileHelper = $this->get(FileHelper::class);
+        $fileHelper->removeGalleryPhoto($photosPath, $id);
 
         return new JsonResponse('', 200);
     }
+
+
 }
