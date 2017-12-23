@@ -9,16 +9,16 @@ use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
 
 /**
- * Class BaseAdmin
+ * Class AbstractBaseAdmin
  *
  * @author Claudiu Nicola <claudiunicola96@gmail.com>
  */
-class BaseAdmin extends AbstractAdmin
+abstract class AbstractBaseAdmin extends AbstractAdmin
 {
     /**
      * @var string
      */
-    protected $imageTargetFolder = 'default';
+    protected $imageTargetFolder;
 
     /**
      * @var FileHelper
@@ -30,25 +30,15 @@ class BaseAdmin extends AbstractAdmin
      */
     protected $repository;
 
-    /**
-     * @param string           $code
-     * @param string           $class
-     * @param string           $baseControllerName
-     * @param FileHelper       $fileHelper
-     * @param EntityRepository $repository
-     */
-    public function __construct(
-        $code,
-        $class,
-        $baseControllerName,
-        FileHelper $fileHelper,
-        EntityRepository $repository
-    ) {
-        parent::__construct($code, $class, $baseControllerName);
 
-        $this->fileHelper = $fileHelper;
-        $this->repository = $repository;
-    }
+    /**
+     * Set the folder where the images we'll be saved.
+     *
+     * @param string $imageTargetFolder
+     *
+     * @return void
+     */
+    abstract public function setImageTargetFolder(string $imageTargetFolder): void;
 
     /**
      * @param        $object
@@ -111,4 +101,22 @@ class BaseAdmin extends AbstractAdmin
             }
         }
     }
+
+    /**
+     * @param FileHelper $fileHelper
+     */
+    public function setFileHelper(FileHelper $fileHelper)
+    {
+        $this->fileHelper = $fileHelper;
+    }
+
+    /**
+     * @param EntityRepository $repository
+     */
+    public function setRepository(EntityRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
+
 }

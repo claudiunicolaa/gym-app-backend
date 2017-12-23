@@ -8,6 +8,8 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\CoreBundle\Validator\ErrorElement;
 use Symfony\Component\Validator\Constraints\GreaterThan;
+use AppBundle\Services\Helper\FileHelper;
+use Doctrine\ORM\EntityRepository;
 
 
 /**
@@ -15,12 +17,28 @@ use Symfony\Component\Validator\Constraints\GreaterThan;
  *
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
  */
-class CourseAdmin extends BaseAdmin
+class CourseAdmin extends AbstractBaseAdmin
 {
     /**
-     * @var string
+     * @param string           $code
+     * @param string           $class
+     * @param string           $baseControllerName
+     * @param FileHelper       $fileHelper
+     * @param EntityRepository $repository
      */
-    protected $imageTargetFolder = 'course';
+    public function __construct(
+        $code,
+        $class,
+        $baseControllerName,
+        FileHelper $fileHelper,
+        EntityRepository $repository
+    ) {
+        parent::__construct($code, $class, $baseControllerName);
+
+        $this->setFileHelper($fileHelper);
+        $this->setRepository($repository);
+        $this->setImageTargetFolder('product');
+    }
 
     /**
      * @inheritdoc
@@ -84,5 +102,13 @@ class CourseAdmin extends BaseAdmin
             ->with('capacity')
             ->addConstraint(new GreaterThan(0))
             ->end();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setImageTargetFolder(string $imageTargetFolder): void
+    {
+        $this->imageTargetFolder = $imageTargetFolder;
     }
 }

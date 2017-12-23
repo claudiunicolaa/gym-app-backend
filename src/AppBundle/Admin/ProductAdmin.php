@@ -3,23 +3,42 @@
 namespace AppBundle\Admin;
 
 use AppBundle\Validator\Constraints\ImageExtension;
+use Doctrine\ORM\EntityRepository;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\CoreBundle\Validator\ErrorElement;
 use Symfony\Component\Validator\Constraints\GreaterThan;
+use AppBundle\Services\Helper\FileHelper;
 
 /**
  * Class ProductAdmin
  *
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
  */
-class ProductAdmin extends BaseAdmin
+class ProductAdmin extends AbstractBaseAdmin
 {
     /**
-     * @var string
+     * @param string           $code
+     * @param string           $class
+     * @param string           $baseControllerName
+     * @param FileHelper       $fileHelper
+     * @param EntityRepository $repository
      */
-    protected $imageTargetFolder = 'product';
+    public function __construct(
+        $code,
+        $class,
+        $baseControllerName,
+        FileHelper $fileHelper,
+        EntityRepository $repository
+    ) {
+        parent::__construct($code, $class, $baseControllerName);
+
+        $this->setFileHelper($fileHelper);
+        $this->setRepository($repository);
+        $this->setImageTargetFolder('product');
+    }
+
 
     /**
      * @inheritdoc
@@ -72,5 +91,13 @@ class ProductAdmin extends BaseAdmin
             ->with('price')
             ->addConstraint(new GreaterThan(0))
             ->end();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setImageTargetFolder(string $imageTargetFolder): void
+    {
+        $this->imageTargetFolder = $imageTargetFolder;
     }
 }

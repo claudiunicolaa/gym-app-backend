@@ -6,6 +6,8 @@ use AppBundle\Validator\Constraints\ImageExtension;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use AppBundle\Services\Helper\FileHelper;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * Class UserAdmin
@@ -13,12 +15,28 @@ use Sonata\AdminBundle\Form\FormMapper;
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
  * @author Claudiu Nicola <claudiunicola96@gmail.com>
  */
-class UserAdmin extends BaseAdmin
+class UserAdmin extends AbstractBaseAdmin
 {
     /**
-     * @var string
+     * @param string           $code
+     * @param string           $class
+     * @param string           $baseControllerName
+     * @param FileHelper       $fileHelper
+     * @param EntityRepository $repository
      */
-    protected $imageTargetFolder = 'user';
+    public function __construct(
+        $code,
+        $class,
+        $baseControllerName,
+        FileHelper $fileHelper,
+        EntityRepository $repository
+    ) {
+        parent::__construct($code, $class, $baseControllerName);
+
+        $this->setFileHelper($fileHelper);
+        $this->setRepository($repository);
+        $this->setImageTargetFolder('user');
+    }
 
     /**
      * @inheritdoc
@@ -94,5 +112,13 @@ class UserAdmin extends BaseAdmin
     {
         parent::prePersist($object);
         $object->setUsername($object->getEmail());
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setImageTargetFolder(string $imageTargetFolder): void
+    {
+        $this->imageTargetFolder = $imageTargetFolder;
     }
 }
