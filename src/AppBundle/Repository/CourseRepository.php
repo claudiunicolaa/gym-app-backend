@@ -33,7 +33,7 @@ class CourseRepository extends EntityRepository
                    u.email,
                    u.lastName,
                    u.firstName,
-                   u.picture,
+                   u.image,
                    c.eventDate,
                    c.capacity,
                    c.image,

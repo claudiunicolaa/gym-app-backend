@@ -52,7 +52,7 @@ abstract class AbstractBaseAdmin extends AbstractAdmin
     {
         $image = $this->getForm()->get('image')->getData();
         if (null !== $image) {
-            $this->fileHelper->removePicture($object);
+            $this->fileHelper->removeImage($object);
             $fileName = $this->fileHelper->uploadFile($image, $targetFolder);
             $object->setImage($fileName);
         }
@@ -79,7 +79,7 @@ abstract class AbstractBaseAdmin extends AbstractAdmin
      */
     public function preRemove($object)
     {
-        $this->fileHelper->removePicture($object);
+        $this->fileHelper->removeImage($object);
     }
 
     /**
@@ -91,12 +91,12 @@ abstract class AbstractBaseAdmin extends AbstractAdmin
             if ($allElements) {
                 $entities = $this->repository->findAll();
                 foreach ($entities as $entity) {
-                    $this->fileHelper->removePicture($entity);
+                    $this->fileHelper->removeImage($entity);
                 }
             } else {
                 foreach ($idx as $id) {
                     $entity = $this->repository->find($id);
-                    $this->fileHelper->removePicture($entity);
+                    $this->fileHelper->removeImage($entity);
                 }
             }
         }

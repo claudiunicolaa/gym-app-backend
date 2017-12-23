@@ -282,7 +282,7 @@ class User extends BaseUser
             'id'         => $this->getId(),
             'fullName'   => $this->getFullName(),
             'email'      => $this->getEmail(),
-            'picture'    => $this->getImage(),
+            'image'    => $this->getImage(),
             'isAtTheGym' => $this->isAtTheGym()
         ];
     }
@@ -298,7 +298,7 @@ class User extends BaseUser
         $this->setUsername($this->getEmail());
         $this->setLastName(explode(' ', $data['fullName'])[0] ?? '');
         $this->setFirstName(explode(' ', $data['fullName'])[1] ?? '');
-        $this->setImage($data['picture'] ?? '');
+        $this->setImage($data['image'] ?? '');
         $this->setPlainPassword($data['password'] ?? '');
         $this->addRole("ROLE_USER");
         $this->setEnabled(true);
@@ -319,8 +319,8 @@ class User extends BaseUser
             $this->setFirstName(explode(' ', $data['fullName'])[1]);
         }
 
-        if (isset($data['picture']) && null !== $data['picture']) {
-            $this->setImage($data['picture']);
+        if (isset($data['image']) && null !== $data['image']) {
+            $this->setImage($data['image']);
         }
 
         if (isset($data['password'])) {
