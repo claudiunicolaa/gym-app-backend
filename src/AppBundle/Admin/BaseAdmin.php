@@ -6,6 +6,7 @@ use AppBundle\Services\Helper\FileHelper;
 use Doctrine\ORM\EntityRepository;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
+use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
 
 /**
  * Class BaseAdmin
