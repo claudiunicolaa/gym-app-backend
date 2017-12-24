@@ -3,19 +3,13 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Services\Helper\FileHelper;
-use Doctrine\DBAL\Schema\View;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Filesystem\Exception\IOException;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Finder\Finder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Acl\Exception\Exception;
 
 /**
  * Class MediaController
@@ -70,7 +64,7 @@ class MediaController extends Controller
     /**
      * @Route("/photos/{id}", name="delete_picture", methods={"DELETE"})
      *
-     * @param null|string $id
+     * @param string $id
      * @return JsonResponse
      * @ApiDoc(
      *  resource=true,
@@ -82,13 +76,13 @@ class MediaController extends Controller
      *  }
      *  )
      */
-    public function deletePictureAction(?string $id) : JsonResponse
+    public function deletePictureAction(string $id) : JsonResponse
     {
-        if (null === $id) {
-            return new JsonResponse(['error' => 'Picture id can\'t be empty/null'], 400);
+        try {
+            $this->get(FileHelper::class)->removeGalleryPhoto($id);
+        } catch (FileNotFoundException|IOException $ex) {
+            return new JsonResponse(['error' => 'Picture can\'t be removed!'], 400);
         }
-
-        $this->get(FileHelper::class)->removeGalleryPhoto($id);
 
         return new JsonResponse('', 200);
     }

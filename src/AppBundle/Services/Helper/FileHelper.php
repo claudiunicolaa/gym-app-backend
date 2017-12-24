@@ -17,6 +17,7 @@ use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
  * Class FileHelper
  *
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
+ * @author Alexandru Emil Popa <a.pope95@yahoo.com>
  */
 class FileHelper
 {
@@ -73,15 +74,15 @@ class FileHelper
 
     /**
      * @param string $id
+     *
+     * @throws FileNotFoundException|IOException if the id is invalid
      */
     public function removeGalleryPhoto(string $id) : void
     {
-        try {
             $fileSystem = new Filesystem();
             $file = new File($this->getPhotosPath() . '/' . $id);
 
             $fileSystem->remove($file);
-        } catch (FileNotFoundException|IOException $ignored) {}
     }
 
     /**
