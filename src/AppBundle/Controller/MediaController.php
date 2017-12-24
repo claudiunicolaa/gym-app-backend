@@ -80,10 +80,10 @@ class MediaController extends Controller
     {
         try {
             $this->get(FileHelper::class)->removeGalleryPhoto($id);
+
+            return new JsonResponse('', 200);
         } catch (FileNotFoundException|IOException $ex) {
             return new JsonResponse(['error' => 'Picture can\'t be removed!'], 400);
         }
-
-        return new JsonResponse('', 200);
     }
 }

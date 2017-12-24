@@ -79,10 +79,9 @@ class FileHelper
      */
     public function removeGalleryPhoto(string $id) : void
     {
-            $fileSystem = new Filesystem();
-            $file = new File($this->getPhotosPath() . '/' . $id);
-
-            $fileSystem->remove($file);
+        $fileSystem = new Filesystem();
+        $file = new File($this->getPhotosPath() . '/' . $id);
+        $fileSystem->remove($file);
     }
 
     /**
