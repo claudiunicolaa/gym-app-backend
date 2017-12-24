@@ -68,10 +68,11 @@
 <script type="text/javascript">
     function removePhoto(fileName) {
         var xmlhttp = new XMLHttpRequest();
-        var params = "id=" + fileName;
-        xmlhttp.open("DELETE", '{{ path('delete_picture') }}', true);
+        var route = "{{ path('delete_picture', {'id' : "PLACEHOLDER"}) }}";
+        route = route.replace("PLACEHOLDER", fileName);
+        xmlhttp.open("DELETE", route, true);
         xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xmlhttp.send(params);
+        xmlhttp.send();
         xmlhttp.onreadystatechange = function() {
             if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
                 window.location.reload();

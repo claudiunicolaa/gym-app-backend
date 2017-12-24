@@ -45,11 +45,19 @@ class FileHelper
     }
 
     /**
+     * @return string
+     */
+    public function getPhotosPath() : string
+    {
+        return $this->webRoot . self::PATH_TO_GYM_PHOTOS;
+    }
+
+    /**
      * @return array
      */
     public function getGymPhotos() : array
     {
-        $photosPath = $this->webRoot . self::PATH_TO_GYM_PHOTOS;
+        $photosPath = $this->getPhotosPath();
         $fileNames = [];
 
         if (file_exists($photosPath) && is_dir($photosPath)) {
@@ -64,14 +72,13 @@ class FileHelper
     }
 
     /**
-     * @param $photosPath
-     * @param $id
+     * @param string $id
      */
-    public function removeGalleryPhoto($photosPath, $id)
+    public function removeGalleryPhoto(string $id) : void
     {
         try {
             $fileSystem = new Filesystem();
-            $file = new File($photosPath . '/' . $id);
+            $file = new File($this->getPhotosPath() . '/' . $id);
 
             $fileSystem->remove($file);
         } catch (FileNotFoundException|IOException $ignored) {}

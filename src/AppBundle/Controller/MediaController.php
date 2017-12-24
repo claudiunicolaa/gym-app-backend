@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Services\Helper\FileHelper;
+use Doctrine\DBAL\Schema\View;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
@@ -13,6 +14,7 @@ use Symfony\Component\Finder\Finder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Acl\Exception\Exception;
 
 /**
@@ -23,23 +25,6 @@ use Symfony\Component\Security\Acl\Exception\Exception;
  */
 class MediaController extends Controller
 {
-    const PATH_TO_GYM_PHOTOS = '/uploads/gym-photos';
-
-    /**
-     * @var string
-     */
-    private $webRoot;
-
-    /**
-     * MediaController constructor.
-     *
-     * @param string $rootDir
-     */
-    public function __construct(string $rootDir)
-    {
-        $this->webRoot = realpath($rootDir . '/../web');
-    }
-    
     /**
      * ### Example Response ###
      *      [
@@ -67,35 +52,25 @@ class MediaController extends Controller
      */
     public function getPhotosAction() : JsonResponse
     {
-        $fileHelper = $this->get(FileHelper::class);
-        $fileNames = $fileHelper->getGymPhotos();
-
-        return new JsonResponse($fileNames, 200);
+        return new JsonResponse($this->get(FileHelper::class)->getGymPhotos(), 200);
     }
 
     /**
      * @Route("/admin/photos", name="photo_gallery_route")
+     * @return Response
      */
-    public function photoGalleryAction()
+    public function photoGalleryAction() : Response
     {
-        $fileHelper = $this->get(FileHelper::class);
-        $fileNames = $fileHelper->getGymPhotos();
-
         return $this->render(
             'default/gallery.html.twig',
-            array('photos' => $fileNames)
+            array('photos' => $this->get(FileHelper::class)->getGymPhotos())
         );
     }
 
-    public function getPhotosPath() : string
-    {
-        return $this->webRoot . self::PATH_TO_GYM_PHOTOS;
-    }
-
     /**
-     * @Route("/photos", name="delete_picture", methods={"DELETE"})
+     * @Route("/photos/{id}", name="delete_picture", methods={"DELETE"})
      *
-     * @param Request $request
+     * @param null|string $id
      * @return JsonResponse
      * @ApiDoc(
      *  resource=true,
@@ -107,20 +82,14 @@ class MediaController extends Controller
      *  }
      *  )
      */
-    public function deletePictureAction(Request $request) : JsonResponse
+    public function deletePictureAction(?string $id) : JsonResponse
     {
-        $id = $request->get('id');
         if (null === $id) {
             return new JsonResponse(['error' => 'Picture id can\'t be empty/null'], 400);
         }
 
-        $photosPath = $this->getPhotosPath();
-
-        $fileHelper = $this->get(FileHelper::class);
-        $fileHelper->removeGalleryPhoto($photosPath, $id);
+        $this->get(FileHelper::class)->removeGalleryPhoto($id);
 
         return new JsonResponse('', 200);
     }
-
-
 }
