@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Photo Gallery</title>
+
+    <!-- Google Webfonts -->
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,100,500' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="{{ asset("css/animate.css") }}">
+    <!-- Icomoon Icon Fonts-->
+    <link rel="stylesheet" href="{{ asset("css/icomoon.css") }}">
+    <!-- Magnific Popup -->
+    <link rel="stylesheet" href="{{ asset("css/magnific-popup.css") }}">
+    <!-- Salvattore -->
+    <link rel="stylesheet" href="{{ asset("css/salvattore.css") }}">
+    <!-- Theme Style -->
+    <link rel="stylesheet" href="{{ asset("css/style.css") }}">
+    <!-- Modernizr JS -->
+    <script src={{ asset("js/modernizr-2.6.2.min.js") }} ></script>
+    <!-- FOR IE9 below -->
+    <!--[if lt IE 9]>
+    <script src={{ asset("js/respond.min.js") }} ></script>
+    <![endif]-->
+
+</head>
+<body>
+
+<div id="fh5co-main">
+    <div class="container">
+        <div class="row">
+            <div id="fh5co-board" data-columns>
+                {% for photo in photos %}
+                    <div class="item">
+                        <div class="animate-box" style="display: inline-block; position: relative;">
+                            <button type="button" onclick="removePhoto('{{ photo }}')" style="position: absolute; z-index: 1;">X</button>
+                            <a href="{{ asset("uploads/gym-photos") }}/{{ photo }}" class="image-popup fh5co-board-img">
+                                <img src="{{ asset("uploads/gym-photos") }}/{{ photo }}">
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src={{ asset("js/jquery.min.js") }} ></script>
+<!-- jQuery Easing -->
+<script src={{ asset("js/jquery.easing.1.3.js") }}></script>
+<!-- Bootstrap -->
+<script src={{ asset("js/bootstrap.min.js") }}></script>
+<!-- Waypoints -->
+<script src={{ asset("js/jquery.waypoints.min.js") }}></script>
+<!-- Magnific Popup -->
+<script src={{ asset("js/jquery.magnific-popup.min.js") }}></script>
+<!-- Salvattore -->
+<script src={{ asset("js/salvattore.min.js") }}></script>
+<!-- Main JS -->
+<script src={{ asset("js/main.js") }}></script>
+<script type="text/javascript">
+    function removePhoto(fileName) {
+        var xmlhttp = new XMLHttpRequest();
+        var route = "{{ path('delete_picture', {'id' : "PLACEHOLDER"}) }}";
+        route = route.replace("PLACEHOLDER", fileName);
+        xmlhttp.open("DELETE", route, true);
+        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlhttp.send();
+        xmlhttp.onreadystatechange = function() {
+            if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                window.location.reload();
+            }else if(xmlhttp.readyState === 4 && xmlhttp.status === 400) {
+                alert(xmlhttp.response);
+            }
+        };
+    }
+</script>
+</body>
+</html>

@@ -7,6 +7,7 @@ use AppBundle\Entity\Product;
 use AppBundle\Entity\User;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -16,6 +17,7 @@ use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
  * Class FileHelper
  *
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
+ * @author Alexandru Emil Popa <a.pope95@yahoo.com>
  */
 class FileHelper
 {
@@ -26,6 +28,7 @@ class FileHelper
     const USER_UPLOADS_FOLDER_NAME = self::UPLOADS_FOLDER_NAME . '/user';
     const COURSE_UPLOADS_FOLDER_NAME = self::UPLOADS_FOLDER_NAME . '/course';
     const PRODUCT_UPLOADS_FOLDER_NAME = self::UPLOADS_FOLDER_NAME . '/product';
+    const PATH_TO_GYM_PHOTOS = '/uploads/gym-photos';
 
     /**
      * @var string
@@ -40,6 +43,45 @@ class FileHelper
     public function __construct(string $rootDir)
     {
         $this->webRoot = realpath($rootDir . '/../web');
+    }
+
+    /**
+     * @return string
+     */
+    public function getPhotosPath() : string
+    {
+        return $this->webRoot . self::PATH_TO_GYM_PHOTOS;
+    }
+
+    /**
+     * @return array
+     */
+    public function getGymPhotos() : array
+    {
+        $photosPath = $this->getPhotosPath();
+        $fileNames = [];
+
+        if (file_exists($photosPath) && is_dir($photosPath)) {
+            $finder = new Finder();
+            $finder->files()->in($photosPath);
+            foreach ($finder as $file) {
+                $fileNames[] = $file->getBasename();
+            }
+        }
+
+        return $fileNames;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @throws FileNotFoundException|IOException if the id is invalid
+     */
+    public function removeGalleryPhoto(string $id) : void
+    {
+        $fileSystem = new Filesystem();
+        $file = new File($this->getPhotosPath() . '/' . $id);
+        $fileSystem->remove($file);
     }
 
     /**
