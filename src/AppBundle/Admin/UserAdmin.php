@@ -2,14 +2,12 @@
 
 namespace AppBundle\Admin;
 
-use AppBundle\Entity\User;
-use AppBundle\Repository\UserRepository;
-use AppBundle\Services\Helper\FileHelper;
-use Sonata\AdminBundle\Admin\AbstractAdmin;
+use AppBundle\Validator\Constraints\ImageExtension;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
+use AppBundle\Services\Helper\FileHelper;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * Class UserAdmin
@@ -17,27 +15,27 @@ use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
  * @author Claudiu Nicola <claudiunicola96@gmail.com>
  */
-class UserAdmin extends AbstractAdmin
+class UserAdmin extends AbstractBaseAdmin
 {
     /**
-     * @var FileHelper
+     * @param string           $code
+     * @param string           $class
+     * @param string           $baseControllerName
+     * @param FileHelper       $fileHelper
+     * @param EntityRepository $repository
      */
-    protected $fileHelper;
-
-    /**
-     * @var UserRepository
-     */
-    protected $userRepository;
-
-    /**
-     * @inheritdoc
-     */
-    public function __construct($code, $class, $baseControllerName, FileHelper $fileHelper, UserRepository $userRepository)
-    {
+    public function __construct(
+        $code,
+        $class,
+        $baseControllerName,
+        FileHelper $fileHelper,
+        EntityRepository $repository
+    ) {
         parent::__construct($code, $class, $baseControllerName);
 
-        $this->fileHelper = $fileHelper;
-        $this->userRepository = $userRepository;
+        $this->setFileHelper($fileHelper);
+        $this->setRepository($repository);
+        $this->setImageTargetFolder('user');
     }
 
     /**
@@ -56,11 +54,16 @@ class UserAdmin extends AbstractAdmin
             ->add('roles', 'choice', [
                 'required' => false,
                 'multiple' => true,
-                'choices' => [
-                    'Regular User'=> "ROLE_USER",
-                    'Trainer' => 'ROLE_TRAINER',
+                'choices'  => [
+                    'Regular User'  => "ROLE_USER",
+                    'Trainer'       => 'ROLE_TRAINER',
                     'Administrator' => 'ROLE_ADMIN'
                 ]
+            ])
+            ->add('image', 'file', [
+                'mapped'      => false,
+                'required'    => false,
+                'constraints' => new ImageExtension()
             ])
             ->add('isAtTheGym');
     }
@@ -107,31 +110,15 @@ class UserAdmin extends AbstractAdmin
      */
     public function prePersist($object)
     {
+        parent::prePersist($object);
         $object->setUsername($object->getEmail());
     }
 
-    public function preRemove($object)
+    /**
+     * @inheritdoc
+     */
+    public function setImageTargetFolder(string $imageTargetFolder): void
     {
-        /** @var User $object */
-        $this->fileHelper->removePicture($object);
-    }
-
-    public function preBatchAction($actionName, ProxyQueryInterface $query, array &$idx, $allElements)
-    {
-        if ('delete' === $actionName) {
-            if ($allElements) {
-                $allUsers = $this->userRepository->findAll();
-                /** @var User $user */
-                foreach ($allUsers as $user) {
-                    $this->fileHelper->removePicture($user);
-                }
-            } else {
-                foreach ($idx as $id) {
-                    /** @var User $user */
-                    $user = $this->userRepository->find($id);
-                    $this->fileHelper->removePicture($user);
-                }
-            }
-        }
+        $this->imageTargetFolder = $imageTargetFolder;
     }
 }

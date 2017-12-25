@@ -32,7 +32,7 @@ class CourseController extends Controller
      *                  "id" : "1",
      *                  "fullName" : "Smith Adam",
      *                  "email" : "adamsmith@gmail.com",
-     *                  "picture" : "https://i.imgur.com/NiCqGa3.jpg"
+     *                  "image" : "https://i.imgur.com/NiCqGa3.jpg"
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "30",
@@ -48,7 +48,7 @@ class CourseController extends Controller
      *                  "id" : "2",
      *                  "fullName" : "Adam George",
      *                  "email" : "adamgeorge@gmail.com",
-     *                  "picture" : "https://i.imgur.com/NiCqGa3.jpg"
+     *                  "image" : "https://i.imgur.com/NiCqGa3.jpg"
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "25",
@@ -111,7 +111,7 @@ class CourseController extends Controller
      *                  "id" : "1",
      *                  "fullName" : "Smith Adam",
      *                  "email" : "adamsmith@gmail.com",
-     *                  "picture" : "https://i.imgur.com/NiCqGa3.jpg"
+     *                  "image" : "https://i.imgur.com/NiCqGa3.jpg"
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "30",
@@ -306,7 +306,7 @@ class CourseController extends Controller
 
         $fileHelper = $this->get(FileHelper::class);
         if (isset($requestParameters['image'])) {
-            $fileHelper->removePicture($course);
+            $fileHelper->removeImage($course);
             unset($requestParameters['image']);
             $requestParameters['image'] = $fileHelper->uploadFile($request->files->get('image'), 'course');
         }
@@ -349,7 +349,7 @@ class CourseController extends Controller
 
         $this->denyAccessUnlessGranted('delete', $course);
 
-        $this->get(FileHelper::class)->removePicture($course);
+        $this->get(FileHelper::class)->removeImage($course);
         $em = $this->getDoctrine()->getManager();
         $em->remove($course);
         $em->flush();
@@ -416,7 +416,7 @@ class CourseController extends Controller
             $result[$key]['trainer']['id'] = $courseData["trainer_id"];
             $result[$key]['trainer']['fullName'] = $courseData['lastName'] . ' ' .$courseData['firstName'];
             $result[$key]['trainer']['email'] = $courseData['email'];
-            $result[$key]['trainer']['picture'] = $courseData['picture'];
+            $result[$key]['trainer']['image'] = $courseData['image'];
             $result[$key]['eventDate'] = $courseData['eventDate']->getTimestamp();
             $result[$key]['id'] = $courseData['id'];
             $result[$key]['capacity'] = $courseData['capacity'];

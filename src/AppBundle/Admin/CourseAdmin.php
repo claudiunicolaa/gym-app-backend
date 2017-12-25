@@ -2,43 +2,42 @@
 
 namespace AppBundle\Admin;
 
-use AppBundle\Entity\Course;
-use AppBundle\Repository\CourseRepository;
-use AppBundle\Services\Helper\FileHelper;
-use Sonata\AdminBundle\Admin\AbstractAdmin;
+use AppBundle\Validator\Constraints\ImageExtension;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\CoreBundle\Validator\ErrorElement;
 use Symfony\Component\Validator\Constraints\GreaterThan;
-use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
+use AppBundle\Services\Helper\FileHelper;
+use Doctrine\ORM\EntityRepository;
+
 
 /**
  * Class CourseAdmin
  *
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
  */
-class CourseAdmin extends AbstractAdmin
+class CourseAdmin extends AbstractBaseAdmin
 {
     /**
-     * @var FileHelper
+     * @param string           $code
+     * @param string           $class
+     * @param string           $baseControllerName
+     * @param FileHelper       $fileHelper
+     * @param EntityRepository $repository
      */
-    protected $fileHelper;
-
-    /**
-     * @var CourseRepository
-     */
-    protected $courseRepository;
-
-    /**
-     * @inheritdoc
-     */
-    public function __construct($code, $class, $baseControllerName, FileHelper $fileHelper, CourseRepository $courseRepository)
-    {
+    public function __construct(
+        $code,
+        $class,
+        $baseControllerName,
+        FileHelper $fileHelper,
+        EntityRepository $repository
+    ) {
         parent::__construct($code, $class, $baseControllerName);
 
-        $this->fileHelper = $fileHelper;
-        $this->courseRepository = $courseRepository;
+        $this->setFileHelper($fileHelper);
+        $this->setRepository($repository);
+        $this->setImageTargetFolder('course');
     }
 
     /**
@@ -54,10 +53,15 @@ class CourseAdmin extends AbstractAdmin
                 'number',
                 [
                     'required' => true,
-                    'help' => 'A valid timestamp will be one greater than the present one.'
+                    'help'     => 'A valid timestamp will be one greater than the present one.'
                 ]
             )
-            ->add('capacity', 'number', ['required' => true]);
+            ->add('capacity', 'number', ['required' => true])
+            ->add('image', 'file', [
+                'mapped'      => false,
+                'required'    => false,
+                'constraints' => new ImageExtension()
+            ]);
     }
 
     /**
@@ -100,28 +104,11 @@ class CourseAdmin extends AbstractAdmin
             ->end();
     }
 
-    public function preRemove($object)
+    /**
+     * @inheritdoc
+     */
+    public function setImageTargetFolder(string $imageTargetFolder): void
     {
-        /** @var Course $object */
-        $this->fileHelper->removePicture($object);
-    }
-
-    public function preBatchAction($actionName, ProxyQueryInterface $query, array &$idx, $allElements)
-    {
-        if ('delete' === $actionName) {
-            if ($allElements) {
-                $allCourses = $this->courseRepository->findAll();
-                /** @var Course $product */
-                foreach ($allCourses as $course) {
-                    $this->fileHelper->removePicture($course);
-                }
-            } else {
-                foreach ($idx as $id) {
-                    /** @var Course $course */
-                    $course = $this->courseRepository->find($id);
-                    $this->fileHelper->removePicture($course);
-                }
-            }
-        }
+        $this->imageTargetFolder = $imageTargetFolder;
     }
 }

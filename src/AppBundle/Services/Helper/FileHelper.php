@@ -21,7 +21,7 @@ use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
  */
 class FileHelper
 {
-    const PICTURE_NAME_SIZE = 8;
+    const IMAGE_NAME_SIZE = 8;
     const ALLOWED_TARGET_FOLDERS = ['user', 'course', 'product'];
     const CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const UPLOADS_FOLDER_NAME = 'uploads';
@@ -116,14 +116,14 @@ class FileHelper
         }
 
         $fileExtension = '.' . $file->getClientOriginalExtension();
-        $picturesLocation = $this->webRoot . '/' . self::UPLOADS_FOLDER_NAME .'/' . $targetFolder . '/';
-        $existingPictures = glob($this->webRoot . '/uploads/' . $targetFolder . '/*.*');
+        $imagesLocation = $this->webRoot . '/' . self::UPLOADS_FOLDER_NAME .'/' . $targetFolder . '/';
+        $existingImages = glob($this->webRoot . '/uploads/' . $targetFolder . '/*.*');
         do {
-            $fileName = $this->generateRandomString(self::PICTURE_NAME_SIZE) . $fileExtension;
-            $fullPicturePath = $picturesLocation . $fileName;
-        } while (in_array($fullPicturePath, $existingPictures));
+            $fileName = $this->generateRandomString(self::IMAGE_NAME_SIZE) . $fileExtension;
+            $fullImagePath = $imagesLocation . $fileName;
+        } while (in_array($fullImagePath, $existingImages));
 
-        $file->move($picturesLocation, $fileName);
+        $file->move($imagesLocation, $fileName);
 
         return $fileName;
     }
@@ -133,7 +133,7 @@ class FileHelper
      *
      * @throws InvalidArgumentException if the argument is invalid
      */
-    public function removePicture($entity) : void
+    public function removeImage($entity) : void
     {
         if (!($entity instanceof User) && !($entity instanceof Course) && !($entity instanceof Product)) {
             throw new InvalidArgumentException("Invalid object given!");
@@ -142,12 +142,12 @@ class FileHelper
         $fileSystem = new Filesystem();
         $file = null;
         if ($entity instanceof User) {
-            if ($entity->getPicture() === User::DEFAULT_IMAGE_NAME) {
+            if ($entity->getImage() === User::DEFAULT_IMAGE_NAME) {
                 return ;
             }
 
             try {
-                $file = new File($this->webRoot . '/' . self::USER_UPLOADS_FOLDER_NAME . '/' . $entity->getPicture());
+                $file = new File($this->webRoot . '/' . self::USER_UPLOADS_FOLDER_NAME . '/' . $entity->getImage());
                 $fileSystem->remove($file);
             } catch (FileNotFoundException|IOException $ignored) {}
 

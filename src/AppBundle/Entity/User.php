@@ -59,7 +59,7 @@ class User extends BaseUser
      * @ORM\Column(type="string", length=100, nullable=true)
      * @Groups({"user"})
      */
-    protected $picture;
+    protected $image;
 
     /**
      * @var Collection
@@ -93,18 +93,18 @@ class User extends BaseUser
     {
         parent::__construct();
 
-        $this->trainedCourses = new ArrayCollection();
+        $this->trainedCourses   = new ArrayCollection();
         $this->attendingCourses = new ArrayCollection();
 
         $this->subscribed = false;
-        $this->picture = self::DEFAULT_IMAGE_NAME;
+        $this->image      = self::DEFAULT_IMAGE_NAME;
         $this->isAtTheGym = false;
     }
 
     /**
      * @return bool
      */
-    public function isSubscribed() : bool
+    public function isSubscribed(): bool
     {
         return $this->subscribed;
     }
@@ -114,7 +114,7 @@ class User extends BaseUser
      *
      * @return $this
      */
-    public function setSubscribed(bool $subscribed) : self
+    public function setSubscribed(bool $subscribed): self
     {
         $this->subscribed = $subscribed;
 
@@ -125,16 +125,16 @@ class User extends BaseUser
     /**
      * @return string
      */
-    public function getFirstName() : ?string
+    public function getFirstName(): ?string
     {
-        return (string) $this->firstName;
+        return (string)$this->firstName;
     }
 
     /**
      * @param string $firstName
      * @return $this
      */
-    public function setFirstName(string $firstName) : self
+    public function setFirstName(string $firstName): self
     {
         $this->firstName = $firstName;
 
@@ -144,9 +144,9 @@ class User extends BaseUser
     /**
      * @return string
      */
-    public function getLastName() : ?string
+    public function getLastName(): ?string
     {
-        return (string) $this->lastName;
+        return (string)$this->lastName;
     }
 
     /**
@@ -154,7 +154,7 @@ class User extends BaseUser
      *
      * @return $this
      */
-    public function setLastName(string $lastName) : self
+    public function setLastName(string $lastName): self
     {
         $this->lastName = $lastName;
 
@@ -164,19 +164,19 @@ class User extends BaseUser
     /**
      * @return string
      */
-    public function getPicture() : ?string
+    public function getImage(): ?string
     {
-        return (string) $this->picture;
+        return (string)$this->image;
     }
 
     /**
-     * @param string $picture
+     * @param null|string $image
      *
      * @return $this
      */
-    public function setPicture(?string $picture) : self
+    public function setImage(?string $image): self
     {
-        $this->picture = $picture;
+        $this->image = $image;
 
         return $this;
     }
@@ -194,7 +194,7 @@ class User extends BaseUser
      *
      * @return $this
      */
-    public function addTrainedCourse(Course $course) : self
+    public function addTrainedCourse(Course $course): self
     {
         $this->trainedCourses->add($course);
 
@@ -206,7 +206,7 @@ class User extends BaseUser
      *
      * @return $this
      */
-    public function removeTrainedCourse(Course $course) : self
+    public function removeTrainedCourse(Course $course): self
     {
         $this->trainedCourses->removeElement($course);
 
@@ -226,7 +226,7 @@ class User extends BaseUser
      *
      * @return $this
      */
-    public function addAttendingCourse(Course $course) : self
+    public function addAttendingCourse(Course $course): self
     {
         $this->attendingCourses->add($course);
 
@@ -238,7 +238,7 @@ class User extends BaseUser
      *
      * @return $this
      */
-    public function removeAttendingCourse(Course $course) : self
+    public function removeAttendingCourse(Course $course): self
     {
         $this->attendingCourses->removeElement($course);
 
@@ -248,7 +248,7 @@ class User extends BaseUser
     /**
      * @return string
      */
-    public function getFullName() : string
+    public function getFullName(): string
     {
         return $this->getLastName() . ' ' . $this->getFirstName();
     }
@@ -276,13 +276,13 @@ class User extends BaseUser
     /**
      * @return array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         return [
-            'id' => $this->getId(),
-            'fullName' => $this->getFullName(),
-            'email' => $this->getEmail(),
-            'picture' => $this->getPicture(),
+            'id'         => $this->getId(),
+            'fullName'   => $this->getFullName(),
+            'email'      => $this->getEmail(),
+            'image'    => $this->getImage(),
             'isAtTheGym' => $this->isAtTheGym()
         ];
     }
@@ -292,13 +292,13 @@ class User extends BaseUser
      *
      * @return $this
      */
-    public function setProperties(array $data) : self
+    public function setProperties(array $data): self
     {
         $this->setEmail($data['email'] ?? '');
         $this->setUsername($this->getEmail());
         $this->setLastName(explode(' ', $data['fullName'])[0] ?? '');
         $this->setFirstName(explode(' ', $data['fullName'])[1] ?? '');
-        $this->setPicture($data['picture'] ?? '');
+        $this->setImage($data['image'] ?? '');
         $this->setPlainPassword($data['password'] ?? '');
         $this->addRole("ROLE_USER");
         $this->setEnabled(true);
@@ -312,15 +312,15 @@ class User extends BaseUser
      *
      * @return $this
      */
-    public function updateProperties(array $data) : self
+    public function updateProperties(array $data): self
     {
         if (isset($data['fullName'])) {
             $this->setLastName(explode(' ', $data['fullName'])[0]);
             $this->setFirstName(explode(' ', $data['fullName'])[1]);
         }
 
-        if (isset($data['picture']) && null !== $data['picture']) {
-            $this->setPicture($data['picture']);
+        if (isset($data['image']) && null !== $data['image']) {
+            $this->setImage($data['image']);
         }
 
         if (isset($data['password'])) {
@@ -344,17 +344,16 @@ class User extends BaseUser
      *
      * @return string
      */
-    public function getHighestRole() : string
+    public function getHighestRole(): string
     {
-        $userRoles = $this->getRoles();
+        $userRoles               = $this->getRoles();
         $rolesSortedByImportance = ['ROLE_ADMIN', 'ROLE_TRAINER'];
-        foreach ($rolesSortedByImportance as $role)
-        {
-            if (in_array($role, $userRoles))
-            {
+        foreach ($rolesSortedByImportance as $role) {
+            if (in_array($role, $userRoles)) {
                 return $role;
             }
         }
+
         return 'ROLE_USER';
     }
 }

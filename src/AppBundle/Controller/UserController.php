@@ -27,7 +27,7 @@ class UserController extends Controller
      *         "id" : "1",
      *         "fullName" : "Smith Adam",
      *         "email" : "smithadam@gmail.com",
-     *         "picture" : "abcdefg.jpg",
+     *         "image" : "abcdefg.jpg",
      *         "isAtTheGym" : "1"
      *     }
      *
@@ -65,7 +65,7 @@ class UserController extends Controller
      *  filters={
      *      {"name"="fullName", "dataType"="string"},
      *      {"name"="password", "dataType"="string"},
-     *      {"name"="picture", "dataType"="File"},
+     *      {"name"="image", "dataType"="File"},
      *      {"name"="isAtTheGym", "dataType"="boolean"},
      *      {"name"="_method", "dataType"="string", "description"="Mandatory: value = PUT"},
      *  },
@@ -81,8 +81,8 @@ class UserController extends Controller
     {
         $requestParams = $request->request->all();
         unset($requestParams['_method']);
-        if (null !== $request->files->get('picture')) {
-            $requestParams['picture'] = $request->files->get('picture');
+        if (null !== $request->files->get('image')) {
+            $requestParams['image'] = $request->files->get('image');
         }
 
         $userValidator = $this->get(UserValidator::class);
@@ -97,9 +97,9 @@ class UserController extends Controller
         $fileHelper = $this->get(FileHelper::class);
         $loggedUser = $this->getUser();
 
-        if (isset($requestParams['picture'])) {
-            $fileHelper->removePicture($loggedUser);
-            $requestParams['picture'] = $fileHelper->uploadFile($requestParams['picture'], 'user');
+        if (isset($requestParams['image'])) {
+            $fileHelper->removeImage($loggedUser);
+            $requestParams['image'] = $fileHelper->uploadFile($requestParams['image'], 'user');
         }
 
         $loggedUser->updateProperties($requestParams);
