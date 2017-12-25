@@ -195,4 +195,12 @@ class Product
             'category' => $this->getCategory(),
         ];
     }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string)$this->getName();
+    }
 }
