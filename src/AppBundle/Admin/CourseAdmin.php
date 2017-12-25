@@ -37,7 +37,7 @@ class CourseAdmin extends AbstractBaseAdmin
 
         $this->setFileHelper($fileHelper);
         $this->setRepository($repository);
-        $this->setImageTargetFolder('product');
+        $this->setImageTargetFolder('course');
     }
 
     /**
