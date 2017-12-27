@@ -45,7 +45,7 @@ class AuthorizationController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="User login.",
+     *  description="",
      *  section="Authorization",
      *  filters={
      *      {"name"="email", "dataType"="string"},
@@ -96,7 +96,7 @@ class AuthorizationController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="User register.",
+     *  description="",
      *  section="Authorization",
      *  filters={
      *      {"name"="email", "dataType"="string", "description" : "Mandatory"},

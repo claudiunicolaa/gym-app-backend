@@ -298,7 +298,7 @@ class User extends BaseUser
         $this->setUsername($this->getEmail());
         $this->setLastName(explode(' ', $data['fullName'])[0] ?? '');
         $this->setFirstName(explode(' ', $data['fullName'])[1] ?? '');
-        $this->setImage($data['image'] ?? '');
+        $this->setImage($data['image'] ?? self::DEFAULT_IMAGE_NAME);
         $this->setPlainPassword($data['password'] ?? '');
         $this->addRole("ROLE_USER");
         $this->setEnabled(true);

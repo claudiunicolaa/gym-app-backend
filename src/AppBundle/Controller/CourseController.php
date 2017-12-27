@@ -32,12 +32,12 @@ class CourseController extends Controller
      *                  "id" : "1",
      *                  "fullName" : "Smith Adam",
      *                  "email" : "adamsmith@gmail.com",
-     *                  "image" : "https://i.imgur.com/NiCqGa3.jpg"
+     *                  "image" : "NiCqGa3.jpg"
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "30",
      *              "name" : "Course A",
-     *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
+     *              "image" : "NiCqGa3.jpg",
      *              "registeredUsers" : "15",
      *              "amRegistered" : "0"
      *         },
@@ -48,12 +48,12 @@ class CourseController extends Controller
      *                  "id" : "2",
      *                  "fullName" : "Adam George",
      *                  "email" : "adamgeorge@gmail.com",
-     *                  "image" : "https://i.imgur.com/NiCqGa3.jpg"
+     *                  "image" : "NiCqGa3.jpg"
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "25",
      *              "name" : "Course B",
-     *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
+     *              "image" : "NiCqGa3.jpg",
      *              "registeredUsers" : "25",
      *              "amRegistered" : "1"
      *         }
@@ -67,7 +67,7 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Returns all courses that match the given filters.",
+     *  description="Get all courses that match the given filters.",
      *  section="Course",
      * filters={
      *      {"name"="usersCourses", "dataType"="string", "description"="Returns the courses the user is registered to. Optional. Values: true or false"},
@@ -111,12 +111,12 @@ class CourseController extends Controller
      *                  "id" : "1",
      *                  "fullName" : "Smith Adam",
      *                  "email" : "adamsmith@gmail.com",
-     *                  "image" : "https://i.imgur.com/NiCqGa3.jpg"
+     *                  "image" : "NiCqGa3.jpg"
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "30",
      *              "name" : "Course A",
-     *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
+     *              "image" : "NiCqGa3.jpg",
      *              "registeredUsers" : "15",
      *              "amRegistered" : "1"
      *         }
@@ -130,7 +130,7 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Returns the course with the given id.",
+     *  description="Get a course by id",
      *  section="Course",
      *  statusCodes={
      *      200="Returned when successful",
@@ -161,13 +161,13 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used for course creation. The assigned trainer will be the user that makes the request.",
+     *  description="Create a course. The assigned trainer will be the user that makes the request.",
      *  section="Course",
      *  filters={
      *      {"name"="eventDate", "dataType"="timestamp", "description" : "Mandatory"},
      *      {"name"="capacity", "dataType"="int", "description" : "Mandatory"},
-     *      {"name"="image", "dataType"="string", "description" : "Optional"},
      *      {"name"="name", "dataType"="string", "description" : "Mandatory"},
+     *      {"name"="image", "dataType"="string", "description" : "Optional"},
      *  },
      *  statusCodes={
      *      200="Returned when successful",
@@ -219,7 +219,7 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used when a user wants to subscribe to a course. In the request send the course id.",
+     *  description="Used when a user wants to subscribe to a course. Send the course id",
      *  section="Course",
      *  statusCodes={
      *      200="Returned when successful",
@@ -330,7 +330,7 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used for course removal. Use the course id for the removal.",
+     *  description="Delete a course by id",
      *  section="Course",
      *  statusCodes={
      *      200="Returned when successful",
@@ -366,7 +366,7 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used when a user wants to unsubscribe from a course. Send the course id.",
+     *  description="Used when a user wants to unsubscribe from a course. Send the course id",
      *  section="Course",
      *  statusCodes={
      *      200="Returned when successful",

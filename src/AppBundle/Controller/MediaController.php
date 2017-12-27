@@ -35,7 +35,7 @@ class MediaController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Get gym photos. Go to /uploads/gym-photos/name-of-photo-with-extension",
+     *  description="Get all gym photos (/uploads/gym-photos/name-of-photo-with-extension)",
      *  section="Media",
      *  statusCodes={
      *      200="Returned when successful",
@@ -62,7 +62,7 @@ class MediaController extends Controller
     }
 
     /**
-     * @Route("/photos/{id}", name="delete_picture", methods={"DELETE"})
+     * @Route("/media/photos/{id}", name="delete_picture", methods={"DELETE"})
      *
      * @param string $id
      * @return JsonResponse
