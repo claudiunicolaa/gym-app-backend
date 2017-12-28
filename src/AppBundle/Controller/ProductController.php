@@ -43,7 +43,7 @@ class ProductController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Returns the list of products.",
+     *  description="Get all products",
      *  section="Product",
      *  statusCodes={
      *      200="Returned when successful",
@@ -85,7 +85,7 @@ class ProductController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Returns a product with given id.",
+     *  description="Get product by id",
      *  section="Product",
      *  statusCodes={
      *      200="Returned when successful",

@@ -11,7 +11,7 @@ use AppBundle\Exception\CourseRepositoryException;
  */
 class CourseFiltersValidator
 {
-    const ALLOWED_FILTERS = ['usersCourses', 'ownedCourses', 'intervalStart', 'intervalStop'];
+    const ALLOWED_FILTERS = ['usersCourses', 'ownedCourses', 'intervalStart', 'intervalStop', 'expired'];
 
     /**
      * @param array $data
@@ -86,6 +86,20 @@ class CourseFiltersValidator
     {
         if (!is_numeric($data) || (int)$data < 0 || (int)$data > 2554416000) {
             throw new CourseRepositoryException('Invalid value for intervalStop parameter!');
+        }
+    }
+
+    /**
+     * @param string $data
+     *
+     * @return void
+     *
+     * @throws CourseRepositoryException if data is not valid
+     */
+    private function validateExpired(string $data) : void
+    {
+        if (!in_array(strtolower($data), ['true', 'false'])) {
+            throw new CourseRepositoryException('Invalid value for expired parameter!');
         }
     }
 }

@@ -12,8 +12,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 class UserValidator
 {
-    const ALLOWED_KEYS_CREATE = ['email', 'fullName', 'picture', 'password'];
-    const ALLOWED_KEYS_UPDATE = ['fullName', 'picture', 'password', 'isAtTheGym'];
+    const ALLOWED_KEYS_CREATE = ['email', 'fullName', 'image', 'password'];
+    const ALLOWED_KEYS_UPDATE = ['fullName', 'image', 'password', 'isAtTheGym'];
     const MANDATORY_REGISTER_FIELDS = ['email', 'password', 'fullName'];
     const SUPPORTED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png'];
     const SUPPORTED_BOOLEAN_VALUES = ['true', 'false'];
@@ -85,25 +85,25 @@ class UserValidator
     }
 
     /**
-     * @param UploadedFile|string|null $picture
+     * @param UploadedFile|string|null $image
      *
      * @return void
      *
-     * @throws UserValidationException if the picture is not valid
+     * @throws UserValidationException if the image is not valid
      */
-    private function validatePicture($picture) : void
+    private function validateImage($image) : void
     {
-        if (!($picture instanceof UploadedFile)) {
-            throw new UserValidationException("Invalid picture given!");
+        if (!($image instanceof UploadedFile)) {
+            throw new UserValidationException("Invalid image given!");
         }
 
-        $extension = strtolower($picture->getClientOriginalExtension());
+        $extension = strtolower($image->getClientOriginalExtension());
         if (!in_array($extension, self::SUPPORTED_IMAGE_EXTENSIONS)) {
-            throw new UserValidationException("Invalid picture extension given!");
+            throw new UserValidationException("Invalid image extension given!");
         }
 
-        if (strlen($picture->getClientOriginalName()) === 0) {
-            throw new UserValidationException("Picture must have a name!");
+        if (strlen($image->getClientOriginalName()) === 0) {
+            throw new UserValidationException("Image must have a name!");
         }
     }
 

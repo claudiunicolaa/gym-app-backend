@@ -2,12 +2,12 @@
 
 namespace AppBundle\Admin;
 
-use Sonata\AdminBundle\Admin\AbstractAdmin;
+use AppBundle\Validator\Constraints\ImageExtension;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Route\RouteCollection;
-use Symfony\Component\Validator\Constraints\NotNull;
+use AppBundle\Services\Helper\FileHelper;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * Class UserAdmin
@@ -15,8 +15,29 @@ use Symfony\Component\Validator\Constraints\NotNull;
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
  * @author Claudiu Nicola <claudiunicola96@gmail.com>
  */
-class UserAdmin extends AbstractAdmin
+class UserAdmin extends AbstractBaseAdmin
 {
+    /**
+     * @param string           $code
+     * @param string           $class
+     * @param string           $baseControllerName
+     * @param FileHelper       $fileHelper
+     * @param EntityRepository $repository
+     */
+    public function __construct(
+        $code,
+        $class,
+        $baseControllerName,
+        FileHelper $fileHelper,
+        EntityRepository $repository
+    ) {
+        parent::__construct($code, $class, $baseControllerName);
+
+        $this->setFileHelper($fileHelper);
+        $this->setRepository($repository);
+        $this->setImageTargetFolder('user');
+    }
+
     /**
      * @inheritdoc
      */
@@ -33,11 +54,16 @@ class UserAdmin extends AbstractAdmin
             ->add('roles', 'choice', [
                 'required' => false,
                 'multiple' => true,
-                'choices' => [
-                    'Regular User'=> "ROLE_USER",
-                    'Trainer' => 'ROLE_TRAINER',
+                'choices'  => [
+                    'Regular User'  => "ROLE_USER",
+                    'Trainer'       => 'ROLE_TRAINER',
                     'Administrator' => 'ROLE_ADMIN'
                 ]
+            ])
+            ->add('image', 'file', [
+                'mapped'      => false,
+                'required'    => false,
+                'constraints' => new ImageExtension()
             ])
             ->add('isAtTheGym');
     }
@@ -84,6 +110,15 @@ class UserAdmin extends AbstractAdmin
      */
     public function prePersist($object)
     {
+        parent::prePersist($object);
         $object->setUsername($object->getEmail());
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setImageTargetFolder(string $imageTargetFolder): void
+    {
+        $this->imageTargetFolder = $imageTargetFolder;
     }
 }

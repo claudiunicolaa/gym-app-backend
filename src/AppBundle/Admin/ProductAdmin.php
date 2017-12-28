@@ -2,36 +2,43 @@
 
 namespace AppBundle\Admin;
 
-use AppBundle\Services\Helper\FileHelper;
 use AppBundle\Validator\Constraints\ImageExtension;
-use Sonata\AdminBundle\Admin\AbstractAdmin;
+use Doctrine\ORM\EntityRepository;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\CoreBundle\Validator\ErrorElement;
 use Symfony\Component\Validator\Constraints\GreaterThan;
+use AppBundle\Services\Helper\FileHelper;
 
 /**
  * Class ProductAdmin
  *
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
  */
-class ProductAdmin extends AbstractAdmin
+class ProductAdmin extends AbstractBaseAdmin
 {
     /**
-     * @var FileHelper
+     * @param string           $code
+     * @param string           $class
+     * @param string           $baseControllerName
+     * @param FileHelper       $fileHelper
+     * @param EntityRepository $repository
      */
-    protected $fileHelper;
-
-    /**
-     * @inheritdoc
-     */
-    public function __construct($code, $class, $baseControllerName, FileHelper $fileHelper)
-    {
+    public function __construct(
+        $code,
+        $class,
+        $baseControllerName,
+        FileHelper $fileHelper,
+        EntityRepository $repository
+    ) {
         parent::__construct($code, $class, $baseControllerName);
 
-        $this->fileHelper = $fileHelper;
+        $this->setFileHelper($fileHelper);
+        $this->setRepository($repository);
+        $this->setImageTargetFolder('product');
     }
+
 
     /**
      * @inheritdoc
@@ -44,8 +51,8 @@ class ProductAdmin extends AbstractAdmin
             ->add('category', 'text', ['required' => true])
             ->add('description', 'text', ['required' => false])
             ->add('image', 'file', [
-                'mapped' => false,
-                'required' => false,
+                'mapped'      => false,
+                'required'    => false,
                 'constraints' => new ImageExtension()
             ]);
     }
@@ -70,7 +77,6 @@ class ProductAdmin extends AbstractAdmin
         $listMapper
             ->addIdentifier('id')
             ->addIdentifier('price')
-            ->addIdentifier('image')
             ->addIdentifier('name')
             ->addIdentifier('category')
             ->addIdentifier('description');
@@ -90,25 +96,8 @@ class ProductAdmin extends AbstractAdmin
     /**
      * @inheritdoc
      */
-    public function prePersist($object)
+    public function setImageTargetFolder(string $imageTargetFolder): void
     {
-        $image = $this->getForm()->get('image')->getData();
-        if (null !== $image) {
-            $fileName = $this->fileHelper->uploadFile($image, 'product');
-            $object->setImage($fileName);
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function preUpdate($newObject)
-    {
-        $image = $this->getForm()->get('image')->getData();
-        if (null !== $image) {
-            $this->fileHelper->removePicture($newObject);
-            $fileName = $this->fileHelper->uploadFile($image, 'product');
-            $newObject->setImage($fileName);
-        }
+        $this->imageTargetFolder = $imageTargetFolder;
     }
 }

@@ -21,6 +21,14 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 class AuthorizationController extends Controller
 {
     /**
+     * @Route("/", name="default_route")
+     */
+    public function homepageAction()
+    {
+        return $this->redirectToRoute('sonata_admin_dashboard');
+    }
+
+    /**
      * ### Example Response ###
      *     {
      *         "token" : <token>,
@@ -37,7 +45,7 @@ class AuthorizationController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="User login.",
+     *  description="",
      *  section="Authorization",
      *  filters={
      *      {"name"="email", "dataType"="string"},
@@ -88,27 +96,27 @@ class AuthorizationController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="User register.",
+     *  description="",
      *  section="Authorization",
      *  filters={
      *      {"name"="email", "dataType"="string", "description" : "Mandatory"},
      *      {"name"="password", "dataType"="string", "description" : "Mandatory"},
      *      {"name"="fullName", "dataType"="string", "description": "Mandatory. Format: last_name first_name"},
-     *      {"name"="picture", "dataType"="File", "description" : "Optional"}
+     *      {"name"="image", "dataType"="File", "description" : "Optional"}
      *  },
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is not valid",
      *      405="Returned when the method called is not allowed",
-     *      413="Returned if the picture provided is too big. 2MB allowed"
+     *      413="Returned if the image provided is too big. 2MB allowed"
      *  }
      *  )
      */
     public function registerUserAction(Request $request) : JsonResponse
     {
         $requestParams = $request->request->all();
-        if (null !== $request->files->get('picture')) {
-            $requestParams['picture'] = $request->files->get('picture');
+        if (null !== $request->files->get('image')) {
+            $requestParams['image'] = $request->files->get('image');
         }
 
         $userValidator = $this->get(UserValidator::class);
@@ -126,7 +134,7 @@ class AuthorizationController extends Controller
 
         /** @var UserManager $userManager */
         $userManager = $this->get('fos_user.user_manager');
-        $requestParams['picture'] = $this->get(FileHelper::class)->uploadFile($request->files->get('picture'), 'user');
+        $requestParams['image'] = $this->get(FileHelper::class)->uploadFile($request->files->get('image'), 'user');
         $user = $userManager->createUser()->setProperties($requestParams);
         $userManager->updateUser($user);
 

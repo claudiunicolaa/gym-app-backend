@@ -284,10 +284,18 @@ class Course
     {
         $this->setName($data['name']);
         $this->setTrainer($data['trainer']);
-        $this->setImage($data['image'] ?? '');
+        $this->setImage($data['image'] ?? self::DEFAULT_IMAGE_NAME);
         $this->setCapacity($data['capacity']);
         $this->setEventDate($data['eventDate']);
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string)$this->getName();
     }
 }

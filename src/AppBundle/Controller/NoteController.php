@@ -46,7 +46,7 @@ class NoteController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Get the current user's notes",
+     *  description="Get all notes",
      *  section="Note",
      *  statusCodes={
      *      200="Returned when successful",
@@ -82,12 +82,13 @@ class NoteController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Returns the note with the given id for the current user",
+     *  description="Get note by id",
      *  section="Note",
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid",
      *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      403="Returned when you are not the owner of the note",
      *      405="Returned when the method called is not allowed"
      *  }
      *  )
@@ -98,7 +99,48 @@ class NoteController extends Controller
             return new JsonResponse(['error' => 'Note with given id doesn\'t exist'], 400);
         }
 
+        if ($note->getUser() !== $this->getUser()) {
+            return new JsonResponse(['error' => 'You don\'t own this note!'], 403);
+        }
+
         return new JsonResponse($note->toArray(), 200);
+    }
+
+    /**
+     * @Route("/api/user/note/{id}", name="note_delete", methods={"DELETE"})
+     *
+     * @param Note $note
+     *
+     * @return JsonResponse
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Delete note by id",
+     *  section="Note",
+     *  statusCodes={
+     *      200="Returned when successful",
+     *      400="Returned when the request is invalid",
+     *      401="Returned when the request is valid, but the token given is invalid or missing",
+     *      403="Returned when you are not the owner of the note",
+     *      405="Returned when the method called is not allowed"
+     *  }
+     *  )
+     */
+    public function deleteNoteAction(?Note $note) : JsonResponse
+    {
+        if (null === $note) {
+            return new JsonResponse(['error' => 'Note with given id doesn\'t exist'], 400);
+        }
+
+        if ($note->getUser() !== $this->getUser()) {
+            return new JsonResponse(['error' => 'You don\'t own this note!'], 403);
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($note);
+        $em->flush();
+
+        return new JsonResponse('', 200);
     }
 
     /**
@@ -110,8 +152,11 @@ class NoteController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used when a user wants to create a note",
+     *  description="Create a note",
      *  section="Note",
+     *  filters={
+     *      {"name"="text", "dataType"="timestamp", "description" : "Mandatory"},
+     *  },
      *  statusCodes={
      *      200="Returned when successful",
      *      400="Returned when the request is invalid.",
@@ -120,13 +165,11 @@ class NoteController extends Controller
      *  }
      *  )
      */
-    public function addNoteAction(Request $request) : JsonResponse
+    public function createNoteAction(Request $request) : JsonResponse
     {
         $loggedUser = $this->getUser();
         $requestParams = $request->request->all();
-
         $noteValidator = $this->get(NoteValidator::class);
-
         try {
             $noteValidator->checkMandatoryFields($requestParams);
             $noteValidator->validate($requestParams);

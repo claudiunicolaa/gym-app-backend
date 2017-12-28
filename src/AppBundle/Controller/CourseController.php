@@ -32,12 +32,12 @@ class CourseController extends Controller
      *                  "id" : "1",
      *                  "fullName" : "Smith Adam",
      *                  "email" : "adamsmith@gmail.com",
-     *                  "picture" : "https://i.imgur.com/NiCqGa3.jpg"
+     *                  "image" : "NiCqGa3.jpg"
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "30",
      *              "name" : "Course A",
-     *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
+     *              "image" : "NiCqGa3.jpg",
      *              "registeredUsers" : "15",
      *              "amRegistered" : "0"
      *         },
@@ -48,12 +48,12 @@ class CourseController extends Controller
      *                  "id" : "2",
      *                  "fullName" : "Adam George",
      *                  "email" : "adamgeorge@gmail.com",
-     *                  "picture" : "https://i.imgur.com/NiCqGa3.jpg"
+     *                  "image" : "NiCqGa3.jpg"
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "25",
      *              "name" : "Course B",
-     *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
+     *              "image" : "NiCqGa3.jpg",
      *              "registeredUsers" : "25",
      *              "amRegistered" : "1"
      *         }
@@ -67,13 +67,14 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Returns all courses that match the given filters.",
+     *  description="Get all courses that match the given filters.",
      *  section="Course",
      * filters={
      *      {"name"="usersCourses", "dataType"="string", "description"="Returns the courses the user is registered to. Optional. Values: true or false"},
      *      {"name"="ownedCourses", "dataType"="string", "description"="Returns the courses the current user is training. Optional. Values: true or false"},
      *      {"name"="intervalStart", "dataType"="timestamp", "description"="Returns the courses that start before the given time. Optional"},
-     *      {"name"="intervalStop", "dataType"="timestamp", "description"="Returns the courses that start until the given time. Optional"}
+     *      {"name"="intervalStop", "dataType"="timestamp", "description"="Returns the courses that start until the given time. Optional"},
+     *      {"name"="expired", "dataType"="string", "description"="Returns the courses based on expired status. Optional. Values: true or false"}
      *  },
      *  statusCodes={
      *      200="Returned when successful",
@@ -110,12 +111,12 @@ class CourseController extends Controller
      *                  "id" : "1",
      *                  "fullName" : "Smith Adam",
      *                  "email" : "adamsmith@gmail.com",
-     *                  "picture" : "https://i.imgur.com/NiCqGa3.jpg"
+     *                  "image" : "NiCqGa3.jpg"
      *              },
      *              "eventDate" : "1508916731",
      *              "capacity" : "30",
      *              "name" : "Course A",
-     *              "image" : "https://i.imgur.com/NiCqGa3.jpg",
+     *              "image" : "NiCqGa3.jpg",
      *              "registeredUsers" : "15",
      *              "amRegistered" : "1"
      *         }
@@ -129,7 +130,7 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Returns the course with the given id.",
+     *  description="Get a course by id",
      *  section="Course",
      *  statusCodes={
      *      200="Returned when successful",
@@ -160,13 +161,13 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used for course creation. The assigned trainer will be the user that makes the request.",
+     *  description="Create a course. The assigned trainer will be the user that makes the request.",
      *  section="Course",
      *  filters={
      *      {"name"="eventDate", "dataType"="timestamp", "description" : "Mandatory"},
      *      {"name"="capacity", "dataType"="int", "description" : "Mandatory"},
-     *      {"name"="image", "dataType"="string", "description" : "Optional"},
      *      {"name"="name", "dataType"="string", "description" : "Mandatory"},
+     *      {"name"="image", "dataType"="string", "description" : "Optional"},
      *  },
      *  statusCodes={
      *      200="Returned when successful",
@@ -218,7 +219,7 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used when a user wants to subscribe to a course. In the request send the course id.",
+     *  description="Used when a user wants to subscribe to a course. Send the course id",
      *  section="Course",
      *  statusCodes={
      *      200="Returned when successful",
@@ -305,7 +306,7 @@ class CourseController extends Controller
 
         $fileHelper = $this->get(FileHelper::class);
         if (isset($requestParameters['image'])) {
-            $fileHelper->removePicture($course);
+            $fileHelper->removeImage($course);
             unset($requestParameters['image']);
             $requestParameters['image'] = $fileHelper->uploadFile($request->files->get('image'), 'course');
         }
@@ -329,7 +330,7 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used for course removal. Use the course id for the removal.",
+     *  description="Delete a course by id",
      *  section="Course",
      *  statusCodes={
      *      200="Returned when successful",
@@ -348,7 +349,7 @@ class CourseController extends Controller
 
         $this->denyAccessUnlessGranted('delete', $course);
 
-        $this->get(FileHelper::class)->removePicture($course);
+        $this->get(FileHelper::class)->removeImage($course);
         $em = $this->getDoctrine()->getManager();
         $em->remove($course);
         $em->flush();
@@ -365,7 +366,7 @@ class CourseController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Used when a user wants to unsubscribe from a course. Send the course id.",
+     *  description="Used when a user wants to unsubscribe from a course. Send the course id",
      *  section="Course",
      *  statusCodes={
      *      200="Returned when successful",
@@ -415,7 +416,7 @@ class CourseController extends Controller
             $result[$key]['trainer']['id'] = $courseData["trainer_id"];
             $result[$key]['trainer']['fullName'] = $courseData['lastName'] . ' ' .$courseData['firstName'];
             $result[$key]['trainer']['email'] = $courseData['email'];
-            $result[$key]['trainer']['picture'] = $courseData['picture'];
+            $result[$key]['trainer']['image'] = $courseData['image'];
             $result[$key]['eventDate'] = $courseData['eventDate']->getTimestamp();
             $result[$key]['id'] = $courseData['id'];
             $result[$key]['capacity'] = $courseData['capacity'];

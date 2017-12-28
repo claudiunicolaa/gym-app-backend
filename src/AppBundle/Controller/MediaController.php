@@ -2,22 +2,23 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Services\Helper\FileHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Finder\Finder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Symfony\Component\Security\Acl\Exception\Exception;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MediaController
  *
  * @author Ioan Ovidiu Enache <i.ovidiuenache@yahoo.com>
+ * @author Alexandru Emil Popa <a.pope95@yahoo.com>
  */
 class MediaController extends Controller
 {
-    const PATH_TO_GYM_PHOTOS = '/../web/uploads/gym-photos';
-    
     /**
      * ### Example Response ###
      *      [
@@ -34,7 +35,7 @@ class MediaController extends Controller
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Get gym photos. Go to /uploads/gym-photos/name-of-photo-with-extension",
+     *  description="Get all gym photos (/uploads/gym-photos/name-of-photo-with-extension)",
      *  section="Media",
      *  statusCodes={
      *      200="Returned when successful",
@@ -45,17 +46,44 @@ class MediaController extends Controller
      */
     public function getPhotosAction() : JsonResponse
     {
-        $photoPath = $this->getParameter('kernel.root_dir') . self::PATH_TO_GYM_PHOTOS;
-        $fileNames = [];
+        return new JsonResponse($this->get(FileHelper::class)->getGymPhotos(), 200);
+    }
 
-        if (file_exists($photoPath) && is_dir($photoPath)) {
-            $finder = new Finder();
-            $finder->files()->in($photoPath);
-            foreach ($finder as $file) {
-                $fileNames[] = $file->getBasename();
-            }
+    /**
+     * @Route("/admin/photos", name="photo_gallery_route")
+     * @return Response
+     */
+    public function photoGalleryAction() : Response
+    {
+        return $this->render(
+            'default/gallery.html.twig',
+            array('photos' => $this->get(FileHelper::class)->getGymPhotos())
+        );
+    }
+
+    /**
+     * @Route("/media/photos/{id}", name="delete_picture", methods={"DELETE"})
+     *
+     * @param string $id
+     * @return JsonResponse
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Delete the picture with the given ID",
+     *  section="Media",
+     *  statusCodes={
+     *      200="Returned when successful",
+     *      400="Returned when the request is invalid",
+     *  }
+     *  )
+     */
+    public function deletePictureAction(string $id) : JsonResponse
+    {
+        try {
+            $this->get(FileHelper::class)->removeGalleryPhoto($id);
+
+            return new JsonResponse('', 200);
+        } catch (FileNotFoundException|IOException $ex) {
+            return new JsonResponse(['error' => 'Picture can\'t be removed!'], 400);
         }
-
-        return new JsonResponse($fileNames, 200);
     }
 }

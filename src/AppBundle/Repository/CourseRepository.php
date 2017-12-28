@@ -2,7 +2,6 @@
 
 namespace AppBundle\Repository;
 
-use AppBundle\Entity\Course;
 use AppBundle\Entity\User;
 use AppBundle\Exception\CourseRepositoryException;
 use Doctrine\ORM\EntityRepository;
@@ -34,7 +33,7 @@ class CourseRepository extends EntityRepository
                    u.email,
                    u.lastName,
                    u.firstName,
-                   u.picture,
+                   u.image,
                    c.eventDate,
                    c.capacity,
                    c.image,
@@ -89,15 +88,15 @@ class CourseRepository extends EntityRepository
     protected function applyFilters(QueryBuilder $queryBuilder, User $loggedUser, array $filters = []) : void
     {
         if (isset($filters['usersCourses'])) {
-            $op = $filters['usersCourses'] === 'true' ? 'MEMBER OF' : 'NOT MEMBER OF';
-            $queryBuilder->andWhere(':loggedUser ' . $op . ' c.registeredUsers')
+            $operator = $filters['usersCourses'] === 'true' ? 'MEMBER OF' : 'NOT MEMBER OF';
+            $queryBuilder->andWhere(':loggedUser ' . $operator . ' c.registeredUsers')
                 ->setParameter('loggedUser', $loggedUser)
             ;
         }
 
         if (isset($filters['ownedCourses'])) {
-            $op = $filters['ownedCourses'] === 'true' ? '=' : '!=';
-            $queryBuilder->andWhere('c.trainer ' . $op . ' :loggedUser')
+            $operator = $filters['ownedCourses'] === 'true' ? '=' : '!=';
+            $queryBuilder->andWhere('c.trainer ' . $operator . ' :loggedUser')
                 ->setParameter('loggedUser', $loggedUser)
             ;
         }
@@ -113,6 +112,13 @@ class CourseRepository extends EntityRepository
             $date = (new \DateTime())->setTimestamp((int)$filters['intervalStop']);
             $queryBuilder->andWhere('c.eventDate <= :intervalStop')
                 ->setParameter('intervalStop', $date)
+            ;
+        }
+
+        if (isset($filters['expired'])) {
+            $operator = $filters['expired'] === 'true' ? '<=' : '>';
+            $queryBuilder->andWhere('c.eventDate ' . $operator . ' :today')
+                ->setParameter('today', new \DateTime())
             ;
         }
     }
