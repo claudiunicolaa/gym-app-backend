@@ -11,6 +11,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Security\Acl\Exception\Exception;
 use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
 
 /**
@@ -22,13 +23,14 @@ use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
 class FileHelper
 {
     const IMAGE_NAME_SIZE = 8;
-    const ALLOWED_TARGET_FOLDERS = ['user', 'course', 'product'];
+    const ALLOWED_TARGET_FOLDERS = ['user', 'course', 'product','gym-photos'];
     const CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const UPLOADS_FOLDER_NAME = 'uploads';
     const USER_UPLOADS_FOLDER_NAME = self::UPLOADS_FOLDER_NAME . '/user';
     const COURSE_UPLOADS_FOLDER_NAME = self::UPLOADS_FOLDER_NAME . '/course';
     const PRODUCT_UPLOADS_FOLDER_NAME = self::UPLOADS_FOLDER_NAME . '/product';
     const PATH_TO_GYM_PHOTOS = '/uploads/gym-photos';
+    const SUPPORTED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png'];
 
     /**
      * @var string
@@ -126,6 +128,29 @@ class FileHelper
         $file->move($imagesLocation, $fileName);
 
         return $fileName;
+    }
+
+    /**
+     * @param string $image
+     *
+     * @return void
+     *
+     * @throws Exception if the image is not valid
+     */
+    public function validateImage($image) : void
+    {
+        if (!($image instanceof UploadedFile)) {
+            throw new Exception("Invalid image given!");
+        }
+
+        $extension = strtolower($image->getClientOriginalExtension());
+        if (!in_array($extension, self::SUPPORTED_IMAGE_EXTENSIONS)) {
+            throw new Exception("Invalid image extension given!");
+        }
+
+        if (strlen($image->getClientOriginalName()) === 0) {
+            throw new Exception("Image must have a name!");
+        }
     }
 
     /**

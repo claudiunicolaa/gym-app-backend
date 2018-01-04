@@ -2,14 +2,19 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Form\Type\PhotoType;
 use AppBundle\Services\Helper\FileHelper;
+use AppBundle\Validator\Constraints\ImageExtension;
+use AppBundle\Validator\Constraints\ImageExtensionValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Acl\Exception\Exception;
 
 /**
  * Class MediaController
@@ -44,7 +49,7 @@ class MediaController extends Controller
      *  }
      *  )
      */
-    public function getPhotosAction() : JsonResponse
+    public function getPhotosAction(): JsonResponse
     {
         return new JsonResponse($this->get(FileHelper::class)->getGymPhotos(), 200);
     }
@@ -53,7 +58,7 @@ class MediaController extends Controller
      * @Route("/admin/photos", name="photo_gallery_route")
      * @return Response
      */
-    public function photoGalleryAction() : Response
+    public function photoGalleryAction(): Response
     {
         return $this->render(
             'default/gallery.html.twig',
@@ -76,7 +81,7 @@ class MediaController extends Controller
      *  }
      *  )
      */
-    public function deletePictureAction(string $id) : JsonResponse
+    public function deletePictureAction(string $id): JsonResponse
     {
         try {
             $this->get(FileHelper::class)->removeGalleryPhoto($id);
@@ -85,5 +90,27 @@ class MediaController extends Controller
         } catch (FileNotFoundException|IOException $ex) {
             return new JsonResponse(['error' => 'Picture can\'t be removed!'], 400);
         }
+    }
+
+    /**
+     * @Route("/media/photo", name="picture_form")
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function newPictureAction(Request $request): Response
+    {
+
+        $file = $request->files->get('photo');
+        $fileHelper = $this->get(FileHelper::class);
+        try {
+            $fileHelper->validateImage($file);
+        } catch (Exception $exception) {
+            return $this->redirectToRoute('photo_gallery_route');
+        }
+        $fileHelper->uploadFile($file, "gym-photos");
+
+        return $this->redirectToRoute('photo_gallery_route');
     }
 }
