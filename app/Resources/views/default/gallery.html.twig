@@ -34,6 +34,30 @@
     <a href="{{ path('sonata_admin_dashboard') }}">
         <img style="height: 50px; width: 50px; margin-top: 20px; margin-left: 20px; margin-bottom: 50px;" src="{{ asset("images/img_68585.png") }}" />
     </a>
+    <button style=" margin-top: 20px; margin-left: 20px; margin-bottom: 50px;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Add photo</button>
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form action="{{ path('picture_form') }}" method="post" enctype="multipart/form-data">
+                        Select image to upload:
+                        <input type="file" name="photo" id="photo">
+                        <input type="submit" value="Upload Photo" name="submit">
+                    </form>
+                    {% for flashMessage in app.session.flashbag.get('notice') %}
+
+                        <div class="alert alert-success">
+                            {{ flashMessage }}
+                        </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
     <h3 style="margin-left: 50px;">Photo Gallery</h3>
     <div id="fh5co-board" data-columns>
         {% for photo in photos %}
