@@ -114,6 +114,7 @@ sonata_admin:
                     - sonata.product.admin
                     - sonata.course.admin
                     - sonata.user.admin
+                    - sonata.note.admin
 
 sonata_block:
     default_contexts: [cms]
