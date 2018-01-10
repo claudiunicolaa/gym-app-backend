@@ -179,7 +179,7 @@ class NoteController extends Controller
             $em->persist($note);
             $em->flush();
 
-            return new JsonResponse('', 200);
+            return new JsonResponse($note->toArray(), 200);
         } catch (NoteValidationException $ex) {
             return new JsonResponse(['error' => $ex->getMessage()], 400);
         }
