@@ -79,7 +79,9 @@ class UserValidator
     private function validateFullName(string $fullName) : void
     {
         $fullName = trim($fullName);
-        if ('' === $fullName || strpos($fullName, ' ') === false) {
+        if ('' === $fullName ||
+            strpos($fullName, ' ') === false ||
+            strlen($fullName > 255)) {
             throw new UserValidationException("Invalid full name given!");
         }
     }
@@ -122,7 +124,8 @@ class UserValidator
      */
     private function validatePassword(string $password) : void
     {
-        if (0 === preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/', $password)) {
+        if (0 === preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/', $password) ||
+            strlen($password) > 255) {
             throw new UserValidationException("Invalid password given!");
         }
     }

@@ -79,7 +79,7 @@ class CourseValidator
      */
     private function validateCapacity(string $capacity) : void
     {
-        if (!is_numeric($capacity) || (int)$capacity < 0) {
+        if (!is_numeric($capacity) || (int)$capacity < 0 || (int)$capacity > 50) {
             throw new CourseValidationException("Invalid capacity given!");
         }
     }
@@ -116,7 +116,7 @@ class CourseValidator
      */
     private function validateName(string $name) : void
     {
-        if (!is_string($name) || strlen($name) === 0) {
+        if (!is_string($name) || strlen($name) === 0 || strlen($name) > 255) {
             throw new CourseValidationException("Invalid name given!");
         }
     }
