@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+
 /**
  * @author Alexandru Emil Popa <a.pope95@yahoo.com>
  *
@@ -50,7 +51,7 @@ class Note
     /**
      * @return string
      */
-    public function getText() : string
+    public function getText() : ?string
     {
         return $this->text;
     }
@@ -78,7 +79,7 @@ class Note
     /**
      * @return User
      */
-    public function getUser() : User
+    public function getUser() : ?User
     {
         return $this->user;
     }
