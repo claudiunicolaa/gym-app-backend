@@ -22,3 +22,7 @@ services:
         arguments:
             - AppBundle\Entity\Note
 
+    AppBundle\Repository\NewsRepository:
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - AppBundle\Entity\News

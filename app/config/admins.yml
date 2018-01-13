@@ -20,3 +20,9 @@ services:
         arguments: [~, AppBundle\Entity\User, ~, '@AppBundle\Services\Helper\FileHelper', '@AppBundle\Repository\UserRepository']
         tags:
             - { name: sonata.admin, manager_type: orm, label: User }
+
+    sonata.news.admin:
+        class: AppBundle\Admin\NewsAdmin
+        arguments: [~, AppBundle\Entity\News, ~, '@AppBundle\Repository\NewsRepository']
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: News }
