@@ -32,7 +32,8 @@ class NoteValidator
      *
      * @return void
      *
-     * @throws NoteValidationException if the note text is empty or too many parameters given
+     * @throws NoteValidationException if the note text is empty, too long
+     * or too many parameters given
      */
     public function validate(array $data) : void {
         $filteredData = array_intersect_key($data, array_flip(self::MANDATORY_FIELDS));
@@ -43,6 +44,10 @@ class NoteValidator
 
         if ($data['text'] === "") {
             throw new NoteValidationException('Note text can\'t be empty!');
+        }
+
+        if (strlen($data['text']) > 500) {
+            throw new NoteValidationException('Note text too long!');
         }
     }
 }

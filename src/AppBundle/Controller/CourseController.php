@@ -204,7 +204,7 @@ class CourseController extends Controller
             $em->persist($course);
             $em->flush();
 
-            return new JsonResponse('', 200);
+            return new JsonResponse($course->toArray(), 200);
         } catch (CourseValidationException $ex) {
             return new JsonResponse(['error' => $ex->getMessage()], 400);
         }
