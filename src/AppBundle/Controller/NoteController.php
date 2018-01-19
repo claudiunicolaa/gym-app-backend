@@ -155,7 +155,7 @@ class NoteController extends Controller
      *  description="Create a note",
      *  section="Note",
      *  filters={
-     *      {"name"="text", "dataType"="timestamp", "description" : "Mandatory"},
+     *      {"name"="text", "dataType"="string", "description" : "Mandatory"},
      *  },
      *  statusCodes={
      *      200="Returned when successful",

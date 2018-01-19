@@ -28,6 +28,13 @@ class News
     protected $text;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string")
+     */
+    protected $title;
+
+    /**
      * @return int
      */
     public function getId() : int
@@ -41,6 +48,26 @@ class News
     public function getText() : ?string
     {
         return $this->text;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     *
+     * @return $this
+     */
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
     }
 
     /**
@@ -63,6 +90,7 @@ class News
         return [
             'id' => $this->getId(),
             'text' => $this->getText(),
+            'title' => $this->getTitle()
         ];
     }
 

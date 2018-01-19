@@ -21,11 +21,13 @@ class NewsController extends Controller
      *      {
      *         {
      *              "id" : "1",
-     *              "text" : "a"
+     *              "text" : "a",
+     *              "title" : "a"
      *         },
      *         {
      *              "id" : "2",
-     *              "text" : "b"
+     *              "text" : "b",
+     *              "title" : "b"
      *         }
      *     }
      *
