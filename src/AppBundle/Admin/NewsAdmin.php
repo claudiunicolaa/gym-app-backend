@@ -34,7 +34,8 @@ class NewsAdmin extends AbstractBaseAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('text', 'text', ['required' => true]);
+            ->add('text', 'text', ['required' => true])
+            ->add('title', 'text', ['required' => true]);
     }
 
     /**
@@ -44,7 +45,8 @@ class NewsAdmin extends AbstractBaseAdmin
     {
         $datagridMapper
             ->add('id')
-            ->add('text');
+            ->add('text')
+            ->add('title');
     }
 
     /**
@@ -54,7 +56,8 @@ class NewsAdmin extends AbstractBaseAdmin
     {
         $listMapper
             ->addIdentifier('id')
-            ->addIdentifier('text');
+            ->addIdentifier('text')
+            ->addIdentifier('title');
     }
 
 
